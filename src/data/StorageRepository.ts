@@ -25,6 +25,6 @@ export class SingleObjectRepository<T> {
     }
 }
 
-export class LocalStorage {
+export class StorageRepository {
     static player = new SingleObjectRepository<Player>('player')
 }

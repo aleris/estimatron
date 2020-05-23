@@ -5,7 +5,7 @@ export class EstimationPack {
 export class EstimationPacks {
     public static readonly MountainGoat = new EstimationPack(
         'Mountain Goat',
-        ['?', '0', '½', '1', '2', '3', '5', '8', '13', '20', '40', '100', '∞']
+        ['?', '0', '½', '1', '2', '3', '5', '8', '13', '20', '40', '100', '∞', '☕']
     )
 
     public static readonly Fibonacci = new EstimationPack(
@@ -22,4 +22,6 @@ export class EstimationPacks {
         'T-Shirt',
         ['?', 'XS', 'S', 'M', 'L', 'XL', '∞']
     )
+
+    public static readonly Default = EstimationPacks.MountainGoat
 }

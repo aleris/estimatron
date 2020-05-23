@@ -1,33 +1,10 @@
-import { v4 as uuid } from 'uuid'
-
-export class NameId {
-    constructor(public readonly name: string, public readonly uuid: string) { }
-
-    toString(suffix?: string) {
-        if (suffix) {
-            return `${this.name}-${this.uuid}-${suffix}`
-        } else {
-            return `${this.name}-${this.uuid}`
-        }
-    }
-}
-
-export class NameIdGenerator {
-    static looksValid(id: string) {
-        return 42 <= id.length
-    }
-
-    static generate(): NameId {
-        const name = this.generateReadableName(5).toUpperCase()
-        return new NameId(name, uuid())
-    }
-
-    private static generateReadableName(length: number): string {
+export class NameGenerator {
+    public static randomReadableName(length: number = 5): string {
         const vocals = 'aeiou'
-        const consonants = 'bcdfghjlmnprstv'
+        const consonants = 'bcdfghjklmnpqrstvxyz'
         let c = Math.floor(Math.random() * 2)
         let r = ''
-        let prev = '-'
+        let prev = ''
         for (let i = 0; i !== length; i++) {
             let current
             if (c === 0) {
@@ -40,7 +17,7 @@ export class NameIdGenerator {
                 current = this.pickOneCharAvoiding(vocals, prev)
                 c = 0
             }
-            r += current
+            r += i === 0 ? current.toUpperCase() : current
             prev = current
         }
         return r
