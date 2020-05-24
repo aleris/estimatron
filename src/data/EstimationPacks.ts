@@ -10,17 +10,17 @@ export class EstimationPacks {
 
     public static readonly Fibonacci = new EstimationPack(
         'Fibonacci',
-        ['?', '0', '1', '2', '3', '5', '8', '13', '21', '34', '55', '89', '∞']
+        ['?', '0', '1', '2', '3', '5', '8', '13', '21', '34', '55', '89', '∞', '☕']
     )
 
     public static readonly Sequential = new EstimationPack(
         'Sequential',
-        ['?', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '∞']
+        ['?', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '∞', '☕']
     )
 
     public static readonly TShirts = new EstimationPack(
         'T-Shirt',
-        ['?', 'XS', 'S', 'M', 'L', 'XL', '∞']
+        ['?', 'XS', 'S', 'M', 'L', 'XL', '∞', '☕']
     )
 
     public static readonly Default = EstimationPacks.MountainGoat

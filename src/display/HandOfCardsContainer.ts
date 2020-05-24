@@ -1,22 +1,21 @@
 import { Container, Point, Shape } from '@createjs/easeljs'
-import { CardFront } from './CardFront'
 import { SceneLayout } from './SceneLayout'
 import { RefreshLayout } from './RefreshLayout'
 import { EstimationPack, EstimationPacks } from '../data/EstimationPacks'
-import { Card } from '../data/Card'
 import { PositionAndRotation } from './PositionAndRotation'
+import { CardShape } from './CardShape'
 
 export class HandOfCardsContainer extends Container implements RefreshLayout {
     private static readonly START_ANGLE = -Math.PI / 2 - Math.PI / 8
     private static readonly ANGLE_SPREAD = Math.PI / 4
-    public readonly cards = new Array<CardFront>()
+    public readonly cards = new Array<CardShape>()
 
     private readonly container: Container
     private draggedCardStart: Point
-    private grabbedCard?: CardFront = null
-    private radius: number
+    private grabbedCard?: CardShape | null = null
+    private radius: number = 0
 
-    public onDrop: (cardDisplay: CardFront, dropPosition: Point) => void
+    public onDrop: (cardShape: CardShape, dropPosition: Point) => void = () => {}
 
     constructor(private readonly sceneLayout: SceneLayout) {
         super()
@@ -26,19 +25,28 @@ export class HandOfCardsContainer extends Container implements RefreshLayout {
     }
 
     changeEstimationPack(estimationPack: EstimationPack) {
-        const texts = estimationPack.choices
+        const estimations = estimationPack.choices
         this.container.removeAllChildren()
-        for (let i = 0; i !== texts.length; i++) {
-            const text = texts[i]
-            const card = new CardFront(new Card(text), i)
-            this.cards.push(card)
-            this.container.addChild(card)
+        for (let i = 0; i !== estimations.length; i++) {
+            const estimation = estimations[i]
+            const cardShape = new CardShape(estimation, i)
+            this.cards.push(cardShape)
+            this.container.addChild(cardShape)
 
-            // card.addEventListener('mouseover', () => this.raise(card))
-            // card.addEventListener('mouseout', () => this.lower(card))
-            card.addEventListener('mousedown', (event: any) => this.grab(card, new Point(event.stageX, event.stageY)))
-            card.addEventListener('pressmove', (event: any) => this.drag(card, new Point(event.stageX, event.stageY)))
-            card.addEventListener('pressup', (event: any) => this.drop(card, new Point(event.stageX, event.stageY)))
+            // cardShape.addEventListener('mouseover', () => this.raise(cardShape))
+            // cardShape.addEventListener('mouseout', () => this.lower(cardShape))
+            cardShape.addEventListener(
+                'mousedown',
+                (event: any) => this.grab(cardShape, new Point(event.stageX, event.stageY))
+            )
+            cardShape.addEventListener(
+                'pressmove',
+                (event: any) => this.drag(cardShape, new Point(event.stageX, event.stageY))
+            )
+            cardShape.addEventListener(
+                'pressup',
+                (event: any) => this.drop(cardShape, new Point(event.stageX, event.stageY))
+            )
         }
     }
 
@@ -52,9 +60,9 @@ export class HandOfCardsContainer extends Container implements RefreshLayout {
             // - sceneLayout.halfCardHeight
             // + this.calculateFilledHeight(sceneLayout)
 
-        const dbgCenter = new Shape()
-        dbgCenter.graphics.beginStroke('red').drawCircle(0, 0, 3)
-        this.addChild(dbgCenter)
+        // const dbgCenter = new Shape()
+        // dbgCenter.graphics.beginStroke('red').drawCircle(0, 0, 3)
+        // this.addChild(dbgCenter)
         // const dbgStartX = new Shape()
         // const h = this.radius + this.tableLayout.halfCardHeight + this.radius * Math.sin(HandOfCards.START_ANGLE)
         //      // this.tableLayout.halfCardHeight// * Math.atan(HandOfCards.START_ANGLE)
@@ -69,17 +77,17 @@ export class HandOfCardsContainer extends Container implements RefreshLayout {
         // this.addChild(dbgStartX)
     }
 
-    drag(card: CardFront, pos: Point) {
+    drag(card: CardShape, pos: Point) {
         card.drag(pos)
     }
 
-    grab(card: CardFront, pos: Point) {
+    grab(card: CardShape, pos: Point) {
         this.grabbedCard = card
         this.draggedCardStart = new Point(card.x, card.y)
         card.grab(pos)
     }
 
-    drop(card: CardFront, pos: Point) {
+    drop(card: CardShape, pos: Point) {
         card.dropTo(pos)
         this.grabbedCard = null
         if (this.onDrop) {

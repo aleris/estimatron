@@ -11,36 +11,32 @@ import { Bet, BetBuilder } from './data/Bet'
 import { EstimationPacks } from './data/EstimationPacks'
 
 export class TableController {
-    sceneLayout: SceneLayout
-    tableDisplay: TableContainer
+    tableContainer: TableContainer
     stage: StageGL
 
     constructor(
+        private readonly sceneLayout: SceneLayout,
         private readonly sessionTable: SessionTable,
         private readonly sessionPlayer: SessionPlayer
-    ) { }
+    ) {
+        this.tableContainer = new TableContainer(this.sceneLayout, this.sessionTable)
+        this.tableContainer.onChangeMyBet = this.onChangeMyBet.bind(this)
 
-    async init() {
-        const player = this.sessionPlayer.get()
-
-        await this.sessionTable.init(player)
-        console.log('table', this.sessionTable.table, 'players', this.sessionTable.table.players)
-
-        const canvas = document.getElementById('table') as HTMLCanvasElement
-
-        this.sceneLayout = new SceneLayout(canvas)
-        this.tableDisplay = new TableContainer(this.sceneLayout, this.sessionTable.table)
-        this.tableDisplay.onChangeMyBet = this.onChangeMyBet.bind(this)
-
-        window.addEventListener('resize', this.onWindowResize.bind(this), false)
-
-        this.stage = new Stage(canvas)
+        this.stage = new Stage(sceneLayout.canvas)
         this.stage.enableMouseOver()
         if (Touch.isSupported()) {
             Touch.enable(this.stage)
         }
 
-        this.stage.addChild(this.tableDisplay)
+        this.stage.addChild(this.tableContainer)
+    }
+
+    async init() {
+        const player = this.sessionPlayer.get()
+
+        await this.sessionTable.init(player)
+        console.log('table', this.sessionTable.table, 'players', this.sessionTable.table?.players)
+
         this.refreshLayout()
 
         for (let i = 0; i !== 5; i++) {
@@ -55,22 +51,24 @@ export class TableController {
 
         for (let i = 1; i !== 6; i++) {
             setTimeout(() => {
-                this.onOtherPlayerBet(
-                    this.sessionTable.table.players[i].id,
-                    BetBuilder.betWith(EstimationPacks.MountainGoat.choices[3 + i])
-                )
-            }, 100 + i * 100);
+                if (null !== this.sessionTable.table) {
+                    this.onOtherPlayerBet(
+                        this.sessionTable.table.players[i].id,
+                        BetBuilder.betWith(EstimationPacks.MountainGoat.choices[3 + i])
+                    )
+                }
+            }, 100 + i * 500);
         }
-        for (let i = 1; i !== 6; i++) {
-            setTimeout(() => {
-                this.onOtherPlayerBet(
-                    this.sessionTable.table.players[i].id,
-                    BetBuilder.betWith(EstimationPacks.MountainGoat.choices[5 + i])
-                )
-            }, 1230 + i * 130);
-        }
+        // for (let i = 1; i !== 6; i++) {
+        //     setTimeout(() => {
+        //         this.onOtherPlayerBet(
+        //             this.sessionTable.table.players[i].id,
+        //             BetBuilder.betWith(EstimationPacks.MountainGoat.choices[5 + i])
+        //         )
+        //     }, 1230 + i * 130);
+        // }
 
-        setTimeout(() => this.onRevealBets(), 1000)
+        // setTimeout(() => this.onRevealBets(), 5000)
 
         // setTimeout(() => {
         //     this.join({
@@ -92,35 +90,43 @@ export class TableController {
         Ticker.addEventListener('tick', this.stage)
     }
 
-    private onWindowResize() {
+    public onWindowResize() {
         this.refreshLayout()
     }
 
     private refreshLayout() {
         this.sceneLayout.updateDimensionsFromWindow()
-        this.tableDisplay.refreshLayout()
+        this.tableContainer.refreshLayout()
     }
 
     join(player: Player) {
         const added = this.sessionTable.addPlayerIfDoesNotExists(player)
         if (added) {
-            this.tableDisplay.refreshPlayers()
+            this.tableContainer.refreshPlayers()
         }
     }
 
     onChangeMyBet(bet: Bet) {
-        this.sessionTable.table.me.bet = bet
-        console.log('players', this.sessionTable.table.players)
-        // this.tableDisplay.refreshLayout(this.sceneLayout)
+        if (null !== this.sessionTable.table) {
+            this.sessionTable.table.me.bet = bet
+            console.log('players', this.sessionTable.table.players)
+        } else {
+            console.error('table is null, not initialized?')
+        }
+        // this.tableContainer.refreshLayout(this.sceneLayout)
     }
 
     onOtherPlayerBet(playerId: string, bet: Bet) {
         const player = this.sessionTable.findPlayerById(playerId)
-        player.bet = bet
-        this.tableDisplay.animateOtherPlayerBet(player)
+        if (player) {
+            player.bet = bet
+            this.tableContainer.animateOtherPlayerBet(player)
+        } else {
+            console.warn(`player with ${playerId} no longer at table ${this.tableContainer.table.id}`)
+        }
     }
 
     onRevealBets() {
-        this.tableDisplay.revealBets()
+        this.tableContainer.revealBets()
     }
 }

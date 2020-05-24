@@ -4,6 +4,7 @@
 import { SessionTable } from './data/SessionTable'
 import { SessionPlayer } from './data/SessionPlayer'
 import { TableController } from './TableController'
+import { SceneLayout } from './display/SceneLayout'
 
 // firebase.initializeApp({
 //     apiKey: firebaseConfig.apiKey,
@@ -12,10 +13,15 @@ import { TableController } from './TableController'
 // })
 
 // const firestore = firebase.firestore()
-const sessionPlayer = new SessionPlayer()
-const sessionTable = new SessionTable()
-const tableController = new TableController(sessionTable, sessionPlayer)
 
 window.addEventListener('DOMContentLoaded', async () => {
+    const sessionPlayer = new SessionPlayer()
+    const sessionTable = new SessionTable()
+    const canvas = document.getElementById('table') as HTMLCanvasElement
+    const sceneLayout = new SceneLayout(canvas)
+    const tableController = new TableController(sceneLayout, sessionTable, sessionPlayer)
+
+    window.addEventListener('resize', tableController.onWindowResize.bind(tableController), false)
+
     return tableController.init()
 })

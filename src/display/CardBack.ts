@@ -1,13 +1,11 @@
-import { Container, Point, Shadow, Shape } from '@createjs/easeljs'
+import { Container, Shape } from '@createjs/easeljs'
 import { RefreshLayout } from './RefreshLayout'
 import { CardConstants } from './CardConstants'
 
 export class CardBack extends Container implements RefreshLayout {
     private static readonly COLOR = '#c1dae8'
-    public center: Point
 
     private readonly background: Shape
-    private readonly backgroundShadow: Shadow
     private readonly color: Shape
 
     constructor() {
@@ -16,24 +14,11 @@ export class CardBack extends Container implements RefreshLayout {
         this.background = new Shape()
         this.addChild(this.background)
 
-        this.backgroundShadow = new Shadow(
-            CardConstants.SHADOW_COLOR,
-            CardConstants.SHADOW_OFFSET,
-            CardConstants.SHADOW_OFFSET,
-            CardConstants.SHADOW_BLUR
-        )
-        this.background.shadow = this.backgroundShadow
-
         this.color = new Shape()
         this.addChild(this.color)
     }
 
     refreshLayout() {
-        this.center = new Point(Math.round(this.width / 2), Math.round(this.height / 2))
-
-        this.regX = this.center.x
-        this.regY = this.height
-
         this.refreshLayoutBackground()
     }
 

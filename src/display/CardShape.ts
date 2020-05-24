@@ -1,10 +1,11 @@
 import { Container, Point, Shadow, Shape } from '@createjs/easeljs'
 import { RefreshLayout } from './RefreshLayout'
-import { Card } from '../data/Card'
 import { CardConstants } from './CardConstants'
 import { PositionAndRotation } from './PositionAndRotation'
 import { CardFront } from './CardFront'
 import { CardBack } from './CardBack'
+import { Ease, Tween } from '@createjs/tweenjs'
+import { Estimation } from '../data/Bet'
 
 export enum CardSide {
     Front,
@@ -12,9 +13,7 @@ export enum CardSide {
 }
 
 export class CardShape extends Container implements RefreshLayout {
-    public center: Point
 
-    private readonly container: Container
     private readonly background: Shape
 
     private readonly backgroundShadow: Shadow
@@ -26,8 +25,11 @@ export class CardShape extends Container implements RefreshLayout {
     private readonly cardFront: CardFront
     private readonly cardBack: CardBack
 
+    public center: Point
+    public side = CardSide.Front
+
     constructor(
-        public readonly card: Card,
+        public readonly estimation: Estimation,
         public readonly handZIndex = 0
     ) {
         super()
@@ -42,7 +44,49 @@ export class CardShape extends Container implements RefreshLayout {
             CardConstants.SHADOW_BLUR
         )
         this.background.shadow = this.backgroundShadow
-        this.cardFront = new CardFront(card, handZIndex)
+
+        this.cardFront = new CardFront(estimation)
+        this.cardBack = new CardBack()
+        this.showFront()
+    }
+
+    showFront() {
+        this.removeChild(this.cardBack)
+        this.addChild(this.cardFront)
+        this.side = CardSide.Front
+    }
+
+    showBack() {
+        this.removeChild(this.cardFront)
+        this.addChild(this.cardBack)
+        this.side = CardSide.Back
+    }
+
+    flip() {
+        if (this.side === CardSide.Back) {
+            this.showFront()
+        } else {
+            this.showBack()
+        }
+    }
+
+    animateFlip() {
+        Tween.get(this, { override: true })
+            .to(
+                {
+                    skewY: 90
+                },
+                300,
+                Ease.circIn
+            )
+            .call(() => this.flip())
+            .to(
+                {
+                    skewY: 0
+                },
+                300,
+                Ease.circOut
+            )
     }
 
     refreshLayout() {
@@ -52,6 +96,14 @@ export class CardShape extends Container implements RefreshLayout {
         this.regY = this.height // this.center.y
 
         this.refreshLayoutBackground()
+
+        this.cardFront.width = this.width
+        this.cardFront.height = this.height
+        this.cardFront.refreshLayout()
+
+        this.cardBack.width = this.width
+        this.cardBack.height = this.height
+        this.cardBack.refreshLayout()
 
         // this.addChild(new DebugPointDisplay(this.center.x, this.center.y))
     }
@@ -63,5 +115,74 @@ export class CardShape extends Container implements RefreshLayout {
             .beginFill(CardConstants.BACKGROUND_COLOR)
             .drawRoundRect(0, 0, this.width, this.height, rectRadius)
             .endFill()
+    }
+
+    public raise() {
+        this.parent.setChildIndex(this, this.parent.numChildren - 1)
+        Tween.get(this.backgroundShadow, { override: true })
+            .to(
+                {
+                    offsetX: CardConstants.SHADOW_OVER_OFFSET,
+                    offsetY: CardConstants.SHADOW_OVER_OFFSET,
+                    blur: CardConstants.SHADOW_OVER_BLUR
+                },
+                CardShape.RISE_TIME,
+                Ease.quadOut
+            )
+    }
+
+    public lower() {
+        this.parent.setChildIndex(this, this.handZIndex)
+        Tween.get(this.backgroundShadow, { override: true })
+            .to(
+                {
+                    offsetX: CardConstants.SHADOW_OFFSET,
+                    offsetY: CardConstants.SHADOW_OFFSET,
+                    blur: CardConstants.SHADOW_BLUR
+                },
+                CardConstants.LOWER_TIME,
+                Ease.quadIn
+            )
+    }
+
+    grab(pos: Point) {
+        this.cursor = 'grabbing'
+        this.forceUpdateCursor()
+        this.parent.setChildIndex(this, this.parent.numChildren - 1)
+        this.dragOffset = new Point(this.x - pos.x, this.y - pos.y)
+        Tween.get(this, { override: true }).to({
+                regX: this.dragOffset.x + this.center.x,
+                regY: this.dragOffset.y + this.center.y,
+                rotation: 0
+            },
+            CardConstants.GRAB_ROTATE_TIME,
+            Ease.quadOut
+        )
+        this.raise()
+    }
+
+    drag(pos: Point) {
+        this.x = pos.x + this.dragOffset.x
+        this.y = pos.y + this.dragOffset.y
+    }
+
+    dropTo(pos: PositionAndRotation) {
+        this.cursor = 'grab'
+        this.forceUpdateCursor()
+        Tween.get(this, { override: true }).to(
+            {
+                ...pos,
+                regX: this.center.x,
+                regY: this.height
+            },
+            CardConstants.LOWER_TIME,
+            Ease.quadOut
+        )
+        this.lower()
+    }
+
+    // see https://github.com/CreateJS/EaselJS/issues/861
+    private forceUpdateCursor() {
+        this.stage._testMouseOver(true)
     }
 }

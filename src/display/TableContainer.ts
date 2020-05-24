@@ -3,22 +3,22 @@ import { HandOfCardsContainer } from './HandOfCardsContainer'
 import { RefreshLayout } from './RefreshLayout'
 import { SceneLayout } from './SceneLayout'
 import { PlayerSlotsContainer } from './PlayerSlotsContainer'
-import { Table } from '../data/Table'
-import { CardFront } from './CardFront'
 import { PositionAndRotation } from './PositionAndRotation'
 import { Bet, BetBuilder } from '../data/Bet'
 import { Player } from '../data/Player'
+import { CardShape } from './CardShape'
+import { SessionTable } from '../data/SessionTable'
 
 export class TableContainer extends Container implements RefreshLayout {
     private readonly playerSlotsList: PlayerSlotsContainer
     private readonly handOfCards: HandOfCardsContainer
-    private betCard: CardFront | null = null
+    private betCard: CardShape | null = null
 
-    public onChangeMyBet: (bet: Bet) => void
+    public onChangeMyBet: (bet: Bet) => void = () => {}
 
-    constructor(private readonly sceneLayout: SceneLayout, private readonly table: Table) {
+    constructor(private readonly sceneLayout: SceneLayout, public readonly sessionTable: SessionTable) {
         super()
-        this.playerSlotsList = new PlayerSlotsContainer(sceneLayout, table)
+        this.playerSlotsList = new PlayerSlotsContainer(sceneLayout, sessionTable)
         this.addChild(this.playerSlotsList)
         this.handOfCards = new HandOfCardsContainer(sceneLayout)
         this.handOfCards.onDrop = this.onDropCard.bind(this)
@@ -45,17 +45,23 @@ export class TableContainer extends Container implements RefreshLayout {
         this.playerSlotsList.refreshLayout()
     }
 
-    private onDropCard(card: CardFront, pos: Point) {
+    private onDropCard(card: CardShape, pos: Point) {
         if (this.acceptDropToSlot(pos)) {
-            if (null !== this.betCard) {
+            if (null !== this.betCard && null !== this.betCard.handPosition) {
                 this.betCard.dropTo(this.betCard.handPosition)
             }
             const playerSlot = this.playerSlotsList.playerSlot
-            card.dropTo(new PositionAndRotation(playerSlot.x, playerSlot.y, 0))
+            if (playerSlot) {
+                card.dropTo(new PositionAndRotation(playerSlot.x, playerSlot.y, 0))
+            } else {
+                console.error(`player slot not initialized`)
+            }
             this.betCard = card
-            this.onChangeMyBet(BetBuilder.betWith(this.betCard.card.estimation))
+            this.onChangeMyBet(BetBuilder.betWith(this.betCard.estimation))
         } else {
-            card.dropTo(card.handPosition)
+            if (null !== card.handPosition) {
+                card.dropTo(card.handPosition)
+            }
             this.onChangeMyBet(BetBuilder.noBet())
         }
     }
@@ -65,6 +71,6 @@ export class TableContainer extends Container implements RefreshLayout {
     }
 
     revealBets() {
-
+        this.playerSlotsList.revealBets()
     }
 }

@@ -5,7 +5,7 @@ import { Table } from './Table'
 import { IdGenerator } from './IdGenerator'
 
 export class SessionTable {
-    public table: Table
+    public table: Table | null = null
 
     constructor(
         // private readonly firestore: firestore.Firestore
@@ -31,12 +31,12 @@ export class SessionTable {
     }
 
     findPlayerById(playerId: string): Player | undefined {
-        return this.table.players.find(p => p.id === playerId)
+        return this.table?.players.find(p => p.id === playerId)
     }
 
     addPlayerIfDoesNotExists(player: Player): boolean {
         if (!this.findPlayerById(player.id)) {
-            this.table.players.push(player)
+            this.table?.players.push(player)
             return true
         }
         return false

@@ -4,7 +4,10 @@ export class SceneLayout {
     public sceneWidth: number
     public sceneHeight: number
 
-    constructor(public readonly canvas: HTMLCanvasElement) { }
+    constructor(public readonly canvas: HTMLCanvasElement) {
+        this.sceneWidth = canvas.width
+        this.sceneHeight = canvas.height
+    }
 
     get cardWidth(): number {
         return Math.round(

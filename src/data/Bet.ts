@@ -1,8 +1,10 @@
+export type Estimation = string
+
 export const NoEstimation = '~'
 
 export interface Bet {
     timestamp: number
-    estimation: string
+    estimation: Estimation
 }
 
 export class BetBuilder {
