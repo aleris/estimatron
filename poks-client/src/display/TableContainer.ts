@@ -104,7 +104,10 @@ export class TableContainer extends Container implements RefreshLayout {
             if (null !== card.handPosition) {
                 card.dropTo(card.handPosition)
             }
-            this.onChangeMyBet(BetHelper.noBet())
+            if (this.betCard === card) {
+                this.onChangeMyBet(BetHelper.noBet())
+                this.betCard = null
+            }
         }
     }
 
