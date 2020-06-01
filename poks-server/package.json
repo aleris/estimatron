@@ -1,0 +1,28 @@
+{
+  "name": "poks-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/main.js",
+  "scripts": {
+    "lint": "tslint -c tslint.json -p tsconfig.json --fix",
+    "tsc": "tsc",
+    "build": "npm-run-all lint tsc",
+    "dev:start": "npm-run-all build start",
+    "dev": "nodemon --watch src -e ts --exec npm run dev:start",
+    "start": "node .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Adrian Toșcă",
+  "license": "AGPL",
+  "dependencies": {
+    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v17.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^14.0.5",
+    "nodemon": "^2.0.4",
+    "npm-run-all": "^4.1.5",
+    "tslint": "^6.1.2",
+    "typescript": "^3.9.3"
+  }
+}
