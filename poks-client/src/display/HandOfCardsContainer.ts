@@ -1,54 +1,79 @@
 import { Container, Point } from '@createjs/easeljs'
+import { Ease, Tween } from '@createjs/tweenjs'
+import { id } from '@server/model/id'
 import { DeckKind, DeckRepository } from '@server/model/Decks'
-import { estimation } from '@server/model/Bet'
+import { BetHelper } from '@server/model/Bet'
+import { Bet, estimation } from '@server/model/Bet'
+import { PlayerInfo } from '@server/model/PlayerInfo'
 import { SceneLayout } from '@/display/SceneLayout'
 import { RefreshLayout } from '@/display/RefreshLayout'
 import { PositionAndRotation } from '@/display/PositionAndRotation'
 import { CardShape } from '@/display/CardShape'
 import { SessionTable } from '@/data/SessionTable'
+import { PlayerSlotsContainer } from '@/display/PlayerSlotsContainer'
 
 export class HandOfCardsContainer extends Container implements RefreshLayout {
+    public onChangeMyBet: (bet: Bet) => void = () => {}
+
     private static readonly START_ANGLE = -Math.PI / 2 - Math.PI / 8
     private static readonly ANGLE_SPREAD = Math.PI / 4
-    private readonly cards = new Map<estimation, CardShape>()
 
-    private readonly container: Container
+    private deckKind = DeckRepository.defaultDeckKind
+    private readonly cards = new Array<CardShape>()
+    private readonly betsByPlayerIdMap = new Map<id, CardShape>()
+
+    private betCard: CardShape | null = null
     private draggedCardStart: Point
     private grabbedCard: CardShape | null = null
-    private deckKind: DeckKind | null = null
 
-    public onDrop: (cardShape: CardShape, dropPosition: Point) => void = () => {}
-
-    constructor(private readonly sceneLayout: SceneLayout, private readonly sessionTable: SessionTable) {
+    constructor(
+        private readonly sceneLayout: SceneLayout,
+        private readonly sessionTable: SessionTable,
+        private readonly playerSlotsContainer: PlayerSlotsContainer
+    ) {
         super()
-        this.container = new Container()
-        this.addChild(this.container)
+        this.updateDeck(this.deckKind)
     }
 
     refreshLayout(): void {
-        const tableDeckKind = this.sessionTable.tableInfo?.deckKind
-        if (undefined !== tableDeckKind && this.deckKind !== tableDeckKind) {
-            this.updateDeck(tableDeckKind)
+        const tableInfo = this.sessionTable.tableInfo
+        if (tableInfo !== null) {
+            if (this.deckKind !== tableInfo.deckKind) {
+                this.updateDeck(tableInfo.deckKind)
+            }
         }
-        this.arrangeCards(this.sceneLayout)
-        // if (sessionTable)
+
+        this.placeMyCards()
+
+        this.placeOtherPlayerCards()
     }
 
-    getCard(estimation: estimation): CardShape | undefined {
-        return this.cards.get(estimation)
+    revealBets() {
+        for (let player of this.sessionTable.players) {
+            const betCard = this.betsByPlayerIdMap.get(player.id)
+            if (betCard !== undefined) {
+                const shouldFlip = betCard.text !== player.bet.estimation
+                betCard.text = player.bet.estimation
+                betCard.refreshLayout()
+                if (shouldFlip) {
+                    betCard.animateFlip()
+                }
+            }
+        }
     }
 
     updateDeck(deckKind: DeckKind) {
         this.deckKind = deckKind
         const deck = DeckRepository.of(this.deckKind)
         const texts = deck.texts
-        this.container.removeAllChildren()
-        this.cards.clear()
+        this.removeAllChildren()
+        this.cards.length = 0
+        this.betCard = null
         for (let i = 0; i !== texts.length; i++) {
             const estimation = texts[i]
             const cardShape = new CardShape(estimation, i)
-            this.cards.set(estimation, cardShape)
-            this.container.addChild(cardShape)
+            this.cards.push(cardShape)
+            this.addChild(cardShape)
 
             cardShape.addEventListener(
                 'mousedown',
@@ -65,6 +90,118 @@ export class HandOfCardsContainer extends Container implements RefreshLayout {
         }
     }
 
+    createCardForOtherPlayer(player: PlayerInfo, animate: boolean) {
+        const slot = this.playerSlotsContainer.getSlotForPlayer(player)
+        if (!slot) {
+            console.warn(`player ${player.id} no longer on table ${this.sessionTable.tableInfo?.id}`)
+            return
+        }
+        const existingCardBack = this.betsByPlayerIdMap.get(player.id)
+        if (existingCardBack) {
+            const existingDest = { x: slot.x + 2 * slot.width, y: -this.sceneLayout.cardHeight }
+            if (animate) {
+                Tween.get(existingCardBack, {override: true})
+                    .to(
+                        existingDest,
+                        700,
+                        Ease.quadOut
+                    )
+                    .call(() => this.removeChild(existingCardBack))
+            } else {
+                existingCardBack.x = existingDest.x
+                existingCardBack.y = existingDest.y
+            }
+        }
+
+        if (!BetHelper.hasEstimation(player.bet)) {
+            return
+        }
+
+        const cardShape = new CardShape(player.bet.estimation)
+        cardShape.x = slot.x - 2 * slot.width
+        cardShape.y = -this.sceneLayout.cardHeight
+        cardShape.width = this.sceneLayout.cardWidth
+        cardShape.height = this.sceneLayout.cardHeight
+        cardShape.rotation = -90
+        cardShape.refreshLayout()
+        this.addChild(cardShape)
+        this.betsByPlayerIdMap.set(player.id, cardShape)
+
+        const dest = {x: slot.x, y: slot.y, rotation: 0}
+        if (animate) {
+            Tween.get(cardShape)
+                .to(
+                    dest,
+                    700,
+                    Ease.quadIn
+                )
+        } else {
+            cardShape.x = dest.x
+            cardShape.y = dest.y
+            cardShape.rotation = dest.rotation
+        }
+    }
+
+    private acceptDropToSlot(pos: Point): boolean {
+        return pos.y < this.sceneLayout.sceneHeight / 2
+    }
+
+    private placeMyCards(): Point {
+        const radius = this.sceneLayout.sceneWidth / 3
+        const offsetX = this.sceneLayout.halfSceneWidth
+        const offsetY = this.sceneLayout.sceneHeight
+            + radius
+            + this.sceneLayout.cardHeight
+            - this.calculateFilledHeight(this.sceneLayout, radius)
+        let angle = HandOfCardsContainer.START_ANGLE
+        let angleIncrement = HandOfCardsContainer.ANGLE_SPREAD / (this.cards.length - 1)
+        for (let card of this.cards) {
+            card.width = this.sceneLayout.cardWidth
+            card.height = this.sceneLayout.cardHeight
+            card.x = offsetX + Math.round(radius * Math.cos(angle))
+            card.y = offsetY + Math.round(radius * Math.sin(angle))
+            card.rotation = this.radiansToDegrees(angle) * 3
+            card.handPosition = new PositionAndRotation(card.x, card.y, card.rotation)
+            card.cursor = 'grab'
+
+            if (this.sessionTable.playerInfo.bet.estimation === card.text) {
+                this.placeCardOnPlayerSlot(card)
+            }
+
+            card.refreshLayout()
+
+            angle += angleIncrement
+        }
+    }
+
+    private placeOtherPlayerCards() {
+        const players = this.sessionTable.players
+        if (!players) {
+            console.error('players must be set')
+            return
+        }
+
+        // other players bets
+        for (let player of players.filter(player => player.id !== this.sessionTable.playerInfo.id)) {
+            // when refreshing page, the state can already contain bets
+            if (BetHelper.hasEstimation(player.bet)) {
+                this.createCardForOtherPlayer(player, false)
+            }
+        }
+    }
+
+    private placeCardOnPlayerSlot(card: CardShape) {
+        const slot = this.playerSlotsContainer.getSlotForPlayer(this.sessionTable.playerInfo)
+        if (slot === undefined) {
+            console.error(`slot undefined, slot for player not set on refresh layout`)
+            return
+        }
+        card.x = slot.x
+        card.y = slot.y
+        card.rotation = 0
+        this.betCard = card
+    }
+
     private drag(card: CardShape, pos: Point) {
         card.drag(pos)
     }
@@ -78,30 +215,33 @@ export class HandOfCardsContainer extends Container implements RefreshLayout {
     private drop(card: CardShape, pos: Point) {
         card.dropTo(pos)
         this.grabbedCard = null
-        if (this.onDrop) {
-            this.onDrop(card, pos)
-        }
+        this.onDropCard(card, pos)
     }
 
-    private arrangeCards(sceneLayout: SceneLayout): Point {
-        const radius = this.sceneLayout.sceneWidth / 3
-        const offsetX = sceneLayout.halfSceneWidth
-        const offsetY = sceneLayout.sceneHeight
-            + radius
-            + sceneLayout.cardHeight
-            - this.calculateFilledHeight(sceneLayout, radius)
-        let angle = HandOfCardsContainer.START_ANGLE
-        let angleIncrement = HandOfCardsContainer.ANGLE_SPREAD / (this.cards.size - 1)
-        for (let card of this.cards.values()) {
-            card.width = sceneLayout.cardWidth
-            card.height = sceneLayout.cardHeight
-            card.x = offsetX + Math.round(radius * Math.cos(angle))
-            card.y = offsetY + Math.round(radius * Math.sin(angle))
-            card.rotation = this.radiansToDegrees(angle) * 3
-            card.handPosition = new PositionAndRotation(card.x, card.y, card.rotation)
-            card.refreshLayout()
-            // console.log('card', card.x, card.y)
-            angle += angleIncrement
+    private onDropCard(card: CardShape, pos: Point) {
+        if (this.acceptDropToSlot(pos)) {
+            if (null !== this.betCard && null !== this.betCard.handPosition) {
+                this.betCard.dropTo(this.betCard.handPosition)
+            }
+            const playerSlot = this.playerSlotsContainer.playerSlot
+            if (playerSlot) {
+                card.dropTo(new PositionAndRotation(playerSlot.x, playerSlot.y, 0))
+            } else {
+                console.error(`player slot not initialized`)
+            }
+            if (this.betCard !== card) {
+                this.betCard = card
+                console.log('onDropCard', this.betCard)
+                this.onChangeMyBet(BetHelper.betWith(this.betCard.text))
+            }
+        } else {
+            if (null !== card.handPosition) {
+                card.dropTo(card.handPosition)
+            }
+            if (this.betCard === card) {
+                this.onChangeMyBet(BetHelper.noBet())
+                this.betCard = null
+            }
         }
     }
 

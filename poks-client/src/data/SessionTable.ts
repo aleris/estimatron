@@ -7,11 +7,14 @@ import { IdGenerator } from '@/data/IdGenerator'
 import { StorageRepository } from '@/data/StorageRepository'
 
 export class SessionTable {
-    public player: PlayerInfo | null = null
-    public tableInfo: TableInfo | null = null
+    public readonly playerInfo: PlayerInfo
+    public readonly tableInfo: TableInfo
     public readonly players = new Array<PlayerInfo>()
 
-    constructor() { }
+    constructor() {
+        this.playerInfo = this.getLocalPlayerOrNew()
+        this.tableInfo = this.getLocalTableOrNew()
+    }
 
     findPlayerById(playerId: string): PlayerInfo | undefined {
         return this.players.find(p => p.id === playerId)
@@ -30,20 +33,20 @@ export class SessionTable {
     }
 
     update(tableInfo: TableInfo, players: PlayerInfo[]) {
-        this.tableInfo = tableInfo
+        Object.assign(this.tableInfo, tableInfo)
         this.players.length = 0
-        const me = players.find(player => player.id === this.player?.id)
+        const me = players.find(player => player.id === this.playerInfo.id)
         if (undefined === me) {
-            console.error(`cannot find current player ${this.player?.id} in join confirmed list`)
+            console.error(`cannot find current player ${this.playerInfo.id} in join confirmed list`)
             return
         }
         this.players.push(me) // put current player first in list
         const otherPlayers = players.filter(player => player.id !== me.id)
         Array.prototype.push.apply(this.players, otherPlayers)
-        this.player = me
+        Object.assign(this.playerInfo, me)
     }
 
-    getLocalTableOrNew(): TableInfo {
+    private getLocalTableOrNew(): TableInfo {
         let id
         if (window.location.hash) {
             id = window.location.hash.substring(1)
@@ -65,7 +68,7 @@ export class SessionTable {
         return table
     }
 
-    getLocalPlayerOrNew() {
+    private getLocalPlayerOrNew() {
         let player = StorageRepository.player.get()
         if (!player) {
             player = {

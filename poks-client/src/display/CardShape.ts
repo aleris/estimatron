@@ -33,7 +33,7 @@ export class CardShape extends Container implements RefreshLayout {
 
     constructor(
         public text: estimation,
-        public readonly handZIndex = 0
+        public readonly handZIndex: number | null = null
     ) {
         super()
 
@@ -145,7 +145,11 @@ export class CardShape extends Container implements RefreshLayout {
     }
 
     public lower() {
-        this.parent.setChildIndex(this, this.handZIndex)
+        if (null !== this.handZIndex) {
+            this.parent.setChildIndex(this, this.handZIndex)
+        } else {
+            console.error('hand z-index is null on lower')
+        }
         Tween.get(this.backgroundShadow, { override: true })
             .to(
                 {
@@ -161,6 +165,7 @@ export class CardShape extends Container implements RefreshLayout {
     grab(pos: Point) {
         this.cardFront.cursor = 'grabbing'
         this.forceUpdateCursor()
+        console.log('grab getChildIndex', this.parent.getChildIndex(this), this.parent.numChildren)
         this.parent.setChildIndex(this, this.parent.numChildren - 1)
         this.dragOffset = new Point(this.x - pos.x, this.y - pos.y)
         Tween.get(this, { override: true }).to({

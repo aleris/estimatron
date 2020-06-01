@@ -1,7 +1,6 @@
 import { Stage, Touch } from '@createjs/easeljs'
 import { Ticker } from '@createjs/core'
 import { Bet } from '@server/model/Bet'
-import { PlayerInfo } from '@server/model/PlayerInfo'
 import { JoinConfirmedNotificationData } from '@server/model/JoinConfirmedNotificationData'
 import { OtherJoinedNotificationData } from '@server/model/OtherJoinedNotificationData'
 import { OtherBetNotificationData } from '@server/model/OtherBetNotificationData'
@@ -54,9 +53,8 @@ export class TableController {
 
     onConnectionOpened() {
         console.log('onConnectionOpened')
-        const playerInfo = this.sessionTable.getLocalPlayerOrNew()
-        this.sessionTable.player = playerInfo
-        const tableInfo = this.sessionTable.getLocalTableOrNew()
+        const playerInfo = this.sessionTable.playerInfo
+        const tableInfo = this.sessionTable.tableInfo
         this.server.joinTable({
             playerInfo,
             tableInfo
@@ -73,8 +71,8 @@ export class TableController {
     }
 
     onChangeMyBet(bet: Bet) {
-        if (null !== this.sessionTable.player) {
-            this.sessionTable.player.bet = bet
+        if (null !== this.sessionTable.playerInfo) {
+            this.sessionTable.playerInfo.bet = bet
             this.server.bet({
                 bet
             })

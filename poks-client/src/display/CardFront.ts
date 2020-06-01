@@ -19,8 +19,6 @@ export class CardFront extends Container implements RefreshLayout {
     ) {
         super()
 
-        this.cursor = 'grab'
-
         this.background = new Shape()
         this.addChild(this.background)
 

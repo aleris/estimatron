@@ -10,6 +10,6 @@ export class SceneConstants {
     public static readonly SHADOW_OVER_OFFSET = 4
     public static readonly SHADOW_OVER_BLUR = 6
     public static readonly SHADOW_PRESSED_OFFSET = 1
-    public static readonly SHADOW_PRESSED_BLUR = 2
+    public static readonly SHADOW_PRESSED_BLUR = 1
 
 }
