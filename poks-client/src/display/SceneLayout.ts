@@ -1,4 +1,4 @@
-import { CardConstants } from '@/display/CardConstants'
+import { SceneConstants } from '@/display/SceneConstants'
 
 export class SceneLayout {
     public sceneWidth: number
@@ -12,14 +12,14 @@ export class SceneLayout {
     get cardWidth(): number {
         return Math.round(
             Math.max(
-                CardConstants.CARD_MIN_WIDTH,
-                Math.min(this.sceneWidth, this.sceneHeight) * CardConstants.CARD_SCENE_REPORT
+                SceneConstants.CARD_MIN_WIDTH,
+                Math.min(this.sceneWidth, this.sceneHeight) * SceneConstants.CARD_SCENE_REPORT
             )
         )
     }
 
     get cardHeight(): number {
-        return Math.round(this.cardWidth * CardConstants.CARD_SIZE_REPORT)
+        return Math.round(this.cardWidth * SceneConstants.CARD_SIZE_REPORT)
     }
 
     get halfCardWidth(): number {

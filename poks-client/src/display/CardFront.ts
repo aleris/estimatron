@@ -1,6 +1,6 @@
 import { Container, Shape, Text } from '@createjs/easeljs'
 import { RefreshLayout } from '@/display/RefreshLayout'
-import { CardConstants } from '@/display/CardConstants'
+import { SceneConstants } from '@/display/SceneConstants'
 import { estimation } from '@server/model/Bet'
 
 export class CardFront extends Container implements RefreshLayout {
@@ -25,9 +25,11 @@ export class CardFront extends Container implements RefreshLayout {
         this.addChild(this.background)
 
         this.topLeftText = new Text(this.text)
+        this.topLeftText.mouseEnabled = false
         this.addChild(this.topLeftText)
 
         this.bottomRightText = new Text(this.text)
+        this.bottomRightText.mouseEnabled = false
         this.addChild(this.bottomRightText)
     }
 
@@ -40,10 +42,10 @@ export class CardFront extends Container implements RefreshLayout {
     }
 
     private refreshLayoutBackground() {
-        const rectRadius = Math.round(this.width * CardConstants.BACKGROUND_RADIUS_REPORT)
+        const rectRadius = Math.round(this.width * SceneConstants.CARD_BACKGROUND_RADIUS_REPORT)
         this.background.graphics
             .clear()
-            .beginFill(CardConstants.BACKGROUND_COLOR)
+            .beginFill(SceneConstants.CARD_BACKGROUND_COLOR)
             .drawRoundRect(0, 0, this.width, this.height, rectRadius)
             .endFill()
     }

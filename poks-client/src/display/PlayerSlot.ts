@@ -1,6 +1,6 @@
 import { Container, Point, Shape, Text } from '@createjs/easeljs'
 import { RefreshLayout } from '@/display/RefreshLayout'
-import { CardConstants } from '@/display/CardConstants'
+import { SceneConstants } from '@/display/SceneConstants'
 import { PlayerInfo } from '@server/model/PlayerInfo'
 
 export class PlayerSlot extends Container implements RefreshLayout {
@@ -49,7 +49,7 @@ export class PlayerSlot extends Container implements RefreshLayout {
     }
 
     private refreshLayoutBackground() {
-        const rectRadius = Math.floor(this.width * CardConstants.BACKGROUND_RADIUS_REPORT)
+        const rectRadius = Math.floor(this.width * SceneConstants.CARD_BACKGROUND_RADIUS_REPORT)
         this.background.graphics
             .beginFill(PlayerSlot.BACKGROUND_COLOR)
             .drawRoundRect(0, 0, this.width, this.height, rectRadius)

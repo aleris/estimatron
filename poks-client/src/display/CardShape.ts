@@ -1,7 +1,7 @@
 import { Container, Point, Shadow, Shape } from '@createjs/easeljs'
 import { Ease, Tween } from '@createjs/tweenjs'
 import { RefreshLayout } from '@/display/RefreshLayout'
-import { CardConstants } from '@/display/CardConstants'
+import { SceneConstants } from '@/display/SceneConstants'
 import { PositionAndRotation } from '@/display/PositionAndRotation'
 import { CardFront } from '@/display/CardFront'
 import { CardBack } from '@/display/CardBack'
@@ -13,6 +13,8 @@ export enum CardSide {
 }
 
 export class CardShape extends Container implements RefreshLayout {
+    public static readonly CARD_RISE_TIME = 80
+    public static readonly CARD_LOWER_TIME = 240
 
     private readonly background: Shape
 
@@ -38,10 +40,10 @@ export class CardShape extends Container implements RefreshLayout {
         this.addChild(this.background)
 
         this.backgroundShadow = new Shadow(
-            CardConstants.SHADOW_COLOR,
-            CardConstants.SHADOW_OFFSET,
-            CardConstants.SHADOW_OFFSET,
-            CardConstants.SHADOW_BLUR
+            SceneConstants.SHADOW_COLOR,
+            SceneConstants.SHADOW_OFFSET,
+            SceneConstants.SHADOW_OFFSET,
+            SceneConstants.SHADOW_BLUR
         )
         this.background.shadow = this.backgroundShadow
 
@@ -104,16 +106,17 @@ export class CardShape extends Container implements RefreshLayout {
 
         this.cardBack.width = this.width
         this.cardBack.height = this.height
+        this.cardBack.mouseEnabled = false
         this.cardBack.refreshLayout()
 
         // this.addChild(new DebugPointDisplay(this.center.x, this.center.y))
     }
 
     private refreshLayoutBackground() {
-        const rectRadius = Math.round(this.width * CardConstants.BACKGROUND_RADIUS_REPORT)
+        const rectRadius = Math.round(this.width * SceneConstants.CARD_BACKGROUND_RADIUS_REPORT)
         this.background.graphics
             .clear()
-            .beginFill(CardConstants.BACKGROUND_COLOR)
+            .beginFill(SceneConstants.CARD_BACKGROUND_COLOR)
             .drawRoundRect(0, 0, this.width, this.height, rectRadius)
             .endFill()
     }
@@ -123,11 +126,11 @@ export class CardShape extends Container implements RefreshLayout {
         Tween.get(this.backgroundShadow, { override: true })
             .to(
                 {
-                    offsetX: CardConstants.SHADOW_OVER_OFFSET,
-                    offsetY: CardConstants.SHADOW_OVER_OFFSET,
-                    blur: CardConstants.SHADOW_OVER_BLUR
+                    offsetX: SceneConstants.SHADOW_OVER_OFFSET,
+                    offsetY: SceneConstants.SHADOW_OVER_OFFSET,
+                    blur: SceneConstants.SHADOW_OVER_BLUR
                 },
-                CardShape.RISE_TIME,
+                CardShape.CARD_RISE_TIME,
                 Ease.quadOut
             )
     }
@@ -137,11 +140,11 @@ export class CardShape extends Container implements RefreshLayout {
         Tween.get(this.backgroundShadow, { override: true })
             .to(
                 {
-                    offsetX: CardConstants.SHADOW_OFFSET,
-                    offsetY: CardConstants.SHADOW_OFFSET,
-                    blur: CardConstants.SHADOW_BLUR
+                    offsetX: SceneConstants.SHADOW_OFFSET,
+                    offsetY: SceneConstants.SHADOW_OFFSET,
+                    blur: SceneConstants.SHADOW_BLUR
                 },
-                CardConstants.LOWER_TIME,
+                CardShape.CARD_LOWER_TIME,
                 Ease.quadIn
             )
     }
@@ -156,7 +159,7 @@ export class CardShape extends Container implements RefreshLayout {
                 regY: this.dragOffset.y + this.center.y,
                 rotation: 0
             },
-            CardConstants.GRAB_ROTATE_TIME,
+            500,
             Ease.quadOut
         )
         this.raise()
@@ -176,7 +179,7 @@ export class CardShape extends Container implements RefreshLayout {
                 regX: this.center.x,
                 regY: this.height
             },
-            CardConstants.LOWER_TIME,
+            CardShape.CARD_LOWER_TIME,
             Ease.quadOut
         )
         this.lower()

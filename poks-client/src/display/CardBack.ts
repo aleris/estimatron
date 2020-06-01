@@ -1,6 +1,6 @@
 import { Container, Shape } from '@createjs/easeljs'
 import { RefreshLayout } from '@/display/RefreshLayout'
-import { CardConstants } from '@/display/CardConstants'
+import { SceneConstants } from '@/display/SceneConstants'
 
 export class CardBack extends Container implements RefreshLayout {
     private static readonly COLOR = '#c1dae8'
@@ -23,11 +23,11 @@ export class CardBack extends Container implements RefreshLayout {
     }
 
     private refreshLayoutBackground() {
-        const bgRadius = Math.round(this.width * CardConstants.BACKGROUND_RADIUS_REPORT)
+        const bgRadius = Math.round(this.width * SceneConstants.CARD_BACKGROUND_RADIUS_REPORT)
 
         this.background.graphics
             .clear()
-            .beginFill(CardConstants.BACKGROUND_COLOR)
+            .beginFill(SceneConstants.CARD_BACKGROUND_COLOR)
             .drawRoundRect(0, 0, this.width, this.height, bgRadius)
             .endFill()
 
@@ -52,19 +52,19 @@ export class CardBack extends Container implements RefreshLayout {
             .beginFill(CardBack.COLOR)
             .drawRoundRect(margin, margin, this.width - 2 * margin, this.height - 2 * margin, line1Radius)
             .endFill()
-            .beginFill(CardConstants.BACKGROUND_COLOR)
+            .beginFill(SceneConstants.CARD_BACKGROUND_COLOR)
             .drawRoundRect(line1Margin, line1Margin, this.width - 2 * line1Margin, this.height - 2 * line1Margin, line2Radius)
             .endFill()
             .beginFill(CardBack.COLOR)
             .drawRoundRect(line2Margin, line2Margin, this.width - 2 * line2Margin, this.height - 2 * line2Margin, line3Radius)
             .endFill()
-            .beginFill(CardConstants.BACKGROUND_COLOR)
+            .beginFill(SceneConstants.CARD_BACKGROUND_COLOR)
             .drawRect(line3Margin, line3Margin, this.width - 2 * line3Margin, this.height - 2 * line3Margin)
             .endFill()
             .beginFill(CardBack.COLOR)
             .drawRect(line4Margin, line4Margin, this.width - 2 * line4Margin, this.height - 2 * line4Margin)
             .endFill()
-            .beginFill(CardConstants.BACKGROUND_COLOR)
+            .beginFill(SceneConstants.CARD_BACKGROUND_COLOR)
             .drawRect(line5Margin, line5Margin, this.width - 2 * line5Margin, this.height - 2 * line5Margin)
             .endFill()
             .beginFill(CardBack.COLOR)

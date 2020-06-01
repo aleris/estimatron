@@ -1,6 +1,6 @@
 import { Container, Shadow, Shape, Text } from '@createjs/easeljs'
 import { RefreshLayout } from '@/display/RefreshLayout'
-import { CardConstants } from '@/display/CardConstants'
+import { SceneConstants } from '@/display/SceneConstants'
 import { SceneLayout } from '@/display/SceneLayout'
 
 export class SceneButton extends Container implements RefreshLayout {
@@ -27,12 +27,16 @@ export class SceneButton extends Container implements RefreshLayout {
 
         this.background = new Shape()
         this.addChild(this.background)
+        this.background.addEventListener('mouseover', () => this.rollover())
+        this.background.addEventListener('mouseout', () => this.rollout())
+        this.background.addEventListener('mousedown', () => this.mousedown(), false)
+        this.background.addEventListener('pressup', () => this.pressup(), false)
 
         this.backgroundShadow = new Shadow(
-            CardConstants.SHADOW_COLOR,
-            CardConstants.SHADOW_OFFSET,
-            CardConstants.SHADOW_OFFSET,
-            CardConstants.SHADOW_BLUR
+            SceneConstants.SHADOW_COLOR,
+            SceneConstants.SHADOW_OFFSET,
+            SceneConstants.SHADOW_OFFSET,
+            SceneConstants.SHADOW_BLUR
         )
         this.background.shadow = this.backgroundShadow
 
@@ -40,14 +44,10 @@ export class SceneButton extends Container implements RefreshLayout {
         this.textDisplay.color = SceneButton.COLOR
         this.textDisplay.textAlign = 'center'
         this.textDisplay.textBaseline = 'middle'
+        this.textDisplay.mouseEnabled = false
         this.addChild(this.textDisplay)
 
         this.cursor = 'pointer'
-
-        this.addEventListener('rollover', () => this.rollover())
-        this.addEventListener('rollout', () => this.rollout())
-        this.addEventListener('mousedown', () => this.mousedown())
-        this.addEventListener('pressup', () => this.pressup())
 
         // this.textDisplay = new TextArc(text, `3rem "${SceneButton.TEXT_FONT}"`, SceneButton.COLOR)
         // this.addChild(this.textDisplay)
@@ -62,19 +62,19 @@ export class SceneButton extends Container implements RefreshLayout {
     }
 
     mousedown() {
-        this.regX = -CardConstants.SHADOW_OFFSET
-        this.regY = -CardConstants.SHADOW_OFFSET
-        this.backgroundShadow.offsetX = 0
-        this.backgroundShadow.offsetY = 0
-        this.backgroundShadow.blur = 0
+        this.regX = -SceneConstants.SHADOW_OFFSET
+        this.regY = -SceneConstants.SHADOW_OFFSET
+        this.backgroundShadow.offsetX = SceneConstants.SHADOW_PRESSED_OFFSET
+        this.backgroundShadow.offsetY = SceneConstants.SHADOW_PRESSED_OFFSET
+        this.backgroundShadow.blur = SceneConstants.SHADOW_PRESSED_BLUR
     }
 
     pressup() {
         this.regX = 0
         this.regY = 0
-        this.backgroundShadow.offsetX = CardConstants.SHADOW_OFFSET
-        this.backgroundShadow.offsetY = CardConstants.SHADOW_OFFSET
-        this.backgroundShadow.blur = CardConstants.SHADOW_BLUR
+        this.backgroundShadow.offsetX = SceneConstants.SHADOW_OFFSET
+        this.backgroundShadow.offsetY = SceneConstants.SHADOW_OFFSET
+        this.backgroundShadow.blur = SceneConstants.SHADOW_BLUR
     }
 
     refreshLayout(): void {

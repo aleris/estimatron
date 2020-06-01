@@ -4,7 +4,7 @@ import { BetHelper } from '@server/model/Bet'
 import { RefreshLayout } from '@/display/RefreshLayout'
 import { SceneLayout } from '@/display/SceneLayout'
 import { PlayerSlot } from '@/display/PlayerSlot'
-import { CardConstants } from '@/display/CardConstants'
+import { SceneConstants } from '@/display/SceneConstants'
 import { CardShape } from '@/display/CardShape'
 import { SessionTable } from '@/data/SessionTable'
 import { PlayerInfo } from '@server/model/PlayerInfo'
@@ -43,16 +43,16 @@ export class PlayerSlotsContainer extends Container implements RefreshLayout {
         const slotWidth = Math.round(
             Math.min(
                 Math.max(
-                    CardConstants.CARD_MIN_WIDTH,
+                    SceneConstants.CARD_MIN_WIDTH,
                     Math.max(
                         Math.min(availableSlotWidth, this.sceneLayout.cardWidth),
-                        availableHeight / CardConstants.CARD_SIZE_REPORT
+                        availableHeight / SceneConstants.CARD_SIZE_REPORT
                     )
                 ),
                 this.sceneLayout.cardWidth
             )
         )
-        const slotHeight = Math.round(slotWidth * CardConstants.CARD_SIZE_REPORT)
+        const slotHeight = Math.round(slotWidth * SceneConstants.CARD_SIZE_REPORT)
         const centerX = Math.round((this.sceneLayout.sceneWidth) / 2)
         const top = Math.round(availableHeight / 2 + slotHeight / 2)
 
