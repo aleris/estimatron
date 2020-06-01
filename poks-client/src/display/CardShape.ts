@@ -6,6 +6,7 @@ import { PositionAndRotation } from '@/display/PositionAndRotation'
 import { CardFront } from '@/display/CardFront'
 import { CardBack } from '@/display/CardBack'
 import { estimation } from '@server/model/Bet'
+import { BetHelper } from '@server/model/Bet'
 
 export enum CardSide {
     Front,
@@ -49,7 +50,7 @@ export class CardShape extends Container implements RefreshLayout {
 
         this.cardFront = new CardFront(text)
         this.cardBack = new CardBack()
-        this.showFront()
+        this.switchFrontBackForText()
     }
 
     showFront() {
@@ -62,6 +63,14 @@ export class CardShape extends Container implements RefreshLayout {
         this.removeChild(this.cardFront)
         this.addChild(this.cardBack)
         this.side = CardSide.Back
+    }
+
+    switchFrontBackForText() {
+        if (BetHelper.isHidden(this.text)) {
+            this.showBack()
+        } else {
+            this.showFront()
+        }
     }
 
     flip() {
@@ -106,9 +115,9 @@ export class CardShape extends Container implements RefreshLayout {
 
         this.cardBack.width = this.width
         this.cardBack.height = this.height
-        this.cardBack.mouseEnabled = false
         this.cardBack.refreshLayout()
 
+        this.switchFrontBackForText()
         // this.addChild(new DebugPointDisplay(this.center.x, this.center.y))
     }
 

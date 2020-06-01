@@ -37,6 +37,10 @@ export class BetHelper {
         return true
     }
 
+    static isHidden(estimation: estimation): boolean {
+        return estimation === this.HiddenEstimation
+    }
+
     private static currentTimestamp(): number {
         return new Date().getTime()
     }

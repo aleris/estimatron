@@ -16,6 +16,8 @@ export class CardBack extends Container implements RefreshLayout {
 
         this.color = new Shape()
         this.addChild(this.color)
+
+        this.mouseEnabled = false
     }
 
     refreshLayout() {

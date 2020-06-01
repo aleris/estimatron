@@ -148,12 +148,13 @@ export class PlayerSlotsContainer extends Container implements RefreshLayout {
         for (let player of this.sessionTable.players) {
             const betCard = this.betsMap.get(player.id)
             if (betCard !== undefined) {
+                const shouldFlip = betCard.text !== player.bet.estimation
                 betCard.text = player.bet.estimation
                 betCard.refreshLayout()
+                if (shouldFlip) {
+                    betCard.animateFlip()
+                }
             }
-        }
-        for (let card of this.betsMap.values()) {
-            card.animateFlip()
         }
     }
 
