@@ -98,8 +98,10 @@ export class TableContainer extends Container implements RefreshLayout {
             } else {
                 console.error(`player slot not initialized`)
             }
-            this.betCard = card
-            this.onChangeMyBet(BetHelper.betWith(this.betCard.text))
+            if (this.betCard !== card) {
+                this.betCard = card
+                this.onChangeMyBet(BetHelper.betWith(this.betCard.text))
+            }
         } else {
             if (null !== card.handPosition) {
                 card.dropTo(card.handPosition)
