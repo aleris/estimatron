@@ -77,5 +77,6 @@ export class TableContainer extends Container implements RefreshLayout {
     }
 
     resetTable() {
+        this.handOfCards.resetBets()
     }
 }

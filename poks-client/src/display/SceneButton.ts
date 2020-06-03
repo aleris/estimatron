@@ -17,7 +17,7 @@ export class SceneButton extends Container implements RefreshLayout {
     private backgroundFill: any
     private readonly backgroundShadow: Shadow
     private readonly textDisplay: any
-    // private readonly textDisplay: TextArc
+
     constructor(
         public readonly sceneLayout: SceneLayout,
         public readonly text: string,
@@ -48,9 +48,6 @@ export class SceneButton extends Container implements RefreshLayout {
         this.addChild(this.textDisplay)
 
         this.cursor = 'pointer'
-
-        // this.textDisplay = new TextArc(text, `3rem "${SceneButton.TEXT_FONT}"`, SceneButton.COLOR)
-        // this.addChild(this.textDisplay)
     }
 
     rollover() {
@@ -105,10 +102,7 @@ export class SceneButton extends Container implements RefreshLayout {
             .curveTo(w, 0, w, 4 * r)
             .lineTo(w, h - r)
             .curveTo(w, h, w - r - r / 2, h)
-            // .curveTo(w, h, w - r, h)
-            // .curveTo(w - r - r / 2, h, w - r - r / 2, h - r / 2)
             .lineTo(0, r + r / 2)
-            // .curveTo(0, r + r / 2, 0, r)
             .curveTo(0, 0, r, 0)
             .closePath()
             .endFill()

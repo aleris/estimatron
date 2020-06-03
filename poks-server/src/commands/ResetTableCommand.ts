@@ -2,9 +2,9 @@ import * as uWS from 'uWebSockets.js'
 import { Server } from '../Server'
 import { Command } from './Command'
 import { WebSocketTablePlayerInfo } from './WebSocketTablePlayerInfo'
-import { RevealBetsNotification } from '../notifications/RevealBetsNotification'
-import { RevealBetsData } from '../model/RevealBetsData'
 import { ResetTableData } from '../model/ResetTableData'
+import { BetHelper } from '../model/Bet'
+import { ResetTableNotification } from '../notifications/ResetTableNotification'
 
 export class ResetTableCommand implements Command<ResetTableData> {
     constructor(
@@ -21,6 +21,10 @@ export class ResetTableCommand implements Command<ResetTableData> {
             return
         }
 
-        new RevealBetsNotification(table, player).send()
+        table.activityTimestamp = this.server.getTimestamp()
+        table.revealed = false
+        table.players.forEach(player => player.playerInfo.bet = BetHelper.noBet())
+
+        new ResetTableNotification(table, player).send()
     }
 }

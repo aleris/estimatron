@@ -71,6 +71,7 @@ export class TableController {
     }
 
     onChangeMyBet(bet: Bet) {
+        console.log('onChangeMyBet', bet)
         if (null !== this.sessionTable.playerInfo) {
             this.sessionTable.playerInfo.bet = bet
             this.server.bet({
@@ -95,12 +96,13 @@ export class TableController {
 
     // handle notifications from server
     onJoinConfirmed(notificationData: JoinConfirmedNotificationData) {
-        console.log('onJoinAccepted', notificationData.tableInfo, notificationData.players)
+        console.log('onJoinAccepted', notificationData)
         this.sessionTable.update(notificationData.tableInfo, notificationData.players)
         this.tableContainer.refreshLayout()
     }
 
     onOtherJoined(notificationData: OtherJoinedNotificationData) {
+        console.log('onOtherJoined', notificationData)
         const added = this.sessionTable.addOrUpdatePlayer(notificationData.playerInfo)
         if (added) {
             this.tableContainer.refreshPlayers()
@@ -109,6 +111,7 @@ export class TableController {
     }
 
     onOtherBet(notificationData: OtherBetNotificationData) {
+        console.log('onOtherBet', notificationData)
         const player = this.sessionTable.findPlayerById(notificationData.playerId)
         if (player) {
             player.bet = notificationData.bet
@@ -119,6 +122,7 @@ export class TableController {
     }
 
     onOtherLeft(notificationData: OtherLeftNotificationData) {
+        console.log('notificationData', notificationData)
         const player = this.sessionTable.findPlayerById(notificationData.playerId)
         if (player === undefined) {
             console.warn(`player ${notificationData.playerId} no longer on table`)
@@ -129,11 +133,14 @@ export class TableController {
     }
 
     onRevealBets(notificationData: RevealBetsNotificationData) {
+        console.log('onRevealBets', notificationData)
         this.sessionTable.updateBets(notificationData.players)
         this.tableContainer.revealBets()
     }
 
     onResetTable(notificationData: ResetTableNotificationData) {
+        console.log('onResetTable', notificationData)
+        this.sessionTable.updateBets(notificationData.players)
         this.tableContainer.resetTable()
     }
 }

@@ -20,6 +20,7 @@ export class RevealBetsCommand implements Command<RevealBetsData> {
             return
         }
 
+        table.activityTimestamp = this.server.getTimestamp()
         table.revealed = true
         table.lastRevealedByPlayer = player
 

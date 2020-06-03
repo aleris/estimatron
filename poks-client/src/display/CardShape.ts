@@ -117,7 +117,6 @@ export class CardShape extends Container implements RefreshLayout {
         this.cardBack.height = this.height
         this.cardBack.refreshLayout()
 
-        this.switchFrontBackForText()
         // this.addChild(new DebugPointDisplay(this.center.x, this.center.y))
     }
 

@@ -13,7 +13,7 @@ export class ResetTableNotification extends Notification<ResetTableNotificationD
     }
 
     get kind(): Messages {
-        return Messages.RevealBetsNotification
+        return Messages.ResetTableNotification
     }
 
     send() {
