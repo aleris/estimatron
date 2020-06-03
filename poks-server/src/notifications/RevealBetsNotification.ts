@@ -2,7 +2,10 @@ import { Messages } from '../model/Messages'
 import { Notification } from './Notification'
 import { RevealBetsNotificationData } from '../model/RevealBetsNotificationData'
 import { Table } from '../Table'
-import { Player } from '../Player'
+import { Player, PlayerHelper } from '../Player'
+import { logger } from '../logger'
+
+const log = logger.child({ component: 'RevealBetsNotification' })
 
 export class RevealBetsNotification extends Notification<RevealBetsNotificationData> {
     constructor(
@@ -18,11 +21,11 @@ export class RevealBetsNotification extends Notification<RevealBetsNotificationD
 
     send() {
         const players = this.table.players.map(p => p.playerInfo)
-        const data = {
+        const revealBetsNotificationData = {
             revealedBy: this.player.playerInfo,
             players
         }
-        this.sendToAll(this.player.ws, this.table, data)
-        console.log(`done notify RevealBetsNotification for table ${this.table.tableInfo.id} (${this.table.tableInfo.name})`)
+        log.info(`Send ${Messages[this.kind]} from ${PlayerHelper.nameAndId(this.player)}`, { revealBetsNotificationData })
+        this.sendToAll(this.player.ws, this.table, revealBetsNotificationData)
     }
 }

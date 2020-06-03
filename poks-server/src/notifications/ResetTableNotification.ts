@@ -1,8 +1,11 @@
 import { Messages } from '../model/Messages'
 import { Notification } from './Notification'
 import { Table } from '../Table'
-import { Player } from '../Player'
+import { Player, PlayerHelper } from '../Player'
 import { ResetTableNotificationData } from '../model/ResetTableNotificationData'
+import { logger } from '../logger'
+
+const log = logger.child({ component: 'ResetTableNotification' })
 
 export class ResetTableNotification extends Notification<ResetTableNotificationData> {
     constructor(
@@ -18,11 +21,11 @@ export class ResetTableNotification extends Notification<ResetTableNotificationD
 
     send() {
         const players = this.table.players.map(p => p.playerInfo)
-        const data = {
+        const resetTableNotificationData = {
             resetBy: this.player.playerInfo,
             players
         }
-        this.sendToAll(this.player.ws, this.table, data)
-        console.log(`done notify RevealBetsNotification for table ${this.table.tableInfo.id} (${this.table.tableInfo.name})`)
+        log.info(`Send ${Messages[this.kind]} from ${PlayerHelper.nameAndId(this.player)}`, { resetTableNotificationData })
+        this.sendToAll(this.player.ws, this.table, resetTableNotificationData)
     }
 }

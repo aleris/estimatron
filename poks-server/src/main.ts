@@ -1,3 +1,8 @@
+import './env'
+import { logger } from './logger'
 import { Server } from './Server'
 
-const server = new Server(29087)
+const port = 29087
+logger.info(`Starting server on port ${port}...`)
+const server = new Server(port)
+server.start()

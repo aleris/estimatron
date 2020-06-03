@@ -6,3 +6,9 @@ export interface TableInfo {
     name: string,
     deckKind: DeckKind
 }
+
+export class TableInfoHelper {
+    static nameAndId(tableInfo: TableInfo) {
+        return `${tableInfo.name} (${tableInfo.id})`
+    }
+}

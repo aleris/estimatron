@@ -5,6 +5,9 @@ import { WebSocketTablePlayerInfo } from './WebSocketTablePlayerInfo'
 import { ResetTableData } from '../model/ResetTableData'
 import { BetHelper } from '../model/Bet'
 import { ResetTableNotification } from '../notifications/ResetTableNotification'
+import { logger } from '../logger'
+
+const log = logger.child({ component: 'ResetTableCommand' })
 
 export class ResetTableCommand implements Command<ResetTableData> {
     constructor(
@@ -14,12 +17,16 @@ export class ResetTableCommand implements Command<ResetTableData> {
     ) { }
 
     execute() {
-        console.log(`execute ResetTableCommand`, this.resetTableData)
         const { table, player } = WebSocketTablePlayerInfo.getTablePlayer(this.server, this.senderWebSocket)
 
         if (table === undefined || player === undefined) {
             return
         }
+
+        log.info(
+            `execute ResetTableCommand`,
+            { resetTableData: this.resetTableData, tableId: table.tableInfo.id, playerId: player.playerInfo.id }
+        )
 
         table.activityTimestamp = this.server.getTimestamp()
         table.revealed = false

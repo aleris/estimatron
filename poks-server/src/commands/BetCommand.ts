@@ -4,6 +4,9 @@ import { Command } from './Command'
 import { BetData } from '../model/BetData'
 import { WebSocketTablePlayerInfo } from './WebSocketTablePlayerInfo'
 import { OtherBetNotification } from '../notifications/OtherBetNotification'
+import { logger } from '../logger'
+
+const log = logger.child({ component: 'BetCommand' })
 
 export class BetCommand extends Command<BetData> {
     constructor(
@@ -15,17 +18,17 @@ export class BetCommand extends Command<BetData> {
     }
 
     execute() {
-        console.log(`execute BetCommand`, this.betData)
         const { table, player } = WebSocketTablePlayerInfo.getTablePlayer(this.server, this.senderWebSocket)
-
-        if (table === undefined) {
+        if (table === undefined || player === undefined) {
             return
         }
+
+        log.info(
+            `execute BetCommand`,
+            { betData: this.betData, tableId: table.tableInfo.id, playerId: player.playerInfo.id }
+        )
+
         table.activityTimestamp = this.server.getTimestamp()
-
-        if (player === undefined) {
-            return
-        }
         player.playerInfo.bet = this.betData.bet
 
         new OtherBetNotification(table, player, this.betData.bet).send()

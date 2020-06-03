@@ -1,16 +1,16 @@
 import * as uWS from 'uWebSockets.js'
-import { JoinCommand } from './JoinCommand'
-import { MessageData, Messages } from '../model/Messages'
 import { Server } from '../Server'
+import { MessageData, Messages } from '../model/Messages'
+import { BetData } from '../model/BetData'
 import { JoinData } from '../model/JoinData'
 import { LeaveData } from '../model/LeaveData'
-import { LeaveCommand } from './LeaveCommand'
-import { BetCommand } from './BetCommand'
-import { BetData } from '../model/BetData'
-import { RevealBetsCommand } from './RevealBetsCommand'
-import { RevealBetsData } from '../model/RevealBetsData'
 import { ResetTableData } from '../model/ResetTableData'
+import { RevealBetsData } from '../model/RevealBetsData'
+import { BetCommand } from './BetCommand'
+import { JoinCommand } from './JoinCommand'
+import { LeaveCommand } from './LeaveCommand'
 import { ResetTableCommand } from './ResetTableCommand'
+import { RevealBetsCommand } from './RevealBetsCommand'
 
 export class ServerCommandFactory {
     constructor(private readonly server: Server) { }

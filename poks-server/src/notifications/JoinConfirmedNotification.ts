@@ -2,8 +2,11 @@ import { Messages } from '../model/Messages'
 import { JoinConfirmedNotificationData } from '../model/JoinConfirmedNotificationData'
 import { Notification } from './Notification'
 import { Table } from '../Table'
-import { Player } from '../Player'
+import { Player, PlayerHelper } from '../Player'
 import { BetHelper } from '../model/Bet'
+import { logger } from '../logger'
+
+const log = logger.child({ component: 'JoinConfirmedNotification' })
 
 export class JoinConfirmedNotification extends Notification<JoinConfirmedNotificationData> {
     constructor(
@@ -26,6 +29,7 @@ export class JoinConfirmedNotification extends Notification<JoinConfirmedNotific
                     : BetHelper.hideForPlayerInfo(player.playerInfo)
             )
         }
+        log.info(`Send ${Messages[this.kind]} to ${PlayerHelper.nameAndId(this.player)}`, { joinConfirmedData })
         this.sendToPlayer(this.player, joinConfirmedData)
     }
 }

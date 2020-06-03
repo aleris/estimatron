@@ -3,8 +3,12 @@ import { TableInfo } from '../model/TableInfo'
 import { PlayerInfo } from '../model/PlayerInfo'
 import { TablePlayer, TablePlayerIds } from '../model/TablePlayerInfo'
 import { Server } from '../Server'
+import { logger } from '../logger'
+
+const log = logger.child({ component: 'WebSocketTablePlayerInfo' })
 
 export class WebSocketTablePlayerInfo {
+
     static saveTablePlayerIds(ws: uWS.WebSocket, tableInfo: TableInfo, playerInfo: PlayerInfo) {
         ws['tableId'] = tableInfo.id
         ws['playerId'] = playerInfo.id
@@ -21,7 +25,7 @@ export class WebSocketTablePlayerInfo {
         const { tableId, playerId } = this.getTablePlayerInfoIds(ws)
         const table = server.tables.get(tableId)
         if (table === undefined) {
-            console.error(`table ${tableId} not found on server`)
+            log.error(`table ${tableId} not found on server`)
             return {
                 table: undefined,
                 player: undefined
@@ -30,7 +34,7 @@ export class WebSocketTablePlayerInfo {
 
         const player = table.players.find(player => player.playerInfo.id === playerId)
         if (player === undefined) {
-            console.error(`player ${playerId} not found on table ${tableId}`)
+            log.error(`player ${playerId} not found on table ${tableId}`)
             return {
                 table,
                 player: undefined

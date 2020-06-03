@@ -1,4 +1,4 @@
-import { TableInfo } from './model/TableInfo'
+import { TableInfo, TableInfoHelper } from './model/TableInfo'
 import { Player } from './Player'
 
 export interface Table {
@@ -9,4 +9,10 @@ export interface Table {
     revealed: boolean,
     lastRevealedByPlayer: Player | null,
     lastResetByPlayer: Player | null
+}
+
+export class TableHelper {
+    static nameAndId(table: Table) {
+        return TableInfoHelper.nameAndId(table.tableInfo)
+    }
 }
