@@ -24,7 +24,7 @@ export class OtherBetNotification extends Notification<OtherBetNotificationData>
     send() {
         const otherBetNotificationData = {
             playerId: this.player.playerInfo.id,
-            bet: this.table.revealed ? this.bet : BetHelper.hide(this.bet)
+            bet: this.table.tableInfo.revealed ? this.bet : BetHelper.hide(this.bet)
         }
         log.info(`Send ${Messages[this.kind]} from ${PlayerHelper.nameAndId(this.player)}`, { otherBetNotificationData })
         this.sendToOthers(this.table, this.player, otherBetNotificationData)

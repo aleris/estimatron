@@ -4,7 +4,8 @@ import { id } from './id'
 export interface TableInfo {
     id: id,
     name: string,
-    deckKind: DeckKind
+    deckKind: DeckKind,
+    revealed: boolean
 }
 
 export class TableInfoHelper {

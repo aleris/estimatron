@@ -5,8 +5,6 @@ import { estimation } from '@server/model/Bet'
 
 export class CardFront extends Container implements RefreshLayout {
     private static readonly TEXT_TOP_LEFT_RATIO = 0.07
-    private static readonly TEXT_COLOR = '#424242'
-    private static readonly TEXT_FONT = 'Dosis'
     private static readonly TEXT_FONT_RATIO = 0.2
 
     private readonly background: Shape
@@ -51,8 +49,8 @@ export class CardFront extends Container implements RefreshLayout {
     private refreshLayoutTopLeftText() {
         this.topLeftText.text = this.text
         const fontSize = Math.round(this.width * CardFront.TEXT_FONT_RATIO)
-        this.topLeftText.font = `${fontSize}px '${CardFront.TEXT_FONT}'`
-        this.topLeftText.color = CardFront.TEXT_COLOR
+        this.topLeftText.font = `${fontSize}px '${SceneConstants.TEXT_FONT}'`
+        this.topLeftText.color = SceneConstants.CARD_TEXT_COLOR
         const relativeToCorner = Math.round(this.width * CardFront.TEXT_TOP_LEFT_RATIO)
         this.topLeftText.x = relativeToCorner
         this.topLeftText.y = relativeToCorner
@@ -61,8 +59,8 @@ export class CardFront extends Container implements RefreshLayout {
     private refreshLayoutBottomRightText() {
         this.bottomRightText.text = this.text
         const fontSize = Math.round(this.width * CardFront.TEXT_FONT_RATIO)
-        this.bottomRightText.font = `${fontSize}px '${CardFront.TEXT_FONT}'`
-        this.bottomRightText.color = CardFront.TEXT_COLOR
+        this.bottomRightText.font = `${fontSize}px '${SceneConstants.TEXT_FONT}'`
+        this.bottomRightText.color = SceneConstants.CARD_TEXT_COLOR
         this.bottomRightText.rotation = 180
         const relativeToCorner = Math.round(this.width * CardFront.TEXT_TOP_LEFT_RATIO)
         this.bottomRightText.x = this.width - relativeToCorner

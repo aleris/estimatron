@@ -29,7 +29,7 @@ export class ResetTableCommand implements Command<ResetTableData> {
         )
 
         table.activityTimestamp = this.server.getTimestamp()
-        table.revealed = false
+        table.tableInfo.revealed = false
         table.players.forEach(player => player.playerInfo.bet = BetHelper.noBet())
 
         new ResetTableNotification(table, player).send()

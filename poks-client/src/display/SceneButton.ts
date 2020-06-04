@@ -4,11 +4,7 @@ import { SceneConstants } from '@/display/SceneConstants'
 import { SceneLayout } from '@/display/SceneLayout'
 
 export class SceneButton extends Container implements RefreshLayout {
-    private static readonly BACKGROUND_COLOR = '#F39C12'
-    private static readonly BACKGROUND_COLOR_ROLLOVER = '#F5B041'
     private static readonly WIDTH_TEXT_REPORT = 0.22
-    private static readonly TEXT_FONT = 'Dosis'
-    private static readonly COLOR = '#424242'
     private static readonly MARGIN_REPORT = 0.2
     private static readonly WIDTH_REPORT = 0.08
     private static readonly MIN_WIDTH = 50
@@ -18,10 +14,14 @@ export class SceneButton extends Container implements RefreshLayout {
     private readonly backgroundShadow: Shadow
     private readonly textDisplay: any
 
+    public disabled = false
+
     constructor(
         public readonly sceneLayout: SceneLayout,
         public readonly text: string,
-        public readonly flipH: boolean
+        public readonly flipH: boolean,
+        public readonly backgroundColor: string,
+        public readonly backgroundRolloverColor: string
     ) {
         super()
 
@@ -41,7 +41,7 @@ export class SceneButton extends Container implements RefreshLayout {
         this.background.shadow = this.backgroundShadow
 
         this.textDisplay = new Text(text)
-        this.textDisplay.color = SceneButton.COLOR
+        this.textDisplay.color = SceneConstants.BUTTON_TEXT_COLOR
         this.textDisplay.textAlign = 'center'
         this.textDisplay.textBaseline = 'middle'
         this.textDisplay.mouseEnabled = false
@@ -51,27 +51,35 @@ export class SceneButton extends Container implements RefreshLayout {
     }
 
     rollover() {
-        this.backgroundFill.style = SceneButton.BACKGROUND_COLOR_ROLLOVER
+        if (!this.disabled) {
+            this.backgroundFill.style = this.backgroundRolloverColor
+        }
     }
 
     rollout() {
-        this.backgroundFill.style = SceneButton.BACKGROUND_COLOR
+        if (!this.disabled) {
+            this.backgroundFill.style = this.backgroundColor
+        }
     }
 
     mousedown() {
-        this.regX = -SceneConstants.SHADOW_OFFSET
-        this.regY = -SceneConstants.SHADOW_OFFSET
-        this.backgroundShadow.offsetX = SceneConstants.SHADOW_PRESSED_OFFSET
-        this.backgroundShadow.offsetY = SceneConstants.SHADOW_PRESSED_OFFSET
-        this.backgroundShadow.blur = SceneConstants.SHADOW_PRESSED_BLUR
+        if (!this.disabled) {
+            this.regX = -SceneConstants.SHADOW_OFFSET
+            this.regY = -SceneConstants.SHADOW_OFFSET
+            this.backgroundShadow.offsetX = SceneConstants.SHADOW_PRESSED_OFFSET
+            this.backgroundShadow.offsetY = SceneConstants.SHADOW_PRESSED_OFFSET
+            this.backgroundShadow.blur = SceneConstants.SHADOW_PRESSED_BLUR
+        }
     }
 
     pressup() {
-        this.regX = 0
-        this.regY = 0
-        this.backgroundShadow.offsetX = SceneConstants.SHADOW_OFFSET
-        this.backgroundShadow.offsetY = SceneConstants.SHADOW_OFFSET
-        this.backgroundShadow.blur = SceneConstants.SHADOW_BLUR
+        if (!this.disabled) {
+            this.regX = 0
+            this.regY = 0
+            this.backgroundShadow.offsetX = SceneConstants.SHADOW_OFFSET
+            this.backgroundShadow.offsetY = SceneConstants.SHADOW_OFFSET
+            this.backgroundShadow.blur = SceneConstants.SHADOW_BLUR
+        }
     }
 
     refreshLayout(): void {
@@ -82,7 +90,7 @@ export class SceneButton extends Container implements RefreshLayout {
         const r = w * SceneButton.MARGIN_REPORT
 
         const fontSize = this.width * SceneButton.WIDTH_TEXT_REPORT
-        this.textDisplay.font = `${fontSize}px "${SceneButton.TEXT_FONT}"`
+        this.textDisplay.font = `${fontSize}px "${SceneConstants.TEXT_FONT}"`
         const flipSign = this.flipH ? -1 : 1
         this.textDisplay.rotation = flipSign * 45
         this.textDisplay.y = w / 2
@@ -92,9 +100,10 @@ export class SceneButton extends Container implements RefreshLayout {
         if (this.flipH) {
             this.background.regX = this.width
         }
+        const backgroundColor = this.disabled ? SceneConstants.BUTTON_BACKGROUND_DISABLED_COLOR : this.backgroundColor
         const g = this.background.graphics
             .clear()
-            .beginFill(SceneButton.BACKGROUND_COLOR)
+            .beginFill(backgroundColor)
 
         this.backgroundFill = g.command
         g.moveTo(r, 0)

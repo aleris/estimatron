@@ -46,7 +46,6 @@ export class JoinCommand implements Command<JoinData> {
                 // assume updated info didn't get t client, so keep the server ones
                 // player.playerInfo.name = this.joinData.playerInfo.name
                 // player.playerInfo.bet = this.joinData.playerInfo.bet
-                player.playerInfo.gone = false
             }
             table.activityTimestamp = nowTimestamp
             // broadcast player joined
@@ -60,15 +59,16 @@ export class JoinCommand implements Command<JoinData> {
                 players: [player],
                 createdTimestamp: nowTimestamp,
                 activityTimestamp: nowTimestamp,
-                revealed: false,
                 lastRevealedByPlayer: null,
                 lastResetByPlayer: null
             }
+            table.tableInfo.revealed = false
             log.info(`Adding table ${TableHelper.nameAndId(table)} with player ${PlayerHelper.nameAndId(player)}`)
             this.server.tables.set(this.joinData.tableInfo.id, table)
 
             this.recordStatsCreatedTables()
         }
+        player.playerInfo.gone = false
         WebSocketTablePlayerInfo.saveTablePlayerIds(this.senderWebSocket, table.tableInfo, player.playerInfo)
 
         this.senderWebSocket.subscribe(Notification.getTopicName(table, Messages.RevealBetsNotification))

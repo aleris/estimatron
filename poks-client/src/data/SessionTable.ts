@@ -61,7 +61,8 @@ export class SessionTable {
         const table = {
             id,
             name: NameGenerator.randomReadableName(),
-            deckKind: DeckRepository.defaultDeckKind
+            deckKind: DeckRepository.defaultDeckKind,
+            revealed: false
         }
         StorageRepository.table.set(table.id, table)
         window.location.hash = table.id

@@ -23,7 +23,7 @@ export class OtherJoinedNotification extends Notification<OtherJoinedNotificatio
     send() {
         const playerInfo = this.player.playerInfo
         const otherJoinedNotificationData = {
-            playerInfo: this.table.revealed ? playerInfo : BetHelper.hideForPlayerInfo(playerInfo)
+            playerInfo: this.table.tableInfo.revealed ? playerInfo : BetHelper.hideForPlayerInfo(playerInfo)
         }
         log.info(`Send ${Messages[this.kind]} from ${PlayerHelper.nameAndId(this.player)}`, { otherJoinedNotificationData })
         this.sendToOthers(this.table, this.player, otherJoinedNotificationData)

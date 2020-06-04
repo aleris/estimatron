@@ -6,7 +6,6 @@ export interface Table {
     players: Player[],
     createdTimestamp: number,
     activityTimestamp: number,
-    revealed: boolean,
     lastRevealedByPlayer: Player | null,
     lastResetByPlayer: Player | null
 }

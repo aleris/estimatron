@@ -115,7 +115,7 @@ export class TableController {
         const player = this.sessionTable.findPlayerById(notificationData.playerId)
         if (player) {
             player.bet = notificationData.bet
-            this.tableContainer.animateOtherPlayerBet(player)
+            this.tableContainer.otherPlayerBet(player)
         } else {
             console.warn(`player with ${notificationData.playerId} no longer at table ${this.tableContainer?.table?.id}`)
         }

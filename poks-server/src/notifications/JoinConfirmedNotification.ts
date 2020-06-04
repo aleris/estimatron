@@ -24,7 +24,7 @@ export class JoinConfirmedNotification extends Notification<JoinConfirmedNotific
         const joinConfirmedData = {
             tableInfo: this.table.tableInfo,
             players: this.table.players.map(player =>
-                player.playerInfo.id === this.player.playerInfo.id || this.table.revealed
+                player.playerInfo.id === this.player.playerInfo.id || this.table.tableInfo.revealed
                     ? player.playerInfo
                     : BetHelper.hideForPlayerInfo(player.playerInfo)
             )

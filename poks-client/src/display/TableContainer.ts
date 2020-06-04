@@ -1,12 +1,14 @@
 import { Container } from '@createjs/easeljs'
 import { Bet } from '@server/model/Bet'
 import { PlayerInfo } from '@server/model/PlayerInfo'
+import { BetHelper } from '@server/model/Bet'
 import { SessionTable } from '@/data/SessionTable'
 import { HandOfCardsContainer } from '@/display/HandOfCardsContainer'
 import { RefreshLayout } from '@/display/RefreshLayout'
 import { SceneLayout } from '@/display/SceneLayout'
 import { PlayerSlotsContainer } from '@/display/PlayerSlotsContainer'
 import { SceneButton } from '@/display/SceneButton'
+import { SceneConstants } from '@/display/SceneConstants'
 
 export class TableContainer extends Container implements RefreshLayout {
     public onChangeMyBet: (bet: Bet) => void = () => {}
@@ -26,11 +28,24 @@ export class TableContainer extends Container implements RefreshLayout {
         this.playerSlotsList = new PlayerSlotsContainer(sceneLayout, sessionTable)
         this.addChild(this.playerSlotsList)
 
-        this.revealBetsButton = new SceneButton(sceneLayout, 'REVEAL', false)
+        this.revealBetsButton = new SceneButton(
+            sceneLayout,
+            'REVEAL',
+            false,
+            SceneConstants.REVEAL_BUTTON_BACKGROUND_COLOR,
+            SceneConstants.REVEAL_BUTTON_BACKGROUND_COLOR_ROLLOVER
+        )
         this.addChild(this.revealBetsButton)
         this.revealBetsButton.addEventListener('click', () => this.onRevealBetsClick())
 
-        this.resetButton = new SceneButton(sceneLayout, ' RESET', true)
+        this.resetButton = new SceneButton(
+            sceneLayout,
+            ' RESET',
+            true,
+            SceneConstants.RESET_BUTTON_BACKGROUND_COLOR,
+            SceneConstants.RESET_BUTTON_BACKGROUND_COLOR_ROLLOVER
+        )
+        this.resetButton.disabled = true
         this.resetButton.addEventListener('click', () => this.onResetTableClick())
         this.addChild(this.resetButton)
 
@@ -39,19 +54,16 @@ export class TableContainer extends Container implements RefreshLayout {
         this.addChild(this.handOfCards)
     }
 
-    animateOtherPlayerBet(player: PlayerInfo) {
-        this.handOfCards.createCardForOtherPlayer(player, true)
-    }
-
     refreshLayout(): void {
-        console.log('refreshLayout')
         this.height = this.sceneLayout.sceneHeight
         this.width = this.sceneLayout.sceneWidth
 
+        this.revealBetsButton.disabled = this.sessionTable.tableInfo.revealed
         this.revealBetsButton.refreshLayout()
         this.revealBetsButton.y = this.height / 2
         this.revealBetsButton.x = (this.sceneLayout.sceneWidth - this.sceneLayout.sceneWidth / 6) - this.revealBetsButton.width
 
+        this.resetButton.disabled = !this.sessionTable.players.some(p => BetHelper.hasEstimation(p.bet))
         this.resetButton.refreshLayout()
         this.resetButton.y = this.revealBetsButton.y
         this.resetButton.x = this.sceneLayout.sceneWidth / 6
@@ -62,6 +74,10 @@ export class TableContainer extends Container implements RefreshLayout {
         // this.addChild(new DebugGuideLineDisplay(sceneLayout.halfSceneWidth, GuideLineOrientation.Vertical))
         // this.addChild(new DebugGuideLineDisplay(sceneLayout.halfSceneHeight, GuideLineOrientation.Horizontal))
         // this.addChild(new DebugGuideLineDisplay(sceneLayout.halfSceneHeight / 2, GuideLineOrientation.Horizontal))
+    }
+
+    otherPlayerBet(player: PlayerInfo) {
+        this.handOfCards.createCardForOtherPlayer(player, true)
     }
 
     refreshPlayers(): void {
