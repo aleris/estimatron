@@ -24,7 +24,7 @@ export class ResetTableCommand implements Command<ResetTableData> {
         }
 
         log.info(
-            `execute ResetTableCommand`,
+            `Execute ResetTableCommand`,
             { resetTableData: this.resetTableData, tableId: table.tableInfo.id, playerId: player.playerInfo.id }
         )
 

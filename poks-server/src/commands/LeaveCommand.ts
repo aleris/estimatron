@@ -21,7 +21,7 @@ export class LeaveCommand implements Command<LeaveData> {
             return
         }
         log.info(
-            `execute LeaveCommand`,
+            `Execute LeaveCommand`,
             { leaveData: this.leaveData, tableId: table.tableInfo.id, playerId: player.playerInfo.id }
         )
 

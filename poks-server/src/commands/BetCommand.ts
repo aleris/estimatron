@@ -24,7 +24,7 @@ export class BetCommand extends Command<BetData> {
         }
 
         log.info(
-            `execute BetCommand`,
+            `Execute BetCommand`,
             { betData: this.betData, tableId: table.tableInfo.id, playerId: player.playerInfo.id }
         )
 

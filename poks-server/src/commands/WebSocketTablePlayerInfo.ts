@@ -25,7 +25,7 @@ export class WebSocketTablePlayerInfo {
         const { tableId, playerId } = this.getTablePlayerInfoIds(ws)
         const table = server.tables.get(tableId)
         if (table === undefined) {
-            log.error(`table ${tableId} not found on server`)
+            log.error(`Table ${tableId} not found on server`)
             return {
                 table: undefined,
                 player: undefined
@@ -34,7 +34,7 @@ export class WebSocketTablePlayerInfo {
 
         const player = table.players.find(player => player.playerInfo.id === playerId)
         if (player === undefined) {
-            log.error(`player ${playerId} not found on table ${tableId}`)
+            log.error(`Player ${playerId} not found on table ${tableId}`)
             return {
                 table,
                 player: undefined

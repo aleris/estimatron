@@ -54,7 +54,7 @@ export abstract class Notification<T> {
         try {
             ws.send(message)
         } catch (e) {
-            log.error('error when sending message to socket', e)
+            log.error('Error when sending message to socket', e)
         }
     }
 

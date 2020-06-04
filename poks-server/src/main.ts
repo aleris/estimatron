@@ -1,5 +1,6 @@
 import './env'
 import { logger } from './logger'
+import './monitoring'
 import { Server } from './Server'
 
 const port = 29087

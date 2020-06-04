@@ -4,6 +4,8 @@ import { MessageInfo, Messages } from './model/Messages'
 import { LeaveCommand } from './commands/LeaveCommand'
 import { Table } from './Table'
 import { logger } from './logger'
+import { globalStats } from '@opencensus/core'
+import { MEASURE_OPENED_CONNECTIONS } from './monitoring'
 
 const HearBeatMessage = '~'
 
@@ -69,7 +71,7 @@ export class Server {
     }
 
     private close(ws: uWS.WebSocket, code: number, message: ArrayBuffer) {
-        log.info('Connection closed', {code, message})
+        log.info('Connection closed', {code, message:  Buffer.from(message).toString()})
         new LeaveCommand(this, ws, {}).execute()
     }
 
@@ -100,7 +102,12 @@ export class Server {
     }
 
     private open(req: uWS.HttpRequest) {
+        this.recordStatsOpenedConnections()
         log.info(`Connection opened on ${req.getUrl()}`)
+    }
+
+    private recordStatsOpenedConnections() {
+        globalStats.record([{measure: MEASURE_OPENED_CONNECTIONS, value: 1}])
     }
 
     private deleteUnusedTables() {

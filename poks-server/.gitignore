@@ -11,4 +11,4 @@ debug.log
 .DS_Store
 
 .env.dev
-Poks App-019b7b436b4a.json
+google-creds-*.json
