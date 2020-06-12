@@ -7,13 +7,24 @@ import { IdGenerator } from '@/data/IdGenerator'
 import { StorageRepository } from '@/data/StorageRepository'
 
 export class SessionTable {
-    public readonly playerInfo: PlayerInfo
+    private readonly playerInfoId: string
     public readonly tableInfo: TableInfo
     public readonly players = new Array<PlayerInfo>()
 
     constructor() {
-        this.playerInfo = this.getLocalPlayerOrNew()
+        const playerInfo = this.getLocalPlayerOrNew()
+        this.playerInfoId = playerInfo.id
+        this.players.push(playerInfo)
         this.tableInfo = this.getLocalTableOrNew()
+    }
+
+    get playerInfo() {
+        let playerInfo = this.findPlayerById(this.playerInfoId)
+        if (playerInfo === undefined) {
+            playerInfo = this.getLocalPlayerOrNew()
+            this.players.push(playerInfo)
+        }
+        return playerInfo
     }
 
     get areBetsPresent() {
@@ -29,25 +40,47 @@ export class SessionTable {
         if (existingPlayer === undefined) {
             this.players.push(player)
             return true
-        } else {
-            // only first level properties need to be set, ok to use assign
-            Object.assign(existingPlayer, player)
         }
+
+        // only first level properties need to be set, ok to use assign
+        Object.assign(existingPlayer, player)
         return false
     }
 
     update(tableInfo: TableInfo, players: PlayerInfo[]) {
         Object.assign(this.tableInfo, tableInfo)
         this.players.length = 0
-        const me = players.find(player => player.id === this.playerInfo.id)
+        const me = players.find(player => player.id === this.playerInfoId)
         if (undefined === me) {
-            console.error(`cannot find current player ${this.playerInfo.id} in join confirmed list`)
+            console.error(`cannot find current player ${this.playerInfoId} in join confirmed list`)
             return
         }
         this.players.push(me) // put current player first in list
         const otherPlayers = players.filter(player => player.id !== me.id)
         Array.prototype.push.apply(this.players, otherPlayers)
-        Object.assign(this.playerInfo, me)
+    }
+
+    updateBets(players: PlayerInfo[]) {
+        const notificationsPlayerMap = new Map<string, PlayerInfo>(
+            players.map(player => [player.id, player])
+        )
+        this.players.forEach(player => {
+            const notificationPlayer = notificationsPlayerMap.get(player.id)
+            if (notificationPlayer !== undefined) {
+                player.bet = notificationPlayer.bet
+            } else {
+                console.warn(`bet for player in local list ${player.id} (${player.name}) not received`)
+            }
+        })
+    }
+
+    updateMyBet(bet: Bet) {
+        const me = this.players.find(player => player.id === this.playerInfoId)
+        if (undefined === me) {
+            console.error(`cannot find current player ${this.playerInfoId} in local list`)
+            return
+        }
+        me.bet = bet
     }
 
     private getLocalTableOrNew(): TableInfo {
@@ -86,40 +119,5 @@ export class SessionTable {
             StorageRepository.player.set(player)
         }
         return player
-    }
-
-    updateBets(players: PlayerInfo[]) {
-        const notificationsPlayerMap = new Map<string, PlayerInfo>(
-            players.map(player => [player.id, player])
-        )
-        this.players.forEach(player => {
-            const notificationPlayer = notificationsPlayerMap.get(player.id)
-            if (notificationPlayer !== undefined) {
-                player.bet = notificationPlayer.bet
-            } else {
-                console.warn(`bet for player ${player.id} (${player.name}) not received`)
-            }
-        })
-
-        const me = players.find(player => player.id === this.playerInfo.id)
-        if (undefined === me) {
-            console.error(`cannot find current player ${this.playerInfo.id} in player list`)
-            return
-        }
-        this.playerInfo.bet = me.bet
-    }
-
-    updateMyBet(bet: Bet) {
-        if (null !== this.playerInfo) {
-            this.playerInfo.bet = bet
-            const me = this.players.find(player => player.id === this.playerInfo.id)
-            if (undefined === me) {
-                console.error(`cannot find current player ${this.playerInfo.id} in join confirmed list`)
-                return
-            }
-            me.bet = bet
-        } else {
-            console.error('SessionTable playerInfo is null, not initialized?')
-        }
     }
 }

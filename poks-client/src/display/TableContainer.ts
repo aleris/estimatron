@@ -97,6 +97,10 @@ export class TableContainer extends Container implements RefreshLayout {
         this.updateControlButtonsState()
     }
 
+    updateDeckCardsIfChanged() {
+        this.handOfCards.updateDeckCardsIfChanged()
+    }
+
     private updateControlButtonsState() {
         const isRevealed = this.sessionTable.tableInfo.revealed
         this.revealBetsButton.disabled = isRevealed

@@ -145,6 +145,7 @@ export class TableController {
         console.log('onJoinAccepted', notificationData)
         this.sessionTable.update(notificationData.tableInfo, notificationData.players)
         this.tableContainer.refreshLayout()
+        this.updatePlayerOptionButtonPlayerName()
     }
 
     onServerOtherJoined(notificationData: OtherJoinedNotificationData) {
@@ -193,9 +194,20 @@ export class TableController {
     }
 
     onServerTableOptionsChanged(notificationData: ChangeTableOptionsNotificationData) {
+        this.sessionTable.tableInfo.name = notificationData.tableName
+        // TODO: handle table name changed
+        this.sessionTable.tableInfo.deckKind = notificationData.deckKind
+        this.tableContainer.updateDeckCardsIfChanged()
     }
 
     onServerPlayerOptionsChanged(notificationData: ChangePlayerOptionsNotificationData) {
-        // this.sessionTable.
+        const player = this.sessionTable.findPlayerById(notificationData.playerId)
+        if (player !== undefined) {
+            player.name = notificationData.playerName
+            player.observer = notificationData.observerMode
+        }
+        this.updatePlayerOptionButtonPlayerName()
+        this.tableContainer.refreshPlayers()
+        // TODO: handle observer
     }
 }

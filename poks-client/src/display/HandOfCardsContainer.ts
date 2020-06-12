@@ -147,7 +147,7 @@ export class HandOfCardsContainer extends Container implements RefreshLayout {
         }
     }
 
-    private updateDeckCardsIfChanged() {
+    public updateDeckCardsIfChanged() {
         const tableInfo = this.sessionTable.tableInfo
         if (tableInfo !== null) {
             if (this.deckKind !== tableInfo.deckKind) {

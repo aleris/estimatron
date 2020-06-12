@@ -22,6 +22,7 @@ export class ChangePlayerOptionsNotification extends Notification<ChangePlayerOp
     send() {
         const playerInfo = this.player.playerInfo
         const changePlayerOptionsNotificationData = {
+            playerId: playerInfo.id,
             playerName: playerInfo.name,
             observerMode: playerInfo.observer
         }
