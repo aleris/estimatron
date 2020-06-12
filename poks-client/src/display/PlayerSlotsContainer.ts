@@ -7,7 +7,7 @@ import { SessionTable } from '@/data/SessionTable'
 import { PlayerInfo } from '@server/model/PlayerInfo'
 
 export class PlayerSlotsContainer extends Container implements RefreshLayout {
-    private static readonly MARGIN_REPORT = 0.1
+    private static readonly MARGIN_REPORT = 0.15
 
     private readonly playerSlotMap = new Map<string, PlayerSlot>()
 
@@ -37,15 +37,12 @@ export class PlayerSlotsContainer extends Container implements RefreshLayout {
         const slotsCount = players.length
         const availableWidth = this.sceneLayout.sceneWidth
         const availableHeight = this.sceneLayout.halfSceneHeight
-        const availableSlotWidth = availableWidth / slotsCount + margin
+        const availableSlotWidth = availableWidth / (slotsCount + 2)
         const slotWidth = Math.round(
             Math.min(
-                Math.max(
-                    SceneConstants.CARD_MIN_WIDTH,
-                    Math.max(
-                        Math.min(availableSlotWidth, this.sceneLayout.cardWidth),
-                        availableHeight / SceneConstants.CARD_SIZE_REPORT
-                    )
+                Math.min(
+                    Math.min(availableSlotWidth, this.sceneLayout.cardWidth),
+                    availableHeight / SceneConstants.CARD_SIZE_REPORT
                 ),
                 this.sceneLayout.cardWidth
             )
@@ -59,19 +56,22 @@ export class PlayerSlotsContainer extends Container implements RefreshLayout {
 
         let i = 0
         for (let player of players) {
-            const slot = new PlayerSlot(player)
+            const isMe = player.id === this.sessionTable.playerInfo.id
+            const slot = new PlayerSlot(player, isMe)
 
             slot.width = slotWidth
             slot.height = slotHeight
 
+            slot.refreshLayout()
+
             const sign = (i % 2 === 0) ? -1 : 1
             const halfIndex = Math.ceil(i / 2)
-            slot.x = centerX + sign * halfIndex * (slotWidth + margin)
+            const adjustOther = i < 1 ? 0 : sign * (slot.width - slot.cardShapeWidth) / 4
+            slot.x = centerX + sign * halfIndex * (slot.cardShapeWidth + margin) + adjustOther
             slot.y = top
             this.addChild(slot)
-            this.playerSlotMap.set(player.id, slot)
 
-            slot.refreshLayout()
+            this.playerSlotMap.set(player.id, slot)
 
             i++
         }

@@ -11,17 +11,58 @@ import { JoinCommand } from './JoinCommand'
 import { LeaveCommand } from './LeaveCommand'
 import { ResetTableCommand } from './ResetTableCommand'
 import { RevealBetsCommand } from './RevealBetsCommand'
+import { ChangeTableOptionsCommand } from './ChangeTableOptionsCommand'
+import { ChangePlayerOptionsCommand } from './ChangePlayerOptionsCommand'
+import { ChangeTableOptionsData } from '../model/ChangeTableOptionsData'
+import { ChangePlayerOptionsData } from '../model/ChangePlayerOptionsData'
 
 export class ServerCommandFactory {
     constructor(private readonly server: Server) { }
 
     of<T>(contextWebSocket: uWS.WebSocket, messageData: MessageData<T>) {
         switch (messageData.kind) {
-            case Messages.Join: return new JoinCommand(this.server, contextWebSocket, messageData.data as unknown as JoinData)
-            case Messages.Bet: return new BetCommand(this.server, contextWebSocket, messageData.data as unknown as BetData)
-            case Messages.Leave: return new LeaveCommand(this.server, contextWebSocket, messageData.data as unknown as LeaveData)
-            case Messages.RevealBets: return new RevealBetsCommand(this.server, contextWebSocket, messageData.data as unknown as RevealBetsData)
-            case Messages.ResetTable: return new ResetTableCommand(this.server, contextWebSocket, messageData.data as unknown as ResetTableData)
+            case Messages.Join:
+                return new JoinCommand(
+                    this.server,
+                    contextWebSocket,
+                    messageData.data as unknown as JoinData
+                )
+            case Messages.Bet:
+                return new BetCommand(
+                    this.server,
+                    contextWebSocket,
+                    messageData.data as unknown as BetData
+                )
+            case Messages.Leave:
+                return new LeaveCommand(
+                    this.server,
+                    contextWebSocket,
+                    messageData.data as unknown as LeaveData
+                )
+            case Messages.RevealBets:
+                return new RevealBetsCommand(
+                    this.server,
+                    contextWebSocket,
+                    messageData.data as unknown as RevealBetsData
+                )
+            case Messages.ResetTable:
+                return new ResetTableCommand(
+                    this.server,
+                    contextWebSocket,
+                    messageData.data as unknown as ResetTableData
+                )
+            case Messages.ChangeTableOptions:
+                return new ChangeTableOptionsCommand(
+                    this.server,
+                    contextWebSocket,
+                    messageData.data as unknown as ChangeTableOptionsData
+                )
+            case Messages.ChangePlayerOptions:
+                return new ChangePlayerOptionsCommand(
+                    this.server,
+                    contextWebSocket,
+                    messageData.data as unknown as ChangePlayerOptionsData
+                )
             default: throw new Error(`unknown command ${messageData}`)
         }
     }

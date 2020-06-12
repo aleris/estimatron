@@ -73,6 +73,8 @@ export class JoinCommand implements Command<JoinData> {
 
         this.senderWebSocket.subscribe(Notification.getTopicName(table, Messages.RevealBetsNotification))
         this.senderWebSocket.subscribe(Notification.getTopicName(table, Messages.ResetTableNotification))
+        this.senderWebSocket.subscribe(Notification.getTopicName(table, Messages.ChangeTableOptionsNotification))
+        this.senderWebSocket.subscribe(Notification.getTopicName(table, Messages.ChangePlayerOptionsNotification))
 
         new JoinConfirmedNotification(table, player).send()
         new OtherJoinedNotification(table, player).send()

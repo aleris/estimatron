@@ -6,8 +6,9 @@ import { SceneLayout } from '@/display/SceneLayout'
 export class SceneButton extends Container implements RefreshLayout {
     private static readonly WIDTH_TEXT_REPORT = 0.22
     private static readonly MARGIN_REPORT = 0.2
-    private static readonly WIDTH_REPORT = 0.08
-    private static readonly MIN_WIDTH = 50
+    private static readonly WIDTH_REPORT = 0.07
+    private static readonly HEIGHT_REPORT = 0.15
+    private static readonly MIN_WIDTH = 60
 
     private readonly background: Shape
     private backgroundFill: any
@@ -66,9 +67,7 @@ export class SceneButton extends Container implements RefreshLayout {
         if (!this.disabled) {
             this.regX = -SceneConstants.SHADOW_OFFSET
             this.regY = -SceneConstants.SHADOW_OFFSET
-            this.backgroundShadow.offsetX = SceneConstants.SHADOW_PRESSED_OFFSET
-            this.backgroundShadow.offsetY = SceneConstants.SHADOW_PRESSED_OFFSET
-            this.backgroundShadow.blur = SceneConstants.SHADOW_PRESSED_BLUR
+            this.setShadowOffset()
         }
     }
 
@@ -76,14 +75,30 @@ export class SceneButton extends Container implements RefreshLayout {
         if (!this.disabled) {
             this.regX = 0
             this.regY = 0
-            this.backgroundShadow.offsetX = SceneConstants.SHADOW_OFFSET
-            this.backgroundShadow.offsetY = SceneConstants.SHADOW_OFFSET
-            this.backgroundShadow.blur = SceneConstants.SHADOW_BLUR
+            this.setShadowNormal()
         }
     }
 
+    private setShadowNormal() {
+        this.backgroundShadow.offsetX = SceneConstants.SHADOW_OFFSET
+        this.backgroundShadow.offsetY = SceneConstants.SHADOW_OFFSET
+        this.backgroundShadow.blur = SceneConstants.SHADOW_BLUR
+    }
+
+    private setShadowOffset() {
+        this.backgroundShadow.offsetX = SceneConstants.SHADOW_PRESSED_OFFSET
+        this.backgroundShadow.offsetY = SceneConstants.SHADOW_PRESSED_OFFSET
+        this.backgroundShadow.blur = SceneConstants.SHADOW_PRESSED_BLUR
+    }
+
     refreshLayout(): void {
-        const w = Math.max(SceneButton.MIN_WIDTH, this.sceneLayout.sceneWidth * SceneButton.WIDTH_REPORT)
+        const w = Math.max(
+            SceneButton.MIN_WIDTH,
+            Math.min(
+                this.sceneLayout.sceneWidth * SceneButton.WIDTH_REPORT,
+                this.sceneLayout.sceneHeight * SceneButton.HEIGHT_REPORT
+            )
+        )
         this.width = w
         const h = w
         this.height = h
@@ -116,6 +131,11 @@ export class SceneButton extends Container implements RefreshLayout {
             .closePath()
             .endFill()
 
+        if (this.disabled) {
+            this.setShadowOffset()
+        } else {
+            this.setShadowNormal()
+        }
         this.width = w
         this.height = h
     }

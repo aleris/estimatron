@@ -4,10 +4,14 @@ import { LeaveData } from '@server/model/LeaveData'
 import { JoinConfirmedNotificationData } from '@server/model/JoinConfirmedNotificationData'
 import { OtherJoinedNotificationData } from '@server/model/OtherJoinedNotificationData'
 import { BetData } from '@server/model/BetData'
+import { ChangeTableOptionsData } from '@server/model/ChangeTableOptionsData'
+import { ChangePlayerOptionsData } from '@server/model/ChangePlayerOptionsData'
 import { OtherBetNotificationData } from '@server/model/OtherBetNotificationData'
 import { OtherLeftNotificationData } from '@server/model/OtherLeftNotificationData'
 import { RevealBetsNotificationData } from '@server/model/RevealBetsNotificationData'
 import { ResetTableNotificationData } from '@server/model/ResetTableNotificationData'
+import { ChangeTableOptionsNotificationData } from '@server/model/ChangeTableOptionsNotificationData'
+import { ChangePlayerOptionsNotificationData } from '@server/model/ChangePlayerOptionsNotificationData'
 
 export class Server {
     private readonly ws: WebSocket
@@ -20,6 +24,8 @@ export class Server {
     public onOtherLeft: (notificationData: OtherLeftNotificationData) => void = () => {}
     public onRevealBets: (notificationData: RevealBetsNotificationData) => void = () => {}
     public onResetTable: (notificationData: ResetTableNotificationData) => void = () => {}
+    public onTableOptionsChanged: (notificationData: ChangeTableOptionsNotificationData) => void = () => {}
+    public onPlayerOptionsChanged: (notificationData: ChangePlayerOptionsNotificationData) => void = () => {}
 
     constructor() {
         this.ws = new WebSocket(
@@ -49,6 +55,8 @@ export class Server {
                 case Messages.OtherLeftNotification: return this.onOtherLeft(messageData.data)
                 case Messages.RevealBetsNotification: return this.onRevealBets(messageData.data)
                 case Messages.ResetTableNotification: return this.onResetTable(messageData.data)
+                case Messages.ChangeTableOptionsNotification: return this.onTableOptionsChanged(messageData.data)
+                case Messages.ChangePlayerOptionsNotification: return this.onPlayerOptionsChanged(messageData.data)
                 default:
                     throw new Error(`cannot handle command ${commandInfo.kind}`)
             }
@@ -90,6 +98,14 @@ export class Server {
 
     resetTable() {
         this.send(Messages.ResetTable, {})
+    }
+
+    changeTableOptions(optionsData: ChangeTableOptionsData) {
+        this.send(Messages.ChangeTableOptions, optionsData)
+    }
+
+    changePlayerOptions(optionsData: ChangePlayerOptionsData) {
+        this.send(Messages.ChangePlayerOptions, optionsData)
     }
 
     send<T>(kind: Messages, data: T) {

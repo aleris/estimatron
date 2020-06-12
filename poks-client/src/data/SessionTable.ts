@@ -1,7 +1,7 @@
 import { TableInfo } from '@server/model/TableInfo'
 import { PlayerInfo } from '@server/model/PlayerInfo'
 import { DeckRepository } from '@server/model/Decks'
-import { BetHelper } from '@server/model/Bet'
+import { Bet, BetHelper } from '@server/model/Bet'
 import { NameGenerator } from '@/data/NameGenerator'
 import { IdGenerator } from '@/data/IdGenerator'
 import { StorageRepository } from '@/data/StorageRepository'
@@ -14,6 +14,10 @@ export class SessionTable {
     constructor() {
         this.playerInfo = this.getLocalPlayerOrNew()
         this.tableInfo = this.getLocalTableOrNew()
+    }
+
+    get areBetsPresent() {
+        return this.players.some(p => BetHelper.hasEstimation(p.bet))
     }
 
     findPlayerById(playerId: string): PlayerInfo | undefined {
@@ -96,5 +100,26 @@ export class SessionTable {
                 console.warn(`bet for player ${player.id} (${player.name}) not received`)
             }
         })
+
+        const me = players.find(player => player.id === this.playerInfo.id)
+        if (undefined === me) {
+            console.error(`cannot find current player ${this.playerInfo.id} in player list`)
+            return
+        }
+        this.playerInfo.bet = me.bet
+    }
+
+    updateMyBet(bet: Bet) {
+        if (null !== this.playerInfo) {
+            this.playerInfo.bet = bet
+            const me = this.players.find(player => player.id === this.playerInfo.id)
+            if (undefined === me) {
+                console.error(`cannot find current player ${this.playerInfo.id} in join confirmed list`)
+                return
+            }
+            me.bet = bet
+        } else {
+            console.error('SessionTable playerInfo is null, not initialized?')
+        }
     }
 }

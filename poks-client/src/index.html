@@ -1,19 +1,25 @@
 <html>
 <head>
-    <link href="https://fonts.googleapis.com/css2?family=Lobster+Two&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Poks</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <link href="https://fonts.googleapis.com/css2?family=Dosis&display=swap" rel="stylesheet">
-    <script src="/main.bundle.js"></script>
-    <style>
-        body {
-            margin: 0;
-        }
-        #table {
-            background-color: #00BFFF;
-        }
-    </style>
 </head>
 <body>
-    <canvas id="table" width="600" height="400"></canvas>
+    <button id="tableOptionsButton" class="table-options-icon-button">
+        <i class="icon icon-cog"></i>
+    </button>
+    <div id="playerOptionsPane">
+        <button id="playerOptionsButton">
+            <span class="player-options-button-label">Player Name</span>
+            <span class="player-options-button-side-icon">
+                <i class="icon icon-edit"></i>
+            </span>
+        </button>
+    </div>
+    <canvas id="tableCanvas" width="600" height="400"></canvas>
+    <%= require('html-loader!./dialogs/table-options/TableOptionsDialog.html') %>
+    <%= require('html-loader!./dialogs/player-options/PlayerOptionsDialog.html') %>
 </body>
 </html>

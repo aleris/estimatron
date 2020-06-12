@@ -11,6 +11,7 @@ import { PositionAndRotation } from '@/display/PositionAndRotation'
 import { CardShape } from '@/display/CardShape'
 import { SessionTable } from '@/data/SessionTable'
 import { PlayerSlotsContainer } from '@/display/PlayerSlotsContainer'
+import { SceneConstants } from '@/display/SceneConstants'
 
 export class HandOfCardsContainer extends Container implements RefreshLayout {
     public onChangeMyBet: (bet: Bet) => void = () => {}
@@ -38,11 +39,11 @@ export class HandOfCardsContainer extends Container implements RefreshLayout {
     refreshLayout(): void {
         this.updateDeckCardsIfChanged()
 
+        this.placeOtherPlayerCards()
+
         this.placeMyCards()
 
         this.placeMyBetCardOnPlayerSlot()
-
-        this.placeOtherPlayerCards()
     }
 
     revealBets() {
@@ -121,17 +122,17 @@ export class HandOfCardsContainer extends Container implements RefreshLayout {
         }
 
         const cardShape = new CardShape(player.bet.estimation)
-        cardShape.x = slot.x - 2 * slot.width
-        cardShape.y = -this.sceneLayout.cardHeight
-        cardShape.width = this.sceneLayout.cardWidth
-        cardShape.height = this.sceneLayout.cardHeight
+        cardShape.width = slot.cardShapeWidth
+        cardShape.height = slot.cardShapeHeight
+        // cardShape.x = slot.x - 2 * cardShape.width
+        // cardShape.y = -cardShape.height
         cardShape.rotation = -90
         cardShape.refreshLayout()
         cardShape.switchFrontBackForText()
         this.addChild(cardShape)
         this.betsByPlayerIdMap.set(player.id, cardShape)
 
-        const dest = { x: slot.x, y: slot.y, rotation: 0 }
+        const dest = { x: slot.centerOfCardShape.x, y: slot.centerOfCardShape.y, rotation: 0 }
         if (animate) {
             Tween.get(cardShape)
                 .to(
@@ -197,6 +198,7 @@ export class HandOfCardsContainer extends Container implements RefreshLayout {
         card.x = slot.x
         card.y = slot.y
         card.rotation = 0
+        this.setChildIndex(card, this.numChildren - 1)
         this.betCard = card
     }
 
@@ -269,6 +271,7 @@ export class HandOfCardsContainer extends Container implements RefreshLayout {
             const playerSlot = this.playerSlotsContainer.playerSlot
             if (playerSlot) {
                 card.dropTo(new PositionAndRotation(playerSlot.x, playerSlot.y, 0))
+                this.setChildIndex(card, this.numChildren - 1)
             } else {
                 console.error(`player slot not initialized`)
             }

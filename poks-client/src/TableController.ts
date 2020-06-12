@@ -1,16 +1,22 @@
 import { Stage, Touch } from '@createjs/easeljs'
 import { Ticker } from '@createjs/core'
 import { Bet } from '@server/model/Bet'
+import { ChangeTableOptionsData } from '@server/model/ChangeTableOptionsData'
+import { ChangePlayerOptionsData } from '@server/model/ChangePlayerOptionsData'
 import { JoinConfirmedNotificationData } from '@server/model/JoinConfirmedNotificationData'
 import { OtherJoinedNotificationData } from '@server/model/OtherJoinedNotificationData'
 import { OtherBetNotificationData } from '@server/model/OtherBetNotificationData'
 import { OtherLeftNotificationData } from '@server/model/OtherLeftNotificationData'
 import { RevealBetsNotificationData } from '@server/model/RevealBetsNotificationData'
 import { ResetTableNotificationData } from '@server/model/ResetTableNotificationData'
+import { ChangeTableOptionsNotificationData } from '@server/model/ChangeTableOptionsNotificationData'
+import { ChangePlayerOptionsNotificationData } from '@server/model/ChangePlayerOptionsNotificationData'
 import { SessionTable } from '@/data/SessionTable'
 import { SceneLayout } from '@/display/SceneLayout'
 import { TableContainer } from '@/display/TableContainer'
 import { Server } from '@/Server'
+import { TableOptionsDialogController } from '@/dialogs/table-options/TableOptionsDialogController'
+import { PlayerOptionsDialogController } from '@/dialogs/player-options/PlayerOptionsDialogController'
 
 export class TableController {
     private readonly sceneLayout: SceneLayout
@@ -18,9 +24,35 @@ export class TableController {
     private readonly tableContainer: TableContainer
     private readonly stage: Stage
     private readonly server: Server
+    private readonly tableOptionsButton: HTMLElement | null
+    private readonly tableOptionsDialogController: TableOptionsDialogController
+    private readonly playerOptionsButton: HTMLElement | null
+    private readonly playerOptionsDialogController: PlayerOptionsDialogController
 
-    constructor() {
-        const canvas = document.getElementById('table') as HTMLCanvasElement
+    constructor(canvasElementId: string) {
+        this.tableOptionsDialogController = new TableOptionsDialogController()
+        this.tableOptionsDialogController.onTableOptionsChanged = this.onTableOptionsChanged.bind(this)
+
+        this.tableOptionsButton = document.getElementById('tableOptionsButton')
+        this.tableOptionsButton?.addEventListener('click', () => {
+            const tableInfo = this.sessionTable.tableInfo
+            this.tableOptionsDialogController.update({ tableName: tableInfo.name, deckKind: tableInfo.deckKind })
+            this.playerOptionsDialogController.close()
+            this.tableOptionsDialogController.toggleDialog()
+        })
+
+        this.playerOptionsDialogController = new PlayerOptionsDialogController()
+        this.playerOptionsDialogController.onPlayerOptionsChanged = this.onPlayerOptionsChanged.bind(this)
+
+        this.playerOptionsButton = document.getElementById('playerOptionsButton')
+        this.playerOptionsButton?.addEventListener('click', () => {
+            const playerInfo = this.sessionTable.playerInfo
+            this.playerOptionsDialogController.update({ playerName: playerInfo.name, observerMode: playerInfo.observer })
+            this.tableOptionsDialogController.close()
+            this.playerOptionsDialogController.toggleDialog()
+        })
+
+        const canvas = document.getElementById(canvasElementId) as HTMLCanvasElement
 
         this.sceneLayout = new SceneLayout(canvas)
 
@@ -42,16 +74,18 @@ export class TableController {
         Ticker.addEventListener('tick', this.stage)
 
         this.server = new Server()
-        this.server.onConnectionOpened = this.onConnectionOpened.bind(this)
-        this.server.onJoinConfirmed = this.onJoinConfirmed.bind(this)
-        this.server.onOtherJoined = this.onOtherJoined.bind(this)
-        this.server.onOtherBet = this.onOtherBet.bind(this)
-        this.server.onOtherLeft = this.onOtherLeft.bind(this)
-        this.server.onRevealBets = this.onRevealBets.bind(this)
-        this.server.onResetTable = this.onResetTable.bind(this)
+        this.server.onConnectionOpened = this.onServerConnectionOpened.bind(this)
+        this.server.onJoinConfirmed = this.onServerJoinConfirmed.bind(this)
+        this.server.onOtherJoined = this.onServerOtherJoined.bind(this)
+        this.server.onOtherBet = this.onServerOtherBet.bind(this)
+        this.server.onOtherLeft = this.onServerOtherLeft.bind(this)
+        this.server.onRevealBets = this.onServerRevealBets.bind(this)
+        this.server.onResetTable = this.onServerResetTable.bind(this)
+        this.server.onTableOptionsChanged = this.onServerTableOptionsChanged.bind(this)
+        this.server.onPlayerOptionsChanged = this.onServerPlayerOptionsChanged.bind(this)
     }
 
-    onConnectionOpened() {
+    onServerConnectionOpened() {
         console.log('onConnectionOpened')
         const playerInfo = this.sessionTable.playerInfo
         const tableInfo = this.sessionTable.tableInfo
@@ -64,6 +98,14 @@ export class TableController {
     private refreshLayout() {
         this.sceneLayout.updateDimensionsFromWindow()
         this.tableContainer.refreshLayout()
+        this.updatePlayerOptionButtonPlayerName()
+    }
+
+    private updatePlayerOptionButtonPlayerName() {
+        const textSpan = this.playerOptionsButton?.getElementsByClassName('player-options-button-label').item(0)
+        if (textSpan) {
+            textSpan.textContent = this.sessionTable.playerInfo.name
+        }
     }
 
     public onWindowResize() {
@@ -72,16 +114,10 @@ export class TableController {
 
     onChangeMyBet(bet: Bet) {
         console.log('onChangeMyBet', bet)
-        if (null !== this.sessionTable.playerInfo) {
-            this.sessionTable.playerInfo.bet = bet
-            this.server.bet({
-                bet
-            })
-            console.log('players', this.sessionTable.players)
-        } else {
-            console.error('SessionTable me ref is null, not initialized?')
-        }
-        // this.tableContainer.refreshLayout(this.sceneLayout)
+        this.sessionTable.updateMyBet(bet)
+        this.server.bet({
+            bet
+        })
     }
 
     onRevealBetsClick() {
@@ -94,14 +130,24 @@ export class TableController {
         this.server.resetTable()
     }
 
+    onTableOptionsChanged(options: ChangeTableOptionsData) {
+        console.log('onTableOptionsChanged', options)
+        this.server.changeTableOptions(options)
+    }
+
+    onPlayerOptionsChanged(options: ChangePlayerOptionsData) {
+        console.log('onPlayerOptionsChanged', options)
+        this.server.changePlayerOptions(options)
+    }
+
     // handle notifications from server
-    onJoinConfirmed(notificationData: JoinConfirmedNotificationData) {
+    onServerJoinConfirmed(notificationData: JoinConfirmedNotificationData) {
         console.log('onJoinAccepted', notificationData)
         this.sessionTable.update(notificationData.tableInfo, notificationData.players)
         this.tableContainer.refreshLayout()
     }
 
-    onOtherJoined(notificationData: OtherJoinedNotificationData) {
+    onServerOtherJoined(notificationData: OtherJoinedNotificationData) {
         console.log('onOtherJoined', notificationData)
         const added = this.sessionTable.addOrUpdatePlayer(notificationData.playerInfo)
         if (added) {
@@ -110,7 +156,7 @@ export class TableController {
         this.tableContainer.refreshPlayers()
     }
 
-    onOtherBet(notificationData: OtherBetNotificationData) {
+    onServerOtherBet(notificationData: OtherBetNotificationData) {
         console.log('onOtherBet', notificationData)
         const player = this.sessionTable.findPlayerById(notificationData.playerId)
         if (player) {
@@ -121,7 +167,7 @@ export class TableController {
         }
     }
 
-    onOtherLeft(notificationData: OtherLeftNotificationData) {
+    onServerOtherLeft(notificationData: OtherLeftNotificationData) {
         console.log('notificationData', notificationData)
         const player = this.sessionTable.findPlayerById(notificationData.playerId)
         if (player === undefined) {
@@ -132,15 +178,24 @@ export class TableController {
         this.tableContainer.refreshPlayers()
     }
 
-    onRevealBets(notificationData: RevealBetsNotificationData) {
+    onServerRevealBets(notificationData: RevealBetsNotificationData) {
         console.log('onRevealBets', notificationData)
+        this.sessionTable.tableInfo.revealed = true
         this.sessionTable.updateBets(notificationData.players)
         this.tableContainer.revealBets()
     }
 
-    onResetTable(notificationData: ResetTableNotificationData) {
+    onServerResetTable(notificationData: ResetTableNotificationData) {
         console.log('onResetTable', notificationData)
+        this.sessionTable.tableInfo.revealed = false
         this.sessionTable.updateBets(notificationData.players)
         this.tableContainer.resetTable()
+    }
+
+    onServerTableOptionsChanged(notificationData: ChangeTableOptionsNotificationData) {
+    }
+
+    onServerPlayerOptionsChanged(notificationData: ChangePlayerOptionsNotificationData) {
+        // this.sessionTable.
     }
 }

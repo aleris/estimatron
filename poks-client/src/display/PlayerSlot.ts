@@ -4,8 +4,8 @@ import { SceneConstants } from '@/display/SceneConstants'
 import { PlayerInfo } from '@server/model/PlayerInfo'
 
 export class PlayerSlot extends Container implements RefreshLayout {
-    private static readonly BACKGROUND_COLOR = '#007299'
-    private static readonly TEXT_COLOR = '#424242'
+    private static readonly BACKGROUND_COLOR = '#2a513e'
+    private static readonly TEXT_COLOR = '#fff'
     private static readonly TEXT_FONT = 'Dosis'
     private static readonly TEXT_FONT_REPORT = 0.15
     private static readonly TEXT_BOTTOM_MARGIN_REPORT = 0.025
@@ -13,8 +13,10 @@ export class PlayerSlot extends Container implements RefreshLayout {
     private readonly background: Shape
     private readonly nameText: any
     private readonly strikethroughShape: Shape
+    public cardShapeWidth: number = 0
+    public cardShapeHeight: number = 0
 
-    constructor(public readonly playerInfo: PlayerInfo) {
+    constructor(public readonly playerInfo: PlayerInfo, public readonly isMe: boolean) {
         super()
 
         this.background = new Shape()
@@ -32,8 +34,17 @@ export class PlayerSlot extends Container implements RefreshLayout {
         // this.addChild(new DebugPointDisplay(0, 0))
     }
 
+    get centerOfCardShape() {
+        return new Point(this.x, this.y - (this.height - this.cardShapeHeight))
+    }
+
     refreshLayout(): void {
-        this.center = new Point(Math.round(this.width / 2), Math.round(this.height / 2))
+        this.nameText.visible = !this.isMe
+        this.strikethroughShape.visible = !this.isMe
+        this.cardShapeWidth = this.isMe ? this.width : this.width * SceneConstants.CARD_OTHER_SIZE_REPORT
+        this.cardShapeHeight = this.isMe ? this.height : this.height * SceneConstants.CARD_OTHER_SIZE_REPORT
+
+        this.center = new Point(Math.round(this.cardShapeWidth / 2), Math.round(this.height / 2))
         this.regX = this.center.x
         this.regY = this.height
 
@@ -52,7 +63,7 @@ export class PlayerSlot extends Container implements RefreshLayout {
         const rectRadius = Math.floor(this.width * SceneConstants.CARD_BACKGROUND_RADIUS_REPORT)
         this.background.graphics
             .beginFill(PlayerSlot.BACKGROUND_COLOR)
-            .drawRoundRect(0, 0, this.width, this.height, rectRadius)
+            .drawRoundRect(0, 0, this.cardShapeWidth, this.cardShapeHeight, rectRadius)
             .endFill()
     }
 
@@ -62,8 +73,9 @@ export class PlayerSlot extends Container implements RefreshLayout {
         this.nameText.text = this.playerInfo.name
         this.nameText.font = font
         const textBounds = this.nameText.getBounds()
-        this.nameText.x = this.width / 2
-        this.nameText.y = this.height + this.height * PlayerSlot.TEXT_BOTTOM_MARGIN_REPORT + textBounds.height / 2
+        this.nameText.x = this.cardShapeWidth / 2
+        this.nameText.y = this.cardShapeHeight
+            + this.cardShapeHeight * PlayerSlot.TEXT_BOTTOM_MARGIN_REPORT + textBounds.height / 2
     }
 
     private refreshStrikethroughShape() {

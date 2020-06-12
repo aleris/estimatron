@@ -13,7 +13,13 @@ export enum Messages {
     RevealBetsNotification,
 
     ResetTable,
-    ResetTableNotification
+    ResetTableNotification,
+
+    ChangeTableOptions,
+    ChangeTableOptionsNotification,
+
+    ChangePlayerOptions,
+    ChangePlayerOptionsNotification
 }
 
 export interface MessageInfo {

@@ -1,7 +1,6 @@
 import { Container } from '@createjs/easeljs'
 import { Bet } from '@server/model/Bet'
 import { PlayerInfo } from '@server/model/PlayerInfo'
-import { BetHelper } from '@server/model/Bet'
 import { SessionTable } from '@/data/SessionTable'
 import { HandOfCardsContainer } from '@/display/HandOfCardsContainer'
 import { RefreshLayout } from '@/display/RefreshLayout'
@@ -9,6 +8,7 @@ import { SceneLayout } from '@/display/SceneLayout'
 import { PlayerSlotsContainer } from '@/display/PlayerSlotsContainer'
 import { SceneButton } from '@/display/SceneButton'
 import { SceneConstants } from '@/display/SceneConstants'
+import { DebugGuideLine, GuideLineOrientation } from '@/display/DebugGuideLine'
 
 export class TableContainer extends Container implements RefreshLayout {
     public onChangeMyBet: (bet: Bet) => void = () => {}
@@ -58,41 +58,50 @@ export class TableContainer extends Container implements RefreshLayout {
         this.height = this.sceneLayout.sceneHeight
         this.width = this.sceneLayout.sceneWidth
 
-        this.revealBetsButton.disabled = this.sessionTable.tableInfo.revealed
-        this.revealBetsButton.refreshLayout()
+        this.updateControlButtonsState()
+
         this.revealBetsButton.y = this.height / 2
         this.revealBetsButton.x = (this.sceneLayout.sceneWidth - this.sceneLayout.sceneWidth / 6) - this.revealBetsButton.width
 
-        this.resetButton.disabled = !this.sessionTable.players.some(p => BetHelper.hasEstimation(p.bet))
-        this.resetButton.refreshLayout()
         this.resetButton.y = this.revealBetsButton.y
         this.resetButton.x = this.sceneLayout.sceneWidth / 6
 
         this.playerSlotsList.refreshLayout()
         this.handOfCards.refreshLayout()
 
-        // this.addChild(new DebugGuideLineDisplay(sceneLayout.halfSceneWidth, GuideLineOrientation.Vertical))
-        // this.addChild(new DebugGuideLineDisplay(sceneLayout.halfSceneHeight, GuideLineOrientation.Horizontal))
-        // this.addChild(new DebugGuideLineDisplay(sceneLayout.halfSceneHeight / 2, GuideLineOrientation.Horizontal))
+        // this.addChild(new DebugGuideLine(this.sceneLayout.halfSceneHeight, GuideLineOrientation.Horizontal))
     }
 
     otherPlayerBet(player: PlayerInfo) {
         this.handOfCards.createCardForOtherPlayer(player, true)
+        this.updateControlButtonsState()
     }
 
     refreshPlayers(): void {
         this.playerSlotsList.refreshLayout()
+        this.updateControlButtonsState()
     }
 
     changeMyBet(bet: Bet) {
         this.onChangeMyBet(bet)
+        this.updateControlButtonsState()
     }
 
     revealBets() {
         this.handOfCards.revealBets()
+        this.updateControlButtonsState()
     }
 
     resetTable() {
         this.handOfCards.resetBets()
+        this.updateControlButtonsState()
+    }
+
+    private updateControlButtonsState() {
+        const isRevealed = this.sessionTable.tableInfo.revealed
+        this.revealBetsButton.disabled = isRevealed
+        this.revealBetsButton.refreshLayout()
+        this.resetButton.disabled = !this.sessionTable.areBetsPresent && !isRevealed
+        this.resetButton.refreshLayout()
     }
 }
