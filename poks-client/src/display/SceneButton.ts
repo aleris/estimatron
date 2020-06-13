@@ -47,8 +47,6 @@ export class SceneButton extends Container implements RefreshLayout {
         this.textDisplay.textBaseline = 'middle'
         this.textDisplay.mouseEnabled = false
         this.addChild(this.textDisplay)
-
-        this.cursor = 'pointer'
     }
 
     rollover() {
@@ -67,7 +65,7 @@ export class SceneButton extends Container implements RefreshLayout {
         if (!this.disabled) {
             this.regX = -SceneConstants.SHADOW_OFFSET
             this.regY = -SceneConstants.SHADOW_OFFSET
-            this.setShadowOffset()
+            this.setShadowPressed()
         }
     }
 
@@ -85,7 +83,7 @@ export class SceneButton extends Container implements RefreshLayout {
         this.backgroundShadow.blur = SceneConstants.SHADOW_BLUR
     }
 
-    private setShadowOffset() {
+    private setShadowPressed() {
         this.backgroundShadow.offsetX = SceneConstants.SHADOW_PRESSED_OFFSET
         this.backgroundShadow.offsetY = SceneConstants.SHADOW_PRESSED_OFFSET
         this.backgroundShadow.blur = SceneConstants.SHADOW_PRESSED_BLUR
@@ -132,9 +130,11 @@ export class SceneButton extends Container implements RefreshLayout {
             .endFill()
 
         if (this.disabled) {
-            this.setShadowOffset()
+            this.setShadowPressed()
+            this.cursor = 'default'
         } else {
             this.setShadowNormal()
+            this.cursor = 'pointer'
         }
         this.width = w
         this.height = h

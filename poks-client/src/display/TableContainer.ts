@@ -36,7 +36,11 @@ export class TableContainer extends Container implements RefreshLayout {
             SceneConstants.REVEAL_BUTTON_BACKGROUND_COLOR_ROLLOVER
         )
         this.addChild(this.revealBetsButton)
-        this.revealBetsButton.addEventListener('click', () => this.onRevealBetsClick())
+        this.revealBetsButton.addEventListener('click', () => {
+            if (!this.revealBetsButton.disabled) {
+                this.onRevealBetsClick()
+            }
+        })
 
         this.resetButton = new SceneButton(
             sceneLayout,
@@ -46,7 +50,11 @@ export class TableContainer extends Container implements RefreshLayout {
             SceneConstants.RESET_BUTTON_BACKGROUND_COLOR_ROLLOVER
         )
         this.resetButton.disabled = true
-        this.resetButton.addEventListener('click', () => this.onResetTableClick())
+        this.resetButton.addEventListener('click', () => {
+            if (!this.resetButton.disabled) {
+                this.onResetTableClick()
+            }
+        })
         this.addChild(this.resetButton)
 
         this.handOfCards = new HandOfCardsContainer(sceneLayout, sessionTable, this.playerSlotsList)

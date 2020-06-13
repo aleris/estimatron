@@ -164,7 +164,6 @@ export class CardShape extends Container implements RefreshLayout {
     grab(pos: Point) {
         this.cardFront.cursor = 'grabbing'
         this.forceUpdateCursor()
-        console.log('grab getChildIndex', this.parent.getChildIndex(this), this.parent.numChildren)
         this.parent.setChildIndex(this, this.parent.numChildren - 1)
         this.dragOffset = new Point(this.x - pos.x, this.y - pos.y)
         Tween.get(this, { override: true }).to({
