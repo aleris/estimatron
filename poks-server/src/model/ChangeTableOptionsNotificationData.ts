@@ -1,5 +1,5 @@
-import { DeckKind } from './Decks'
+import { TableOptions } from './TableOptions'
 
 export class ChangeTableOptionsNotificationData {
-    constructor(public readonly tableName: string, public readonly deckKind: DeckKind) { }
+    constructor(public readonly tableOptions: TableOptions) { }
 }

@@ -1,9 +1,5 @@
-import { id } from './id'
+import { PlayerOptions } from './PlayerOptions'
 
 export class ChangePlayerOptionsNotificationData {
-    constructor(
-        public readonly playerId: id,
-        public readonly playerName: string,
-        public readonly observerMode: boolean
-    ) { }
+    constructor(public readonly playerOptions: PlayerOptions) { }
 }

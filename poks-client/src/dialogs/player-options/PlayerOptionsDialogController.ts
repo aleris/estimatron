@@ -1,16 +1,17 @@
-import { ChangePlayerOptionsData } from '@server/model/ChangePlayerOptionsData'
+import { PlayerOptions } from '@server/model/PlayerOptions'
 import { OptionsDialog } from '@/dialogs/OptionsDialog'
+import { SessionTable } from '@/data/SessionTable'
 
-export class PlayerOptionsDialogController extends OptionsDialog<ChangePlayerOptionsData> {
+export class PlayerOptionsDialogController extends OptionsDialog<PlayerOptions> {
     private readonly playerOptionsDialog: HTMLElement | null
     private readonly playerOptionsCloseButton: HTMLElement | null
     private readonly playerOptionsApplyButton: HTMLElement | null
     private readonly playerOptionsPlayerName: HTMLInputElement | null
     private readonly playerOptionsObserverMode: HTMLInputElement | null
 
-    public onPlayerOptionsChanged: (playerOptions: ChangePlayerOptionsData) => void = () => {}
+    public onPlayerOptionsChanged: (playerOptions: PlayerOptions) => void = () => {}
 
-    constructor() {
+    constructor(private readonly sessionTable: SessionTable) {
         super()
         this.playerOptionsDialog = document.getElementById('playerOptionsDialog')
         this.playerOptionsCloseButton = document.getElementById('playerOptionsCloseButton')
@@ -24,7 +25,8 @@ export class PlayerOptionsDialogController extends OptionsDialog<ChangePlayerOpt
 
         this.playerOptionsApplyButton?.addEventListener('click', () => {
             this.onPlayerOptionsChanged({
-                playerName: this.playerOptionsPlayerName?.value || '',
+                id: this.sessionTable.playerInfo.id,
+                name: this.playerOptionsPlayerName?.value || '',
                 observerMode: this.playerOptionsObserverMode?.checked || false
             })
             this.toggleDialog()
@@ -35,9 +37,9 @@ export class PlayerOptionsDialogController extends OptionsDialog<ChangePlayerOpt
         return this.playerOptionsDialog
     }
 
-    update(options: ChangePlayerOptionsData) {
+    update(options: PlayerOptions) {
         if (null !== this.playerOptionsPlayerName) {
-            this.playerOptionsPlayerName.value = options.playerName
+            this.playerOptionsPlayerName.value = options.name
         }
         if (null !== this.playerOptionsObserverMode) {
             this.playerOptionsObserverMode.checked = options.observerMode

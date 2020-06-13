@@ -6,7 +6,7 @@ export interface PlayerInfo {
     id: id,
     name: string,
     bet: Bet,
-    observer: boolean,
+    observerMode: boolean,
     gone: boolean
 }
 

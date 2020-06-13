@@ -1,17 +1,18 @@
 import { DeckKind } from '@server/model/Decks'
-import { ChangeTableOptionsData } from '@server/model/ChangeTableOptionsData'
+import { TableOptions } from '@server/model/TableOptions'
+import { SessionTable } from '@/data/SessionTable'
 import { OptionsDialog } from '@/dialogs/OptionsDialog'
 
-export class TableOptionsDialogController extends OptionsDialog<ChangeTableOptionsData> {
+export class TableOptionsDialogController extends OptionsDialog<TableOptions> {
     private readonly tableOptionsDialog: HTMLElement | null
     private readonly tableOptionsCloseButton: HTMLElement | null
     private readonly tableOptionsApplyButton: HTMLElement | null
     private readonly tableOptionsTableName: HTMLInputElement | null
     private readonly tableOptionsDeckKind: HTMLSelectElement | null
 
-    public onTableOptionsChanged: (tableOptions: ChangeTableOptionsData) => void = () => {}
+    public onTableOptionsChanged: (tableOptions: TableOptions) => void = () => {}
 
-    constructor() {
+    constructor(private readonly sessionTable: SessionTable) {
         super()
         this.tableOptionsDialog = document.getElementById('tableOptionsDialog')
         this.tableOptionsCloseButton = document.getElementById('tableOptionsCloseButton')
@@ -25,7 +26,8 @@ export class TableOptionsDialogController extends OptionsDialog<ChangeTableOptio
 
         this.tableOptionsApplyButton?.addEventListener('click', () => {
             this.onTableOptionsChanged({
-                tableName: this.tableOptionsTableName?.value || '',
+                changedByPlayerId: this.sessionTable.playerInfo.id,
+                name: this.tableOptionsTableName?.value || '',
                 deckKind: this.getDeckKind()
             })
             this.toggleDialog()
@@ -36,9 +38,9 @@ export class TableOptionsDialogController extends OptionsDialog<ChangeTableOptio
         return this.tableOptionsDialog
     }
 
-    update(options: ChangeTableOptionsData) {
+    update(options: TableOptions) {
         if (null !== this.tableOptionsTableName) {
-            this.tableOptionsTableName.value = options.tableName
+            this.tableOptionsTableName.value = options.name
         }
         if (null !== this.tableOptionsDeckKind) {
             this.tableOptionsDeckKind.value = options.deckKind.toString()

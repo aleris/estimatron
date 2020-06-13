@@ -24,12 +24,21 @@ export class ChangePlayerOptionsCommand implements Command<ChangePlayerOptionsDa
 
         log.info(
             `Execute ChangePlayerOptionsCommand`,
-            { resetPlayerData: this.changePlayerOptionsData, tableId: table.tableInfo.id, playerId: player.playerInfo.id }
+            { changePlayerOptionsData: this.changePlayerOptionsData }
         )
 
+        const playerOptions = this.changePlayerOptionsData.playerOptions
+        if (player.playerInfo.id !== playerOptions.id) {
+            log.warn(`Changing player options for other player not allowed`, {
+                playerInfo: player.playerInfo,
+                playerOptions
+            })
+            return
+        }
+
         table.activityTimestamp = this.server.getTimestamp()
-        player.playerInfo.name = this.changePlayerOptionsData.playerName
-        player.playerInfo.observer = this.changePlayerOptionsData.observerMode
+        player.playerInfo.name = playerOptions.name
+        player.playerInfo.observerMode = playerOptions.observerMode
 
         new ChangePlayerOptionsNotification(table, player).send()
     }

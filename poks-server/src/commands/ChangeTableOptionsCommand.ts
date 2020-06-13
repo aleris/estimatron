@@ -24,12 +24,12 @@ export class ChangeTableOptionsCommand implements Command<ChangeTableOptionsData
 
         log.info(
             `Execute ChangeTableOptionsCommand`,
-            { resetTableData: this.changeTableOptionsData, tableId: table.tableInfo.id, playerId: player.playerInfo.id }
+            { changeTableOptionsData: this.changeTableOptionsData }
         )
 
         table.activityTimestamp = this.server.getTimestamp()
-        table.tableInfo.name = this.changeTableOptionsData.tableName
-        table.tableInfo.deckKind = this.changeTableOptionsData.deckKind
+        table.tableInfo.name = this.changeTableOptionsData.tableOptions.name
+        table.tableInfo.deckKind = this.changeTableOptionsData.tableOptions.deckKind
 
         new ChangeTableOptionsNotification(table, player).send()
     }

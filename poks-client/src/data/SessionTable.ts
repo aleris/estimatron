@@ -1,5 +1,7 @@
 import { TableInfo } from '@server/model/TableInfo'
 import { PlayerInfo } from '@server/model/PlayerInfo'
+import { TableOptions } from '@server/model/TableOptions'
+import { PlayerOptions } from '@server/model/PlayerOptions'
 import { DeckRepository } from '@server/model/Decks'
 import { Bet, BetHelper } from '@server/model/Bet'
 import { NameGenerator } from '@/data/NameGenerator'
@@ -113,11 +115,26 @@ export class SessionTable {
                 id: IdGenerator.randomUniqueId(),
                 name: NameGenerator.randomReadableName(),
                 bet: BetHelper.noBet(),
-                observer: false,
+                observerMode: false,
                 gone: false
             }
             StorageRepository.player.set(player)
         }
         return player
+    }
+
+    updateTableOptions(tableOptions: TableOptions) {
+        this.tableInfo.name = tableOptions.name
+        this.tableInfo.deckKind = tableOptions.deckKind
+    }
+
+    updatePlayerOptions(playerOptions: PlayerOptions) {
+        const player = this.findPlayerById(playerOptions.id)
+        if (player !== undefined) {
+            player.name = playerOptions.name
+            player.observerMode = playerOptions.observerMode
+        } else {
+            console.error(`cannot find player with id ${playerOptions.id} in local list`)
+        }
     }
 }

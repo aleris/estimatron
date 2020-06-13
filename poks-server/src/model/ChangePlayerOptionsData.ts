@@ -1,3 +1,5 @@
+import { PlayerOptions } from './PlayerOptions'
+
 export class ChangePlayerOptionsData {
-    constructor(public readonly playerName: string, public readonly observerMode: boolean) { }
+    constructor(public readonly playerOptions: PlayerOptions) { }
 }

@@ -1,8 +1,8 @@
 import { Stage, Touch } from '@createjs/easeljs'
 import { Ticker } from '@createjs/core'
 import { Bet } from '@server/model/Bet'
-import { ChangeTableOptionsData } from '@server/model/ChangeTableOptionsData'
-import { ChangePlayerOptionsData } from '@server/model/ChangePlayerOptionsData'
+import { TableOptions } from '@server/model/TableOptions'
+import { PlayerOptions } from '@server/model/PlayerOptions'
 import { JoinConfirmedNotificationData } from '@server/model/JoinConfirmedNotificationData'
 import { OtherJoinedNotificationData } from '@server/model/OtherJoinedNotificationData'
 import { OtherBetNotificationData } from '@server/model/OtherBetNotificationData'
@@ -30,28 +30,6 @@ export class TableController {
     private readonly playerOptionsDialogController: PlayerOptionsDialogController
 
     constructor(canvasElementId: string) {
-        this.tableOptionsDialogController = new TableOptionsDialogController()
-        this.tableOptionsDialogController.onTableOptionsChanged = this.onTableOptionsChanged.bind(this)
-
-        this.tableOptionsButton = document.getElementById('tableOptionsButton')
-        this.tableOptionsButton?.addEventListener('click', () => {
-            const tableInfo = this.sessionTable.tableInfo
-            this.tableOptionsDialogController.update({ tableName: tableInfo.name, deckKind: tableInfo.deckKind })
-            this.playerOptionsDialogController.close()
-            this.tableOptionsDialogController.toggleDialog()
-        })
-
-        this.playerOptionsDialogController = new PlayerOptionsDialogController()
-        this.playerOptionsDialogController.onPlayerOptionsChanged = this.onPlayerOptionsChanged.bind(this)
-
-        this.playerOptionsButton = document.getElementById('playerOptionsButton')
-        this.playerOptionsButton?.addEventListener('click', () => {
-            const playerInfo = this.sessionTable.playerInfo
-            this.playerOptionsDialogController.update({ playerName: playerInfo.name, observerMode: playerInfo.observer })
-            this.tableOptionsDialogController.close()
-            this.playerOptionsDialogController.toggleDialog()
-        })
-
         const canvas = document.getElementById(canvasElementId) as HTMLCanvasElement
 
         this.sceneLayout = new SceneLayout(canvas)
@@ -72,6 +50,36 @@ export class TableController {
 
         this.refreshLayout()
         Ticker.addEventListener('tick', this.stage)
+
+        this.tableOptionsDialogController = new TableOptionsDialogController(this.sessionTable)
+        this.tableOptionsDialogController.onTableOptionsChanged = this.onTableOptionsChanged.bind(this)
+
+        this.tableOptionsButton = document.getElementById('tableOptionsButton')
+        this.tableOptionsButton?.addEventListener('click', () => {
+            const tableInfo = this.sessionTable.tableInfo
+            this.tableOptionsDialogController.update({
+                changedByPlayerId: this.sessionTable.playerInfo.id,
+                name: tableInfo.name,
+                deckKind: tableInfo.deckKind
+            })
+            this.playerOptionsDialogController.close()
+            this.tableOptionsDialogController.toggleDialog()
+        })
+
+        this.playerOptionsDialogController = new PlayerOptionsDialogController(this.sessionTable)
+        this.playerOptionsDialogController.onPlayerOptionsChanged = this.onPlayerOptionsChanged.bind(this)
+
+        this.playerOptionsButton = document.getElementById('playerOptionsButton')
+        this.playerOptionsButton?.addEventListener('click', () => {
+            const playerInfo = this.sessionTable.playerInfo
+            this.playerOptionsDialogController.update({
+                id: this.sessionTable.playerInfo.id,
+                name: playerInfo.name,
+                observerMode: playerInfo.observerMode
+            })
+            this.tableOptionsDialogController.close()
+            this.playerOptionsDialogController.toggleDialog()
+        })
 
         this.server = new Server()
         this.server.onConnectionOpened = this.onServerConnectionOpened.bind(this)
@@ -130,14 +138,14 @@ export class TableController {
         this.server.resetTable()
     }
 
-    onTableOptionsChanged(options: ChangeTableOptionsData) {
-        console.log('onTableOptionsChanged', options)
-        this.server.changeTableOptions(options)
+    onTableOptionsChanged(tableOptions: TableOptions) {
+        console.log('onTableOptionsChanged', tableOptions)
+        this.server.changeTableOptions({ tableOptions })
     }
 
-    onPlayerOptionsChanged(options: ChangePlayerOptionsData) {
-        console.log('onPlayerOptionsChanged', options)
-        this.server.changePlayerOptions(options)
+    onPlayerOptionsChanged(playerOptions: PlayerOptions) {
+        console.log('onPlayerOptionsChanged', playerOptions)
+        this.server.changePlayerOptions({ playerOptions })
     }
 
     // handle notifications from server
@@ -194,20 +202,14 @@ export class TableController {
     }
 
     onServerTableOptionsChanged(notificationData: ChangeTableOptionsNotificationData) {
-        this.sessionTable.tableInfo.name = notificationData.tableName
+        this.sessionTable.updateTableOptions(notificationData.tableOptions)
         // TODO: handle table name changed
-        this.sessionTable.tableInfo.deckKind = notificationData.deckKind
         this.tableContainer.updateDeckCardsIfChanged()
     }
 
     onServerPlayerOptionsChanged(notificationData: ChangePlayerOptionsNotificationData) {
-        const player = this.sessionTable.findPlayerById(notificationData.playerId)
-        if (player !== undefined) {
-            player.name = notificationData.playerName
-            player.observer = notificationData.observerMode
-        }
+        this.sessionTable.updatePlayerOptions(notificationData.playerOptions)
         this.updatePlayerOptionButtonPlayerName()
         this.tableContainer.refreshPlayers()
-        // TODO: handle observer
     }
 }

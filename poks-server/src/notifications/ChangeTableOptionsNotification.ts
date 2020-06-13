@@ -22,8 +22,11 @@ export class ChangeTableOptionsNotification extends Notification<ChangeTableOpti
     send() {
         const tableInfo = this.table.tableInfo
         const changeTableOptionsNotificationData = {
-            tableName: tableInfo.name,
-            deckKind: tableInfo.deckKind
+            tableOptions: {
+                changedByPlayerId: this.player.playerInfo.id,
+                name: tableInfo.name,
+                deckKind: tableInfo.deckKind
+            }
         }
         log.info(
             `Send ${Messages[this.kind]} from ${PlayerHelper.nameAndId(this.player)}`,
