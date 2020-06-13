@@ -51,6 +51,7 @@ export class SessionTable {
 
     update(tableInfo: TableInfo, players: PlayerInfo[]) {
         Object.assign(this.tableInfo, tableInfo)
+        console.log('SessionTable update', this.tableInfo)
         this.players.length = 0
         const me = players.find(player => player.id === this.playerInfoId)
         if (undefined === me) {

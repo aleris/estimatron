@@ -17,7 +17,6 @@ import { TableContainer } from '@/display/TableContainer'
 import { Server } from '@/Server'
 import { TableOptionsDialogController } from '@/dialogs/table-options/TableOptionsDialogController'
 import { PlayerOptionsDialogController } from '@/dialogs/player-options/PlayerOptionsDialogController'
-import set = Reflect.set
 
 export class TableController {
     private readonly sceneLayout: SceneLayout
@@ -83,7 +82,8 @@ export class TableController {
     private refreshLayout() {
         this.sceneLayout.updateDimensionsFromWindow()
         this.tableContainer.refreshLayout()
-        this.updatePlayerOptionButtonPlayerName()
+        this.updatePlayerOptionsPanePlayerName()
+        this.updateTableOptionsPaneTableName()
     }
 
     private onServerConnectionOpened() {
@@ -96,10 +96,17 @@ export class TableController {
         })
     }
 
-    private updatePlayerOptionButtonPlayerName() {
-        const textSpan = this.playerOptionsButton?.getElementsByClassName('player-options-button-label').item(0)
+    private updatePlayerOptionsPanePlayerName() {
+        const textSpan = document.getElementById('playerOptionsPanePlayerName')
         if (textSpan) {
             textSpan.textContent = this.sessionTable.playerInfo.name
+        }
+    }
+
+    private updateTableOptionsPaneTableName() {
+        const textSpan = document.getElementById('tableOptionsPaneTableName')
+        if (textSpan) {
+            textSpan.textContent = this.sessionTable.tableInfo.name
         }
     }
 
@@ -161,14 +168,15 @@ export class TableController {
 
     // handle notifications from server
     private onServerJoinConfirmed(notificationData: JoinConfirmedNotificationData) {
-        console.log('onJoinAccepted', notificationData)
+        console.log('onServerJoinConfirmed', notificationData)
         this.sessionTable.update(notificationData.tableInfo, notificationData.players)
         this.tableContainer.refreshLayout()
-        this.updatePlayerOptionButtonPlayerName()
+        this.updatePlayerOptionsPanePlayerName()
+        this.updateTableOptionsPaneTableName()
     }
 
     private onServerOtherJoined(notificationData: OtherJoinedNotificationData) {
-        console.log('onOtherJoined', notificationData)
+        console.log('onServerOtherJoined', notificationData)
         const added = this.sessionTable.addOrUpdatePlayer(notificationData.playerInfo)
         if (added) {
             this.tableContainer.refreshPlayers()
@@ -177,7 +185,7 @@ export class TableController {
     }
 
     private onServerOtherBet(notificationData: OtherBetNotificationData) {
-        console.log('onOtherBet', notificationData)
+        console.log('onServerOtherBet', notificationData)
         const player = this.sessionTable.findPlayerById(notificationData.playerId)
         if (player) {
             player.bet = notificationData.bet
@@ -188,7 +196,7 @@ export class TableController {
     }
 
     private onServerOtherLeft(notificationData: OtherLeftNotificationData) {
-        console.log('notificationData', notificationData)
+        console.log('onServerOtherLeft', notificationData)
         const player = this.sessionTable.findPlayerById(notificationData.playerId)
         if (player === undefined) {
             console.warn(`player ${notificationData.playerId} no longer on table`)
@@ -199,28 +207,30 @@ export class TableController {
     }
 
     private onServerRevealBets(notificationData: RevealBetsNotificationData) {
-        console.log('onRevealBets', notificationData)
+        console.log('onServerRevealBets', notificationData)
         this.sessionTable.tableInfo.revealed = true
         this.sessionTable.updateBets(notificationData.players)
         this.tableContainer.revealBets()
     }
 
     private onServerResetTable(notificationData: ResetTableNotificationData) {
-        console.log('onResetTable', notificationData)
+        console.log('onServerResetTable', notificationData)
         this.sessionTable.tableInfo.revealed = false
         this.sessionTable.updateBets(notificationData.players)
         this.tableContainer.resetTable()
     }
 
     private onServerTableOptionsChanged(notificationData: ChangeTableOptionsNotificationData) {
+        console.log('onServerTableOptionsChanged', notificationData)
         this.sessionTable.updateTableOptions(notificationData.tableOptions)
-        // TODO: handle table name changed
+        this.updateTableOptionsPaneTableName()
         this.tableContainer.updateDeckCardsIfChanged()
     }
 
     private onServerPlayerOptionsChanged(notificationData: ChangePlayerOptionsNotificationData) {
+        console.log('onServerPlayerOptionsChanged', notificationData)
         this.sessionTable.updatePlayerOptions(notificationData.playerOptions)
-        this.updatePlayerOptionButtonPlayerName()
+        this.updatePlayerOptionsPanePlayerName()
         this.tableContainer.refreshPlayers()
     }
 }

@@ -9,15 +9,18 @@
 <body>
     <div id="playerOptionsPane">
         <button id="playerOptionsButton">
-            <span class="player-options-button-label">Player Name</span>
+            <span id="playerOptionsPanePlayerName" class="player-options-button-label">Player Name</span>
             <span class="player-options-button-side-icon">
                 <i class="icon icon-edit"></i>
             </span>
         </button>
     </div>
-    <button id="tableOptionsButton" class="table-options-icon-button">
-        <i class="icon icon-cog"></i>
-    </button>
+    <div id="tableOptionsPane">
+        <span id="tableOptionsPaneTableName">Table Name</span>
+        <button id="tableOptionsButton" class="table-options-icon-button">
+            <i class="icon icon-cog"></i>
+        </button>
+    </div>
     <canvas id="tableCanvas" width="600" height="400" tabindex="-1"></canvas>
     <%= require('html-loader!./dialogs/table-options/TableOptionsDialog.html') %>
     <%= require('html-loader!./dialogs/player-options/PlayerOptionsDialog.html') %>

@@ -34,7 +34,7 @@ export class Server {
             .ws('/*', {
                 /* Options */
                 compression: 0,
-                maxPayloadLength: 1024,
+                maxPayloadLength: 512,
                 idleTimeout: 31,
                 /* Handlers */
                 open: (ws, req) => {
