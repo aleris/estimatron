@@ -10,8 +10,6 @@ export class TableOptionsDialogController extends OptionsDialog<TableOptions> {
     private readonly tableOptionsTableName: HTMLInputElement | null
     private readonly tableOptionsDeckKind: HTMLSelectElement | null
 
-    public onTableOptionsChanged: (tableOptions: TableOptions) => void = () => {}
-
     constructor(private readonly sessionTable: SessionTable) {
         super()
         this.tableOptionsDialog = document.getElementById('tableOptionsDialog')
@@ -20,22 +18,7 @@ export class TableOptionsDialogController extends OptionsDialog<TableOptions> {
         this.tableOptionsTableName = document.getElementById('tableOptionsTableName') as HTMLInputElement
         this.tableOptionsDeckKind = document.getElementById('tableOptionsDeckKind') as HTMLSelectElement
 
-        this.tableOptionsCloseButton?.addEventListener('click', () => {
-            this.toggleDialog()
-        })
-
-        this.tableOptionsApplyButton?.addEventListener('click', () => {
-            this.onTableOptionsChanged({
-                changedByPlayerId: this.sessionTable.playerInfo.id,
-                name: this.tableOptionsTableName?.value || '',
-                deckKind: this.getDeckKind()
-            })
-            this.toggleDialog()
-        })
-    }
-
-    protected get dialogElement(): HTMLElement | null {
-        return this.tableOptionsDialog
+        this.addBaseListeners()
     }
 
     update(options: TableOptions) {
@@ -45,6 +28,26 @@ export class TableOptionsDialogController extends OptionsDialog<TableOptions> {
         if (null !== this.tableOptionsDeckKind) {
             this.tableOptionsDeckKind.value = options.deckKind.toString()
         }
+    }
+
+    protected getData() {
+        return {
+            changedByPlayerId: this.sessionTable.playerInfo.id,
+            name: this.tableOptionsTableName?.value || '',
+            deckKind: this.getDeckKind()
+        }
+    }
+
+    protected get dialogElement(): HTMLElement | null {
+        return this.tableOptionsDialog
+    }
+
+    protected get closeButton(): HTMLElement | null {
+        return this.tableOptionsCloseButton
+    }
+
+    protected get applyButton(): HTMLElement | null {
+        return this.tableOptionsApplyButton
     }
 
     private getDeckKind() {

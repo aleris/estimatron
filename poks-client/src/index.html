@@ -7,9 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Dosis&display=swap" rel="stylesheet">
 </head>
 <body>
-    <button id="tableOptionsButton" class="table-options-icon-button">
-        <i class="icon icon-cog"></i>
-    </button>
     <div id="playerOptionsPane">
         <button id="playerOptionsButton">
             <span class="player-options-button-label">Player Name</span>
@@ -18,7 +15,10 @@
             </span>
         </button>
     </div>
-    <canvas id="tableCanvas" width="600" height="400"></canvas>
+    <button id="tableOptionsButton" class="table-options-icon-button">
+        <i class="icon icon-cog"></i>
+    </button>
+    <canvas id="tableCanvas" width="600" height="400" tabindex="-1"></canvas>
     <%= require('html-loader!./dialogs/table-options/TableOptionsDialog.html') %>
     <%= require('html-loader!./dialogs/player-options/PlayerOptionsDialog.html') %>
 </body>

@@ -1,0 +1,45 @@
+.form-field {
+  width: 100%;
+  padding: 10px 0;
+  margin-bottom: 20px;
+}
+
+.field-input {
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 1px solid #dedede;
+  padding: 10px 15px;
+  width: 100%;
+  outline: none;
+
+  &:focus {
+    box-shadow: 0 2px 0 0 #6050dc;
+  }
+}
+
+.field-label {
+  //background-color: #fff;
+  font-size: 0.9rem;
+  //padding: 0 4px;
+  //margin-left: 16px;
+  //color: #424242
+}
+
+.button {
+  background-color: #fff;
+  border: 1px solid #dedede;
+  border-radius: 30px;
+  padding: 5px 30px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  outline: none;
+
+  &:hover {
+    background-color: #f9f9f9;
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 2px #6050dc;
+  }
+}

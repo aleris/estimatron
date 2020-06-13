@@ -9,8 +9,6 @@ export class PlayerOptionsDialogController extends OptionsDialog<PlayerOptions> 
     private readonly playerOptionsPlayerName: HTMLInputElement | null
     private readonly playerOptionsObserverMode: HTMLInputElement | null
 
-    public onPlayerOptionsChanged: (playerOptions: PlayerOptions) => void = () => {}
-
     constructor(private readonly sessionTable: SessionTable) {
         super()
         this.playerOptionsDialog = document.getElementById('playerOptionsDialog')
@@ -19,22 +17,7 @@ export class PlayerOptionsDialogController extends OptionsDialog<PlayerOptions> 
         this.playerOptionsPlayerName = document.getElementById('playerOptionsPlayerName') as HTMLInputElement
         this.playerOptionsObserverMode = document.getElementById('playerOptionsObserverMode') as HTMLInputElement
 
-        this.playerOptionsCloseButton?.addEventListener('click', () => {
-            this.toggleDialog()
-        })
-
-        this.playerOptionsApplyButton?.addEventListener('click', () => {
-            this.onPlayerOptionsChanged({
-                id: this.sessionTable.playerInfo.id,
-                name: this.playerOptionsPlayerName?.value || '',
-                observerMode: this.playerOptionsObserverMode?.checked || false
-            })
-            this.toggleDialog()
-        })
-    }
-
-    protected get dialogElement(): HTMLElement | null {
-        return this.playerOptionsDialog
+        this.addBaseListeners()
     }
 
     update(options: PlayerOptions) {
@@ -44,5 +27,25 @@ export class PlayerOptionsDialogController extends OptionsDialog<PlayerOptions> 
         if (null !== this.playerOptionsObserverMode) {
             this.playerOptionsObserverMode.checked = options.observerMode
         }
+    }
+
+    protected getData() {
+        return {
+            id: this.sessionTable.playerInfo.id,
+            name: this.playerOptionsPlayerName?.value || '',
+            observerMode: this.playerOptionsObserverMode?.checked || false
+        }
+    }
+
+    protected get dialogElement(): HTMLElement | null {
+        return this.playerOptionsDialog
+    }
+
+    protected get closeButton(): HTMLElement | null {
+        return this.playerOptionsCloseButton
+    }
+
+    protected get applyButton(): HTMLElement | null {
+        return this.playerOptionsApplyButton
     }
 }
