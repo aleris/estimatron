@@ -20,22 +20,20 @@ export class RevealBetsCommand implements Command<RevealBetsData> {
     ) { }
 
     execute() {
-        const { table, player } = WebSocketTablePlayerInfo.getTablePlayer(this.server, this.senderWebSocket)
+        const tablePlayer = WebSocketTablePlayerInfo.getTablePlayer(this.server, this.senderWebSocket)
 
-        if (table === undefined || player === undefined) {
-            return
-        }
 
+        const table = tablePlayer.table
         log.info(
             `Execute RevealBetsCommand`,
-            { revealBetsData: this.revealBetsData, tableId: table.tableInfo.id, playerId: player.playerInfo.id }
+            { revealBetsData: this.revealBetsData, tableId: table.tableInfo.id, playerId: tablePlayer.player.playerInfo.id }
         )
 
         table.activityTimestamp = this.server.getTimestamp()
         table.tableInfo.revealed = true
-        table.lastRevealedByPlayer = player
+        table.lastRevealedByPlayer = tablePlayer.player
 
-        new RevealBetsNotification(table, player).send()
+        new RevealBetsNotification(tablePlayer).send()
 
         this.recordStatsGamesPlayed(table)
     }

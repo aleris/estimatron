@@ -16,11 +16,7 @@ export class ChangePlayerOptionsCommand implements Command<ChangePlayerOptionsDa
     ) { }
 
     execute() {
-        const { table, player } = WebSocketTablePlayerInfo.getTablePlayer(this.server, this.senderWebSocket)
-
-        if (table === undefined || player === undefined) {
-            return
-        }
+        const tablePlayer = WebSocketTablePlayerInfo.getTablePlayer(this.server, this.senderWebSocket)
 
         log.info(
             `Execute ChangePlayerOptionsCommand`,
@@ -28,18 +24,19 @@ export class ChangePlayerOptionsCommand implements Command<ChangePlayerOptionsDa
         )
 
         const playerOptions = this.changePlayerOptionsData.playerOptions
+        const player = tablePlayer.player
         if (player.playerInfo.id !== playerOptions.id) {
-            log.warn(`Changing player options for other player not allowed`, {
+            log.warn(`Attempt to change other player options`, {
                 playerInfo: player.playerInfo,
                 playerOptions
             })
             return
         }
 
-        table.activityTimestamp = this.server.getTimestamp()
+        tablePlayer.table.activityTimestamp = this.server.getTimestamp()
         player.playerInfo.name = playerOptions.name
         player.playerInfo.observerMode = playerOptions.observerMode
 
-        new ChangePlayerOptionsNotification(table, player).send()
+        new ChangePlayerOptionsNotification(tablePlayer).send()
     }
 }

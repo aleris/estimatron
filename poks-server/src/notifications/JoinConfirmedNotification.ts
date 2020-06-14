@@ -5,14 +5,12 @@ import { Table } from '../Table'
 import { Player, PlayerHelper } from '../Player'
 import { BetHelper } from '../model/Bet'
 import { logger } from '../logger'
+import { TablePlayer } from '../model/TablePlayerInfo'
 
 const log = logger.child({ component: 'JoinConfirmedNotification' })
 
 export class JoinConfirmedNotification extends Notification<JoinConfirmedNotificationData> {
-    constructor(
-        private readonly table: Table,
-        private readonly player: Player
-    ) {
+    constructor(private readonly tablePlayer: TablePlayer) {
         super()
     }
 
@@ -21,15 +19,20 @@ export class JoinConfirmedNotification extends Notification<JoinConfirmedNotific
     }
 
     send() {
+        const table = this.tablePlayer.table
+        const player = this.tablePlayer.player
+
         const joinConfirmedData = {
-            tableInfo: this.table.tableInfo,
-            players: this.table.players.map(player =>
-                player.playerInfo.id === this.player.playerInfo.id || this.table.tableInfo.revealed
-                    ? player.playerInfo
-                    : BetHelper.hideForPlayerInfo(player.playerInfo)
+            tableInfo: table.tableInfo,
+            players: table.players.map(existingPlayer =>
+                existingPlayer.playerInfo.id === player.playerInfo.id || table.tableInfo.revealed
+                    ? existingPlayer.playerInfo
+                    : BetHelper.hideForPlayerInfo(existingPlayer.playerInfo)
             )
         }
-        log.info(`Send ${Messages[this.kind]} to ${PlayerHelper.nameAndId(this.player)}`, { joinConfirmedData })
-        this.sendToPlayer(this.player, joinConfirmedData)
+
+        log.info(`Send ${Messages[this.kind]} to ${PlayerHelper.nameAndId(player)}`, { joinConfirmedData })
+
+        this.sendToPlayer(player, joinConfirmedData)
     }
 }

@@ -4,14 +4,12 @@ import { Table } from '../Table'
 import { Player, PlayerHelper } from '../Player'
 import { ResetTableNotificationData } from '../model/ResetTableNotificationData'
 import { logger } from '../logger'
+import { TablePlayer } from '../model/TablePlayerInfo'
 
 const log = logger.child({ component: 'ResetTableNotification' })
 
 export class ResetTableNotification extends Notification<ResetTableNotificationData> {
-    constructor(
-        private readonly table: Table,
-        private readonly player: Player
-    ) {
+    constructor(private readonly tablePlayer: TablePlayer) {
         super()
     }
 
@@ -20,12 +18,13 @@ export class ResetTableNotification extends Notification<ResetTableNotificationD
     }
 
     send() {
-        const players = this.table.players.map(p => p.playerInfo)
+        const player = this.tablePlayer.player
+        const players = this.tablePlayer.table.players.map(existingPlayer => existingPlayer.playerInfo)
         const resetTableNotificationData = {
-            resetBy: this.player.playerInfo,
+            resetBy: player.playerInfo,
             players
         }
-        log.info(`Send ${Messages[this.kind]} from ${PlayerHelper.nameAndId(this.player)}`, { resetTableNotificationData })
-        this.sendToAll(this.player.ws, this.table, resetTableNotificationData)
+        log.info(`Send ${Messages[this.kind]} from ${PlayerHelper.nameAndId(player)}`, { resetTableNotificationData })
+        this.sendToAll(this.tablePlayer.table, player, resetTableNotificationData)
     }
 }

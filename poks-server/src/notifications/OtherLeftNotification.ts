@@ -4,14 +4,12 @@ import { Notification } from './Notification'
 import { Table } from '../Table'
 import { Player, PlayerHelper } from '../Player'
 import { logger } from '../logger'
+import { TablePlayer } from '../model/TablePlayerInfo'
 
 const log = logger.child({ component: 'OtherLeftNotification' })
 
 export class OtherLeftNotification extends Notification<OtherLeftNotificationData> {
-    constructor(
-        private readonly table: Table,
-        private readonly player: Player
-    ) {
+    constructor(private readonly tablePlayer: TablePlayer) {
         super()
     }
 
@@ -20,10 +18,11 @@ export class OtherLeftNotification extends Notification<OtherLeftNotificationDat
     }
 
     send() {
+        const player = this.tablePlayer.player
         const otherLeftNotificationData = {
-            playerId: this.player.playerInfo.id
+            playerId: player.playerInfo.id
         }
-        log.info(`Send ${Messages[this.kind]} from ${PlayerHelper.nameAndId(this.player)}`, { otherLeftNotificationData })
-        this.sendToOthers(this.table, this.player, otherLeftNotificationData)
+        log.info(`Send ${Messages[this.kind]} from ${PlayerHelper.nameAndId(player)}`, { otherLeftNotificationData })
+        this.sendToOthers(this.tablePlayer.table, player, otherLeftNotificationData)
     }
 }

@@ -1,17 +1,14 @@
 import { Messages } from '../model/Messages'
 import { Notification } from './Notification'
-import { Table } from '../Table'
-import { Player, PlayerHelper } from '../Player'
+import { PlayerHelper } from '../Player'
 import { logger } from '../logger'
 import { ChangePlayerOptionsNotificationData } from '../model/ChangePlayerOptionsNotificationData'
+import { TablePlayer } from '../model/TablePlayerInfo'
 
 const log = logger.child({ component: 'ChangePlayerOptionsNotification' })
 
 export class ChangePlayerOptionsNotification extends Notification<ChangePlayerOptionsNotificationData> {
-    constructor(
-        private readonly table: Table,
-        private readonly player: Player
-    ) {
+    constructor(private readonly tablePlayer: TablePlayer) {
         super()
     }
 
@@ -20,7 +17,8 @@ export class ChangePlayerOptionsNotification extends Notification<ChangePlayerOp
     }
 
     send() {
-        const playerInfo = this.player.playerInfo
+        const player = this.tablePlayer.player
+        const playerInfo = player.playerInfo
         const changePlayerOptionsNotificationData = {
             playerOptions: {
                 id: playerInfo.id,
@@ -29,9 +27,9 @@ export class ChangePlayerOptionsNotification extends Notification<ChangePlayerOp
             }
         }
         log.info(
-            `Send ${Messages[this.kind]} from ${PlayerHelper.nameAndId(this.player)}`,
+            `Send ${Messages[this.kind]} from ${PlayerHelper.nameAndId(player)}`,
             { changePlayerOptionsNotificationData }
         )
-        this.sendToAll(this.player.ws, this.table, changePlayerOptionsNotificationData)
+        this.sendToAll(this.tablePlayer.table, player, changePlayerOptionsNotificationData)
     }
 }

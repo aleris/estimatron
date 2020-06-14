@@ -1,18 +1,15 @@
 import { Messages } from '../model/Messages'
 import { Notification } from './Notification'
 import { OtherJoinedNotificationData } from '../model/OtherJoinedNotificationData'
-import { Table } from '../Table'
-import { Player, PlayerHelper } from '../Player'
+import { PlayerHelper } from '../Player'
 import { BetHelper } from '../model/Bet'
 import { logger } from '../logger'
+import { TablePlayer } from '../model/TablePlayerInfo'
 
 const log = logger.child({ component: 'OtherJoinedNotification' })
 
 export class OtherJoinedNotification extends Notification<OtherJoinedNotificationData> {
-    constructor(
-        private readonly table: Table,
-        private readonly player: Player
-    ) {
+    constructor(private readonly tablePlayer: TablePlayer) {
         super()
     }
 
@@ -21,11 +18,13 @@ export class OtherJoinedNotification extends Notification<OtherJoinedNotificatio
     }
 
     send() {
-        const playerInfo = this.player.playerInfo
+        const tableInfo = this.tablePlayer.table.tableInfo
+        const player = this.tablePlayer.player
+        const playerInfo = player.playerInfo
         const otherJoinedNotificationData = {
-            playerInfo: this.table.tableInfo.revealed ? playerInfo : BetHelper.hideForPlayerInfo(playerInfo)
+            playerInfo: tableInfo.revealed ? playerInfo : BetHelper.hideForPlayerInfo(playerInfo)
         }
-        log.info(`Send ${Messages[this.kind]} from ${PlayerHelper.nameAndId(this.player)}`, { otherJoinedNotificationData })
-        this.sendToOthers(this.table, this.player, otherJoinedNotificationData)
+        log.info(`Send ${Messages[this.kind]} from ${PlayerHelper.nameAndId(player)}`, { otherJoinedNotificationData })
+        this.sendToOthers(this.tablePlayer.table, player, otherJoinedNotificationData)
     }
 }

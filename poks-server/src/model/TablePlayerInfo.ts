@@ -8,6 +8,6 @@ export interface TablePlayerIds {
 }
 
 export interface TablePlayer {
-    table: Table | undefined
-    player: Player | undefined
+    table: Table
+    player: Player
 }

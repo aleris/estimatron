@@ -21,9 +21,9 @@ export abstract class Notification<T> {
         return Notification.getTopicName(table, this.kind)
     }
 
-    protected sendToAll(ws: uWS.WebSocket, table: Table, data: T) {
+    protected sendToAll(table: Table, player: Player, data: T) {
         log.debug(`Send to all on table ${TableHelper.nameAndId(table)}`, { data })
-        ws.publish(this.getTopicName(table), this.getStringifiedMessage(data))
+        player.ws.publish(this.getTopicName(table), this.getStringifiedMessage(data))
     }
 
     protected sendToOthers(table: Table, player: Player, data: T) {

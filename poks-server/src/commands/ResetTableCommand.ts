@@ -17,21 +17,17 @@ export class ResetTableCommand implements Command<ResetTableData> {
     ) { }
 
     execute() {
-        const { table, player } = WebSocketTablePlayerInfo.getTablePlayer(this.server, this.senderWebSocket)
-
-        if (table === undefined || player === undefined) {
-            return
-        }
+        const tablePlayer = WebSocketTablePlayerInfo.getTablePlayer(this.server, this.senderWebSocket)
 
         log.info(
             `Execute ResetTableCommand`,
-            { resetTableData: this.resetTableData, tableId: table.tableInfo.id, playerId: player.playerInfo.id }
+            { resetTableData: this.resetTableData, tableId: tablePlayer.table.tableInfo.id, playerId: tablePlayer.player.playerInfo.id }
         )
 
-        table.activityTimestamp = this.server.getTimestamp()
-        table.tableInfo.revealed = false
-        table.players.forEach(player => player.playerInfo.bet = BetHelper.noBet())
+        tablePlayer.table.activityTimestamp = this.server.getTimestamp()
+        tablePlayer.table.tableInfo.revealed = false
+        tablePlayer.table.players.forEach(existingPlayer => existingPlayer.playerInfo.bet = BetHelper.noBet())
 
-        new ResetTableNotification(table, player).send()
+        new ResetTableNotification(tablePlayer).send()
     }
 }

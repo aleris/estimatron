@@ -4,14 +4,12 @@ import { Table } from '../Table'
 import { Player, PlayerHelper } from '../Player'
 import { logger } from '../logger'
 import { ChangeTableOptionsNotificationData } from '../model/ChangeTableOptionsNotificationData'
+import { TablePlayer } from '../model/TablePlayerInfo'
 
 const log = logger.child({ component: 'ChangeTableOptionsNotification' })
 
 export class ChangeTableOptionsNotification extends Notification<ChangeTableOptionsNotificationData> {
-    constructor(
-        private readonly table: Table,
-        private readonly player: Player
-    ) {
+    constructor(private readonly tablePlayer: TablePlayer) {
         super()
     }
 
@@ -20,18 +18,20 @@ export class ChangeTableOptionsNotification extends Notification<ChangeTableOpti
     }
 
     send() {
-        const tableInfo = this.table.tableInfo
+        const table = this.tablePlayer.table
+        const tableInfo = table.tableInfo
+        const player = this.tablePlayer.player
         const changeTableOptionsNotificationData = {
             tableOptions: {
-                changedByPlayerId: this.player.playerInfo.id,
+                changedByPlayerId: player.playerInfo.id,
                 name: tableInfo.name,
                 deckKind: tableInfo.deckKind
             }
         }
         log.info(
-            `Send ${Messages[this.kind]} from ${PlayerHelper.nameAndId(this.player)}`,
+            `Send ${Messages[this.kind]} from ${PlayerHelper.nameAndId(player)}`,
             { changeTableOptionsNotificationData }
         )
-        this.sendToAll(this.player.ws, this.table, changeTableOptionsNotificationData)
+        this.sendToAll(table, player, changeTableOptionsNotificationData)
     }
 }

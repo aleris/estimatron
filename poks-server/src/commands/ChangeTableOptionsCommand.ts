@@ -16,21 +16,18 @@ export class ChangeTableOptionsCommand implements Command<ChangeTableOptionsData
     ) { }
 
     execute() {
-        const { table, player } = WebSocketTablePlayerInfo.getTablePlayer(this.server, this.senderWebSocket)
-
-        if (table === undefined || player === undefined) {
-            return
-        }
+        const tablePlayer = WebSocketTablePlayerInfo.getTablePlayer(this.server, this.senderWebSocket)
 
         log.info(
             `Execute ChangeTableOptionsCommand`,
             { changeTableOptionsData: this.changeTableOptionsData }
         )
 
+        const table = tablePlayer.table
         table.activityTimestamp = this.server.getTimestamp()
         table.tableInfo.name = this.changeTableOptionsData.tableOptions.name
         table.tableInfo.deckKind = this.changeTableOptionsData.tableOptions.deckKind
 
-        new ChangeTableOptionsNotification(table, player).send()
+        new ChangeTableOptionsNotification(tablePlayer).send()
     }
 }

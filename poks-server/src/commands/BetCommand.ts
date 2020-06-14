@@ -18,19 +18,16 @@ export class BetCommand extends Command<BetData> {
     }
 
     execute() {
-        const { table, player } = WebSocketTablePlayerInfo.getTablePlayer(this.server, this.senderWebSocket)
-        if (table === undefined || player === undefined) {
-            return
-        }
+        const tablePlayer = WebSocketTablePlayerInfo.getTablePlayer(this.server, this.senderWebSocket)
 
         log.info(
             `Execute BetCommand`,
-            { betData: this.betData, tableId: table.tableInfo.id, playerId: player.playerInfo.id }
+            { betData: this.betData, tableId: tablePlayer.table.tableInfo.id, playerId: tablePlayer.player.playerInfo.id }
         )
 
-        table.activityTimestamp = this.server.getTimestamp()
-        player.playerInfo.bet = this.betData.bet
+        tablePlayer.table.activityTimestamp = this.server.getTimestamp()
+        tablePlayer.player.playerInfo.bet = this.betData.bet
 
-        new OtherBetNotification(table, player, this.betData.bet).send()
+        new OtherBetNotification(tablePlayer, this.betData.bet).send()
     }
 }

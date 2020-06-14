@@ -92,7 +92,11 @@ export class Server {
             const command = this.serverCommandFactory.of(ws, messageData)
             const data = messageData.data
             if (data) {
-                command.execute()
+                try {
+                    command.execute()
+                } catch (error) {
+                    log.error(`Error executing command`, { messageData, error })
+                }
             } else {
                 log.error(`Data missing in command`, { messageData })
             }
