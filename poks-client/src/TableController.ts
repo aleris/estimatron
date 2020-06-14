@@ -5,6 +5,7 @@ import { TableOptions } from '@server/model/TableOptions'
 import { PlayerOptions } from '@server/model/PlayerOptions'
 import { JoinConfirmedNotificationData } from '@server/model/JoinConfirmedNotificationData'
 import { OtherJoinedNotificationData } from '@server/model/OtherJoinedNotificationData'
+import { JoinDeniedNotificationData } from '@server/model/JoinDeniedNotificationData'
 import { OtherBetNotificationData } from '@server/model/OtherBetNotificationData'
 import { OtherLeftNotificationData } from '@server/model/OtherLeftNotificationData'
 import { RevealBetsNotificationData } from '@server/model/RevealBetsNotificationData'
@@ -67,6 +68,7 @@ export class TableController {
         this.server.onConnectionOpened = this.onServerConnectionOpened.bind(this)
         this.server.onJoinConfirmed = this.onServerJoinConfirmed.bind(this)
         this.server.onOtherJoined = this.onServerOtherJoined.bind(this)
+        this.server.onJoinDenied = this.onServerJoinDenied.bind(this)
         this.server.onOtherBet = this.onServerOtherBet.bind(this)
         this.server.onOtherLeft = this.onServerOtherLeft.bind(this)
         this.server.onRevealBets = this.onServerRevealBets.bind(this)
@@ -90,7 +92,7 @@ export class TableController {
         console.log('onConnectionOpened', this.sessionTable)
         const playerInfo = this.sessionTable.playerInfo
         const tableInfo = this.sessionTable.tableInfo
-        this.server.joinTable({
+        this.server.sendJoinTable({
             playerInfo,
             tableInfo
         })
@@ -113,19 +115,19 @@ export class TableController {
     private onChangeMyBet(bet: Bet) {
         console.log('onChangeMyBet', bet)
         this.sessionTable.updateMyBet(bet)
-        this.server.bet({
+        this.server.sendBet({
             bet
         })
     }
 
     private onRevealBetsClick() {
         console.log('onRevealBetsClick')
-        this.server.revealBets()
+        this.server.sendRevealBets()
     }
 
     private onResetTableClick() {
         console.log('onResetTableClick')
-        this.server.resetTable()
+        this.server.sendResetTable()
     }
 
     private onPlayerOptionsButtonClick() {
@@ -154,7 +156,7 @@ export class TableController {
         console.log('onTableOptionsChanged', tableOptions)
         setTimeout(() => this.tableOptionsButton?.focus(), 0)
         if (tableOptions) {
-            this.server.changeTableOptions({tableOptions})
+            this.server.sendChangeTableOptions({tableOptions})
         }
     }
 
@@ -162,7 +164,7 @@ export class TableController {
         console.log('onPlayerOptionsChanged', playerOptions)
         setTimeout(() => this.playerOptionsButton?.focus(), 0)
         if (playerOptions) {
-            this.server.changePlayerOptions({playerOptions})
+            this.server.sendChangePlayerOptions({playerOptions})
         }
     }
 
@@ -182,6 +184,10 @@ export class TableController {
             this.tableContainer.refreshPlayers()
         }
         this.tableContainer.refreshPlayers()
+    }
+
+    private onServerJoinDenied(notificationData: JoinDeniedNotificationData) {
+        console.log('onServerJoinDenied', notificationData)
     }
 
     private onServerOtherBet(notificationData: OtherBetNotificationData) {

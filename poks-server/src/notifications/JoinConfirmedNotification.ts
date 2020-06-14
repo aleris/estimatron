@@ -6,6 +6,8 @@ import { Player, PlayerHelper } from '../Player'
 import { BetHelper } from '../model/Bet'
 import { logger } from '../logger'
 import { TablePlayer } from '../model/TablePlayerInfo'
+import { globalStats } from '@opencensus/core'
+import { MEASURE_PLAYERS_JOINED } from '../monitoring'
 
 const log = logger.child({ component: 'JoinConfirmedNotification' })
 
@@ -33,6 +35,6 @@ export class JoinConfirmedNotification extends Notification<JoinConfirmedNotific
 
         log.info(`Send ${Messages[this.kind]} to ${PlayerHelper.nameAndId(player)}`, { joinConfirmedData })
 
-        this.sendToPlayer(player, joinConfirmedData)
+        this.sendToPlayer(table, player, joinConfirmedData)
     }
 }

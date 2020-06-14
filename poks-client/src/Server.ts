@@ -1,9 +1,9 @@
 import { MessageInfo, Messages } from '@server/model/Messages'
 import { JoinData } from '@server/model/JoinData'
-import { LeaveData } from '@server/model/LeaveData'
+import { BetData } from '@server/model/BetData'
 import { JoinConfirmedNotificationData } from '@server/model/JoinConfirmedNotificationData'
 import { OtherJoinedNotificationData } from '@server/model/OtherJoinedNotificationData'
-import { BetData } from '@server/model/BetData'
+import { JoinDeniedNotificationData } from '@server/model/JoinDeniedNotificationData'
 import { ChangeTableOptionsData } from '@server/model/ChangeTableOptionsData'
 import { ChangePlayerOptionsData } from '@server/model/ChangePlayerOptionsData'
 import { OtherBetNotificationData } from '@server/model/OtherBetNotificationData'
@@ -20,6 +20,7 @@ export class Server {
     public onConnectionClosed: () => void = () => {}
     public onJoinConfirmed: (notificationData: JoinConfirmedNotificationData) => void = () => {}
     public onOtherJoined: (notificationData: OtherJoinedNotificationData) => void = () => {}
+    public onJoinDenied: (notificationData: JoinDeniedNotificationData) => void = () => {}
     public onOtherBet: (notificationData: OtherBetNotificationData) => void = () => {}
     public onOtherLeft: (notificationData: OtherLeftNotificationData) => void = () => {}
     public onRevealBets: (notificationData: RevealBetsNotificationData) => void = () => {}
@@ -37,6 +38,37 @@ export class Server {
         this.ws.onerror = this.wsOnError.bind(this)
     }
 
+    sendJoinTable(joinData: JoinData) {
+        this.send(Messages.Join, joinData)
+    }
+
+    sendBet(betData: BetData) {
+        this.send(Messages.Bet, betData)
+    }
+
+    sendRevealBets() {
+        this.send(Messages.RevealBets, {})
+    }
+
+    sendResetTable() {
+        this.send(Messages.ResetTable, {})
+    }
+
+    sendChangeTableOptions(optionsData: ChangeTableOptionsData) {
+        this.send(Messages.ChangeTableOptions, optionsData)
+    }
+
+    sendChangePlayerOptions(optionsData: ChangePlayerOptionsData) {
+        this.send(Messages.ChangePlayerOptions, optionsData)
+    }
+
+    private send<T>(kind: Messages, data: T) {
+        this.ws.send(JSON.stringify({
+            kind,
+            data
+        }))
+    }
+
     private wsOnOpen() {
         console.log('ws connection opened')
         this.setupHeartbeat()
@@ -51,6 +83,7 @@ export class Server {
             switch (commandInfo.kind) {
                 case Messages.JoinConfirmedNotification: return this.onJoinConfirmed(messageData.data)
                 case Messages.OtherJoinedNotification: return this.onOtherJoined(messageData.data)
+                case Messages.JoinDeniedNotification: return this.onJoinDenied(messageData.data)
                 case Messages.OtherBetNotification: return this.onOtherBet(messageData.data)
                 case Messages.OtherLeftNotification: return this.onOtherLeft(messageData.data)
                 case Messages.RevealBetsNotification: return this.onRevealBets(messageData.data)
@@ -78,40 +111,5 @@ export class Server {
         setInterval(() => {
             this.ws.send('~')
         }, 15000)
-    }
-
-    joinTable(joinData: JoinData) {
-        this.send(Messages.Join, joinData)
-    }
-
-    bet(betData: BetData) {
-        this.send(Messages.Bet, betData)
-    }
-
-    leaveTable(leaveData: LeaveData) {
-        this.send(Messages.Leave, leaveData)
-    }
-
-    revealBets() {
-        this.send(Messages.RevealBets, {})
-    }
-
-    resetTable() {
-        this.send(Messages.ResetTable, {})
-    }
-
-    changeTableOptions(optionsData: ChangeTableOptionsData) {
-        this.send(Messages.ChangeTableOptions, optionsData)
-    }
-
-    changePlayerOptions(optionsData: ChangePlayerOptionsData) {
-        this.send(Messages.ChangePlayerOptions, optionsData)
-    }
-
-    send<T>(kind: Messages, data: T) {
-        this.ws.send(JSON.stringify({
-            kind,
-            data
-        }))
     }
 }

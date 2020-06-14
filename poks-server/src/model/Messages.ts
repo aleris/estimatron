@@ -2,6 +2,7 @@ export enum Messages {
     Join,
     JoinConfirmedNotification,
     OtherJoinedNotification,
+    JoinDeniedNotification,
 
     Bet,
     OtherBetNotification,

@@ -2,8 +2,6 @@ import { globalStats, MeasureUnit, AggregationType, TagKey } from '@opencensus/c
 import * as Exporter from '@opencensus/exporter-stackdriver'
 import { logger } from './logger'
 
-export const TAG_PLAYERS_ON_TABLE: TagKey  = { name: 'players_on_table' }
-
 export const MEASURE_OPENED_CONNECTIONS = globalStats.createMeasureInt64(
     'opened_connections',
     MeasureUnit.UNIT,
@@ -46,6 +44,22 @@ globalStats.registerView(globalStats.createView(
     []
 ))
 
+export const TAG_JOIN_DENY_REASON: TagKey  = { name: 'join_deny_reason' }
+export const MEASURE_PLAYERS_DENIED_JOINED = globalStats.createMeasureInt64(
+    'players_denied_joined',
+    MeasureUnit.UNIT,
+    'Number of players denied joining'
+)
+globalStats.registerView(globalStats.createView(
+    'players_denied_joined_count',
+    MEASURE_PLAYERS_DENIED_JOINED,
+    AggregationType.COUNT,
+    [TAG_JOIN_DENY_REASON],
+    'The count of the number of players denied joining.',
+    []
+))
+
+export const TAG_PLAYERS_ON_TABLE: TagKey  = { name: 'players_on_table' }
 export const MEASURE_GAMES_PLAYED = globalStats.createMeasureInt64(
     'games_played',
     MeasureUnit.UNIT,

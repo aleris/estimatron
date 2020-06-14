@@ -37,8 +37,8 @@ export abstract class Notification<T> {
         })
     }
 
-    protected sendToPlayer(player: Player, data: T) {
-        log.debug(`Send to player ${PlayerHelper.nameAndId(player)}`, { data })
+    protected sendToPlayer(table: Table, player: Player, data: T) {
+        log.debug(`Send to player ${PlayerHelper.nameAndId(player)} on table ${TableHelper.nameAndId(table)}`, { data })
         this.sendToWebSocket(player.ws, this.getStringifiedMessage(data))
     }
 
