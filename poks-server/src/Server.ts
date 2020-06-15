@@ -13,7 +13,6 @@ const log = logger.child({ component: 'Server' })
 
 export class Server {
     public readonly tables = new Map<string, Table>()
-    public readonly serverCommandFactory = new ServerCommandFactory(this)
 
     private app: TemplatedApp | null = null
     private startedOn: Date | null = null
@@ -89,7 +88,7 @@ export class Server {
         const messageInfo = messageData as MessageInfo
         if (messageInfo) {
             log.info(`Received command ${Messages[messageInfo.kind]}`, { messageInfo })
-            const command = this.serverCommandFactory.of(ws, messageData)
+            const command = ServerCommandFactory.of(this, ws, messageData)
             const data = messageData.data
             if (data) {
                 try {

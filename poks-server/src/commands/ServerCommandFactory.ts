@@ -17,49 +17,49 @@ import { ChangeTableOptionsData } from '../model/ChangeTableOptionsData'
 import { ChangePlayerOptionsData } from '../model/ChangePlayerOptionsData'
 
 export class ServerCommandFactory {
-    constructor(private readonly server: Server) { }
+    constructor() { }
 
-    of<T>(contextWebSocket: uWS.WebSocket, messageData: MessageData<T>) {
+    static of<T>(server: Server, contextWebSocket: uWS.WebSocket, messageData: MessageData<T>) {
         switch (messageData.kind) {
             case Messages.Join:
                 return new JoinCommand(
-                    this.server,
+                    server,
                     contextWebSocket,
                     messageData.data as unknown as JoinData
                 )
             case Messages.Bet:
                 return new BetCommand(
-                    this.server,
+                    server,
                     contextWebSocket,
                     messageData.data as unknown as BetData
                 )
             case Messages.Leave:
                 return new LeaveCommand(
-                    this.server,
+                    server,
                     contextWebSocket,
                     messageData.data as unknown as LeaveData
                 )
             case Messages.RevealBets:
                 return new RevealBetsCommand(
-                    this.server,
+                    server,
                     contextWebSocket,
                     messageData.data as unknown as RevealBetsData
                 )
             case Messages.ResetTable:
                 return new ResetTableCommand(
-                    this.server,
+                    server,
                     contextWebSocket,
                     messageData.data as unknown as ResetTableData
                 )
             case Messages.ChangeTableOptions:
                 return new ChangeTableOptionsCommand(
-                    this.server,
+                    server,
                     contextWebSocket,
                     messageData.data as unknown as ChangeTableOptionsData
                 )
             case Messages.ChangePlayerOptions:
                 return new ChangePlayerOptionsCommand(
-                    this.server,
+                    server,
                     contextWebSocket,
                     messageData.data as unknown as ChangePlayerOptionsData
                 )
