@@ -17,13 +17,11 @@ export class OtherLeftNotification extends Notification<OtherLeftNotificationDat
     }
 
     send() {
-        console.log('OtherLeftNotification send')
         const player = this.tablePlayer.player
         const otherLeftNotificationData = {
             playerId: player.playerInfo.id
         }
         log.info(`Send ${Messages[this.kind]} from ${PlayerHelper.nameAndId(player)}`, { otherLeftNotificationData })
-        console.log('OtherLeftNotification', this.tablePlayer.table, player)
         this.sendToOthers(this.tablePlayer.table, player, otherLeftNotificationData)
     }
 }

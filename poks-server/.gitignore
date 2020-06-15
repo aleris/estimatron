@@ -12,3 +12,4 @@ debug.log
 
 .env.dev
 google-creds-*.json
+log

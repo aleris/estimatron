@@ -1,7 +1,7 @@
 import { logger } from './logger'
 import { Monitoring } from './Monitoring'
 import { ServerCommandFactory } from './commands/ServerCommandFactory'
-import { TemplatedApp, default as uWS } from 'uWebSockets.js'
+import { TemplatedApp, WebSocket, HttpRequest, HttpResponse } from 'uWebSockets.js'
 import { MessageInfo, Messages } from './model/Messages'
 import { LeaveCommand } from './commands/LeaveCommand'
 import { Table } from './Table'
@@ -14,16 +14,19 @@ const log = logger.child({ component: 'Server' })
 export class Server {
     public readonly tables = new Map<string, Table>()
 
-    private app: TemplatedApp | null = null
     private startedOn: Date | null = null
+    private deleteUnusedTablesSchedule: NodeJS.Timeout | undefined
 
-    constructor(private readonly port: number) {
-    }
+    constructor(
+        private readonly port: number,
+        private readonly app: TemplatedApp,
+        private readonly runCleanJob = false
+    ) { }
 
     start() {
         this.startedOn = new Date()
 
-        this.app = uWS.App()
+        this.app
             .get('/_admin/status', (res, req) => {
                 this.adminStatus(res, req)
             })
@@ -58,27 +61,35 @@ export class Server {
             });
 
         const tenMinutes = 10 * 60 * 1000
-        setInterval(this.deleteUnusedTables, tenMinutes)
+        if (this.runCleanJob) {
+            this.deleteUnusedTablesSchedule = setInterval(this.deleteUnusedTables, tenMinutes)
+        }
     }
 
-    private adminStatus(res: uWS.HttpResponse, req: uWS.HttpRequest) {
+    public stop() {
+        if (this.deleteUnusedTablesSchedule) {
+            clearInterval(this.deleteUnusedTablesSchedule)
+        }
+    }
+
+    private adminStatus(res: HttpResponse, req: HttpRequest) {
         res.end(JSON.stringify({status: 'UP', tablesSize: this.tables.size, startedOn: this.startedOn}))
     }
 
-    private adminTables(res: uWS.HttpResponse, req: uWS.HttpRequest) {
+    private adminTables(res: HttpResponse, req: HttpRequest) {
         res.end(JSON.stringify([...this.tables], null, '  '))
     }
 
-    private close(ws: uWS.WebSocket, code: number, message: ArrayBuffer) {
+    private close(ws: WebSocket, code: number, message: ArrayBuffer) {
         log.info('Connection closed', {code, message:  Buffer.from(message).toString()})
         new LeaveCommand(this, ws, {}).execute()
     }
 
-    private drain(ws: uWS.WebSocket) {
+    private drain(ws: WebSocket) {
         log.warn('Drain', {getBufferedAmount: ws.getBufferedAmount()})
     }
 
-    private message(message: ArrayBuffer, ws: uWS.WebSocket) {
+    private message(message: ArrayBuffer, ws: WebSocket) {
         const messageString = Buffer.from(message).toString()
         if (messageString === HearBeatMessage) {
             // heartbeat message, ignore
@@ -105,7 +116,7 @@ export class Server {
         }
     }
 
-    private open(req: uWS.HttpRequest) {
+    private open(req: HttpRequest) {
         Monitoring.recordStatsOpenedConnections()
         log.info(`Connection opened on ${req.getUrl()}`)
     }
@@ -114,7 +125,7 @@ export class Server {
         log.debug('Deleting unused tables')
     }
 
-    private updateActivityTimestamp(ws: uWS.WebSocket) {
+    private updateActivityTimestamp(ws: WebSocket) {
         const table = WebSocketTablePlayerInfo.getTable(this, ws)
         if (table !== undefined) {
             table.activityTimestamp = Timestamp.current()

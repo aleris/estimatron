@@ -5,22 +5,34 @@ import * as Transport from 'winston-transport'
 const console = new winston.transports.Console({
     format: winston.format.simple()
 })
-const loggingWinston = new LoggingWinston({
-    projectId: process.env.GOOGLE_PROJECT_ID,
-    logName: 'poks-server'
+
+const file = new winston.transports.File({
+    dirname: 'log',
+    format: winston.format.simple()
 })
 
 const level = process.env.LOG_LEVEL || 'info'
 
-const env = process.env.NODE_ENV
+let cloudLogging: LoggingWinston | null = null
 
 const transports = new Array<Transport>()
-const isDev = env === 'dev'
-if (isDev) {
-    // transports.push(console, loggingWinston)
-    transports.push(console)
-} else {
-    transports.push(loggingWinston)
+
+const env = process.env.NODE_ENV || 'production'
+switch (env) {
+    case 'dev':
+        // transports.push(console, cloudLogging)
+        transports.push(console)
+        break;
+    case 'test':
+        transports.push(file)
+        break;
+    case 'production':
+    default:
+        cloudLogging = new LoggingWinston({
+            projectId: process.env.GOOGLE_PROJECT_ID,
+            logName: 'poks-server'
+        })
+        transports.push(cloudLogging)
 }
 
 export const logger = winston.createLogger({
@@ -29,4 +41,6 @@ export const logger = winston.createLogger({
     transports
 })
 
-logger.exceptions.handle(loggingWinston)
+if (cloudLogging) {
+    logger.exceptions.handle(cloudLogging)
+}
