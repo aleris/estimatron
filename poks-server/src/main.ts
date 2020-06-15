@@ -1,7 +1,10 @@
 import './env'
 import { logger } from './logger'
-import './monitoring'
+import { Monitoring } from './Monitoring'
+
 import { Server } from './Server'
+
+Monitoring.initialize()
 
 const port = 29087
 logger.info(`Starting server on port ${port}...`)

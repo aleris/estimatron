@@ -1,13 +1,10 @@
 import { Messages } from '../model/Messages'
 import { JoinConfirmedNotificationData } from '../model/JoinConfirmedNotificationData'
 import { Notification } from './Notification'
-import { Table } from '../Table'
-import { Player, PlayerHelper } from '../Player'
+import { PlayerHelper } from '../Player'
 import { BetHelper } from '../model/Bet'
 import { logger } from '../logger'
 import { TablePlayer } from '../model/TablePlayerInfo'
-import { globalStats } from '@opencensus/core'
-import { MEASURE_PLAYERS_JOINED } from '../monitoring'
 
 const log = logger.child({ component: 'JoinConfirmedNotification' })
 

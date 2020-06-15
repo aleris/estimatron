@@ -1,8 +1,7 @@
 import * as uWS from 'uWebSockets.js'
 import { logger } from '../logger'
+import { Monitoring } from '../Monitoring'
 import { JoinData } from '../model/JoinData'
-import { Messages } from '../model/Messages'
-import { TableInfoHelper } from '../model/TableInfo'
 import { Command } from './Command'
 import { Notification } from '../notifications/Notification'
 import { OtherJoinedNotification } from '../notifications/OtherJoinedNotification'
@@ -11,8 +10,6 @@ import { WebSocketTablePlayerInfo } from './WebSocketTablePlayerInfo'
 import { Player, PlayerHelper } from '../Player'
 import { Table, TableHelper } from '../Table'
 import { Server } from '../Server'
-import { globalStats } from '@opencensus/core'
-import { MEASURE_CREATED_TABLES, MEASURE_PLAYERS_JOINED } from '../monitoring'
 import { BetHelper } from '../model/Bet'
 import { TablePlayer } from '../model/TablePlayerInfo'
 import { Timestamp } from '../model/Timestamp'
@@ -98,18 +95,11 @@ class CreateTableAction implements JoinCreateAction {
 
         this.server.tables.set(this.joinData.tableInfo.id, table)
 
-        this.recordStatsCreatedTables()
+        Monitoring.recordStatsCreatedTables()
 
         const tablePlayer = { table, player }
 
         return tablePlayer
-    }
-
-    private recordStatsCreatedTables() {
-        globalStats.record([
-            { measure: MEASURE_CREATED_TABLES, value: 1 },
-            { measure: MEASURE_PLAYERS_JOINED, value: 1 }
-        ])
     }
 }
 
@@ -132,16 +122,12 @@ class CreatePlayerAction implements JoinCreateAction {
         }
         this.table.players.push(player)
         log.info(`Added player ${PlayerHelper.nameAndId(player)} to table ${TableHelper.nameAndId(this.table)}`)
-        this.recordStatsPlayersJoined()
+        Monitoring.recordStatsPlayersJoined()
 
         const table =  this.table
         const tablePlayer = { table, player }
 
         return tablePlayer
-    }
-
-    private recordStatsPlayersJoined() {
-        globalStats.record([{ measure: MEASURE_PLAYERS_JOINED, value: 1 }])
     }
 }
 
