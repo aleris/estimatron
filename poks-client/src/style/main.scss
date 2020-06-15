@@ -1,124 +1,14 @@
+@import "base";
 @import "dialog";
 @import "form";
 @import "switch";
 @import "icon";
+@import "table-canvas";
 
-body {
-    margin: 0;
-}
+@import "../hud-components/player-options-panel/PlayerOptionsPanel";
+@import "../hud-components/player-options-dialog/PlayerOptionsDialog";
 
-* {
-    font-family: 'Dosis', sans-serif;
-    font-size: 18px;
-    color: #424242;
-}
+@import "../hud-components/table-options-panel/TableOptionsPanel";
+@import "../hud-components/table-options-dialog/TableOptionsDialog";
 
-#tableCanvas {
-    background-color: #35654d;
-}
-
-#tableOptionsPane {
-    position: absolute;
-    bottom: 4px;
-    right: 4px;
-
-    #tableOptionsPaneTableName {
-        font-size: 16px;
-        color: #fff;
-    }
-
-    #tableOptionsButton {
-        padding: 6px;
-        width: 36px;
-        height: 36px;
-        background-color: transparent;
-        border: 1px solid #35654d;
-        border-radius: 4px;
-        outline: none;
-        cursor: pointer;
-        margin-left: 10px;
-
-        &:hover {
-            background-color: #ededed1f;
-            border: 1px solid #ededed;
-        }
-
-        &:focus, &:active {
-            background-color: #ededed1f;
-            box-shadow: 0 0 0 2px #6050dc;
-        }
-    }
-}
-
-#tableOptionsDialog {
-    width: 600px;
-    height: 280px;
-    margin-top: -140px;
-    margin-left: -300px;
-    transition: left 0.4s ease, top 0.4s ease, visibility 0.4s ease;
-    visibility: visible;
-
-    &.outside {
-        top: 100%;
-        left: 100%;
-        margin-left: 0;
-        margin-top: 0;
-        visibility: hidden;
-    }
-
-}
-
-#playerOptionsPane {
-    position: fixed;
-    top: 0;
-    width: 100%;
-
-    #playerOptionsButton {
-        margin: 4px auto;
-        display: flex;
-        justify-content: space-between;
-        background-color: transparent;
-        border: 1px solid transparent;
-        border-radius: 12px;
-        outline: none;
-        padding: 6px 16px;
-        line-height: 32px;
-        cursor: pointer;
-
-        &:hover {
-            background-color: #ededed1f;
-            border: 1px solid #ededed;
-        }
-
-        &:focus, &:active {
-            background-color: #ededed1f;
-            box-shadow: 0 0 0 2px #6050dc;
-        }
-
-        .player-options-button-label {
-            font-size: 22px;
-            color: #fff;
-        }
-
-        .player-options-button-side-icon {
-            display: inline-block;
-            padding: 6px 0 0 16px;
-            width: 20px;
-            height: 20px;
-        }
-    }
-}
-
-#playerOptionsDialog {
-    width: 600px;
-    height: 240px;
-    margin-top: -120px;
-    margin-left: -300px;
-    transition: left 0.4s ease, top 0.4s ease, visibility 0.4s ease;
-    visibility: visible;
-
-    &.outside {
-        top: -200px;
-        visibility: hidden;
-    }
-}
+@import "../hud-components/notification/Notification";

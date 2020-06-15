@@ -1,0 +1,13 @@
+#playerOptionsDialog {
+  width: 600px;
+  height: 240px;
+  margin-top: -120px;
+  margin-left: -300px;
+  transition: left 0.4s ease, top 0.4s ease, visibility 0.4s ease;
+  visibility: visible;
+
+  &.outside {
+    top: -200px;
+    visibility: hidden;
+  }
+}

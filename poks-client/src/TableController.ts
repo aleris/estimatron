@@ -16,8 +16,10 @@ import { SessionTable } from '@/data/SessionTable'
 import { SceneLayout } from '@/display/SceneLayout'
 import { TableContainer } from '@/display/TableContainer'
 import { Server } from '@/Server'
-import { TableOptionsDialogController } from '@/dialogs/table-options/TableOptionsDialogController'
-import { PlayerOptionsDialogController } from '@/dialogs/player-options/PlayerOptionsDialogController'
+import { PlayerOptionsPanelController } from '@/hud-components/player-options-panel/PlayerOptionsPanelController'
+import { PlayerOptionsDialogController } from '@/hud-components/player-options-dialog/PlayerOptionsDialogController'
+import { TableOptionsPanelController } from '@/hud-components/table-options-panel/TableOptionsPanelController'
+import { TableOptionsDialogController } from '@/hud-components/table-options-dialog/TableOptionsDialogController'
 
 export class TableController {
     private readonly sceneLayout: SceneLayout
@@ -25,10 +27,10 @@ export class TableController {
     private readonly tableContainer: TableContainer
     private readonly stage: Stage
     private readonly server: Server
-    private readonly tableOptionsButton: HTMLElement | null
-    private readonly tableOptionsDialogController: TableOptionsDialogController
-    private readonly playerOptionsButton: HTMLElement | null
+    private readonly playerOptionsPanelController: PlayerOptionsPanelController
     private readonly playerOptionsDialogController: PlayerOptionsDialogController
+    private readonly tableOptionsPanelController: TableOptionsPanelController
+    private readonly tableOptionsDialogController: TableOptionsDialogController
 
     constructor(canvasElementId: string) {
         const canvas = document.getElementById(canvasElementId) as HTMLCanvasElement
@@ -49,20 +51,20 @@ export class TableController {
         this.tableContainer.onResetTableClick = this.onResetTableClick.bind(this)
         this.stage.addChild(this.tableContainer)
 
-        this.refreshLayout()
-        Ticker.addEventListener('tick', this.stage)
+        this.tableOptionsPanelController = new TableOptionsPanelController(this.sessionTable)
+        this.tableOptionsPanelController.onTableOptionsButtonClick = this.onTableOptionsButtonClick.bind(this)
 
         this.tableOptionsDialogController = new TableOptionsDialogController(this.sessionTable)
         this.tableOptionsDialogController.onClose = this.onTableOptionsClose.bind(this)
 
-        this.tableOptionsButton = document.getElementById('tableOptionsButton')
-        this.tableOptionsButton?.addEventListener('click', () => this.onTableOptionsButtonClick())
+        this.playerOptionsPanelController = new PlayerOptionsPanelController(this.sessionTable)
+        this.playerOptionsPanelController.onPlayerOptionsButtonClick = this.onPlayerOptionsButtonClick.bind(this)
 
         this.playerOptionsDialogController = new PlayerOptionsDialogController(this.sessionTable)
         this.playerOptionsDialogController.onClose = this.onPlayerOptionsClose.bind(this)
 
-        this.playerOptionsButton = document.getElementById('playerOptionsButton')
-        this.playerOptionsButton?.addEventListener('click', () => this.onPlayerOptionsButtonClick())
+        this.refreshLayout()
+        Ticker.addEventListener('tick', this.stage)
 
         this.server = new Server()
         this.server.onConnectionOpened = this.onServerConnectionOpened.bind(this)
@@ -84,8 +86,8 @@ export class TableController {
     private refreshLayout() {
         this.sceneLayout.updateDimensionsFromWindow()
         this.tableContainer.refreshLayout()
-        this.updatePlayerOptionsPanePlayerName()
-        this.updateTableOptionsPaneTableName()
+        this.playerOptionsPanelController.refresh()
+        this.tableOptionsPanelController.refresh()
     }
 
     private onServerConnectionOpened() {
@@ -96,20 +98,6 @@ export class TableController {
             playerInfo,
             tableInfo
         })
-    }
-
-    private updatePlayerOptionsPanePlayerName() {
-        const textSpan = document.getElementById('playerOptionsPanePlayerName')
-        if (textSpan) {
-            textSpan.textContent = this.sessionTable.playerInfo.name
-        }
-    }
-
-    private updateTableOptionsPaneTableName() {
-        const textSpan = document.getElementById('tableOptionsPaneTableName')
-        if (textSpan) {
-            textSpan.textContent = this.sessionTable.tableInfo.name
-        }
     }
 
     private onChangeMyBet(bet: Bet) {
@@ -154,7 +142,7 @@ export class TableController {
 
     private onTableOptionsClose(tableOptions: TableOptions | null) {
         console.log('onTableOptionsChanged', tableOptions)
-        setTimeout(() => this.tableOptionsButton?.focus(), 0)
+        this.tableOptionsPanelController.refocusAction()
         if (tableOptions) {
             this.server.sendChangeTableOptions({tableOptions})
         }
@@ -162,7 +150,7 @@ export class TableController {
 
     private onPlayerOptionsClose(playerOptions: PlayerOptions | null) {
         console.log('onPlayerOptionsChanged', playerOptions)
-        setTimeout(() => this.playerOptionsButton?.focus(), 0)
+        this.playerOptionsPanelController.refocusAction()
         if (playerOptions) {
             this.server.sendChangePlayerOptions({playerOptions})
         }
@@ -173,8 +161,8 @@ export class TableController {
         console.log('onServerJoinConfirmed', notificationData)
         this.sessionTable.update(notificationData.tableInfo, notificationData.players)
         this.tableContainer.refreshLayout()
-        this.updatePlayerOptionsPanePlayerName()
-        this.updateTableOptionsPaneTableName()
+        this.playerOptionsPanelController.refresh()
+        this.tableOptionsPanelController.refresh()
     }
 
     private onServerOtherJoined(notificationData: OtherJoinedNotificationData) {
@@ -229,14 +217,14 @@ export class TableController {
     private onServerTableOptionsChanged(notificationData: ChangeTableOptionsNotificationData) {
         console.log('onServerTableOptionsChanged', notificationData)
         this.sessionTable.updateTableOptions(notificationData.tableOptions)
-        this.updateTableOptionsPaneTableName()
+        this.tableOptionsPanelController.refresh()
         this.tableContainer.updateDeckCardsIfChanged()
     }
 
     private onServerPlayerOptionsChanged(notificationData: ChangePlayerOptionsNotificationData) {
         console.log('onServerPlayerOptionsChanged', notificationData)
         this.sessionTable.updatePlayerOptions(notificationData.playerOptions)
-        this.updatePlayerOptionsPanePlayerName()
+        this.playerOptionsPanelController.refresh()
         this.tableContainer.refreshPlayers()
     }
 }

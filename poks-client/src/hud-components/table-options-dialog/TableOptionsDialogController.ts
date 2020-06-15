@@ -1,7 +1,7 @@
 import { DeckKind } from '@server/model/Decks'
 import { TableOptions } from '@server/model/TableOptions'
 import { SessionTable } from '@/data/SessionTable'
-import { OptionsDialog } from '@/dialogs/OptionsDialog'
+import { OptionsDialog } from '@/hud-components/OptionsDialog'
 
 export class TableOptionsDialogController extends OptionsDialog<TableOptions> {
     private readonly tableOptionsDialog: HTMLElement | null

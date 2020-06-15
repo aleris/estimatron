@@ -1,6 +1,6 @@
 import { PlayerOptions } from '@server/model/PlayerOptions'
-import { OptionsDialog } from '@/dialogs/OptionsDialog'
 import { SessionTable } from '@/data/SessionTable'
+import { OptionsDialog } from '@/hud-components/OptionsDialog'
 
 export class PlayerOptionsDialogController extends OptionsDialog<PlayerOptions> {
     private readonly playerOptionsDialog: HTMLElement | null

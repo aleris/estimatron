@@ -1,6 +1,5 @@
 import './style/main.scss'
 import { TableController } from '@/TableController'
-import { TableOptionsDialogController } from '@/dialogs/table-options/TableOptionsDialogController'
 
 window.addEventListener('DOMContentLoaded', async () => {
 
