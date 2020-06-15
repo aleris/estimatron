@@ -5,7 +5,6 @@ import { BetData } from '../model/BetData'
 import { WebSocketTablePlayerInfo } from './WebSocketTablePlayerInfo'
 import { OtherBetNotification } from '../notifications/OtherBetNotification'
 import { logger } from '../logger'
-import { Timestamp } from '../model/Timestamp'
 
 const log = logger.child({ component: 'BetCommand' })
 

@@ -6,7 +6,6 @@ import { ResetTableData } from '../model/ResetTableData'
 import { BetHelper } from '../model/Bet'
 import { ResetTableNotification } from '../notifications/ResetTableNotification'
 import { logger } from '../logger'
-import { Timestamp } from '../model/Timestamp'
 
 const log = logger.child({ component: 'ResetTableCommand' })
 

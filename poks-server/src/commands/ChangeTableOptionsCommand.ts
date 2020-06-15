@@ -5,7 +5,6 @@ import { WebSocketTablePlayerInfo } from './WebSocketTablePlayerInfo'
 import { logger } from '../logger'
 import { ChangeTableOptionsData } from '../model/ChangeTableOptionsData'
 import { ChangeTableOptionsNotification } from '../notifications/ChangeTableOptionsNotification'
-import { Timestamp } from '../model/Timestamp'
 
 const log = logger.child({ component: 'ChangeTableOptionsCommand' })
 
