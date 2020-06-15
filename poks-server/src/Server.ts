@@ -6,6 +6,8 @@ import { Table } from './Table'
 import { logger } from './logger'
 import { globalStats } from '@opencensus/core'
 import { MEASURE_OPENED_CONNECTIONS } from './monitoring'
+import { WebSocketTablePlayerInfo } from './commands/WebSocketTablePlayerInfo'
+import { Timestamp } from './model/Timestamp'
 
 const HearBeatMessage = '~'
 
@@ -93,6 +95,7 @@ export class Server {
             if (data) {
                 try {
                     command.execute()
+                    this.updateActivityTimestamp(ws)
                 } catch (error) {
                     log.error(`Error executing command`, { messageData, error })
                 }
@@ -117,7 +120,10 @@ export class Server {
         log.debug('Deleting unused tables')
     }
 
-    getTimestamp() {
-        return new Date().getTime()
+    private updateActivityTimestamp(ws: uWS.WebSocket) {
+        const table = WebSocketTablePlayerInfo.getTable(this, ws)
+        if (table !== undefined) {
+            table.activityTimestamp = Timestamp.current()
+        }
     }
 }

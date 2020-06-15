@@ -5,6 +5,7 @@ import { WebSocketTablePlayerInfo } from './WebSocketTablePlayerInfo'
 import { logger } from '../logger'
 import { ChangeTableOptionsData } from '../model/ChangeTableOptionsData'
 import { ChangeTableOptionsNotification } from '../notifications/ChangeTableOptionsNotification'
+import { Timestamp } from '../model/Timestamp'
 
 const log = logger.child({ component: 'ChangeTableOptionsCommand' })
 
@@ -24,7 +25,6 @@ export class ChangeTableOptionsCommand implements Command<ChangeTableOptionsData
         )
 
         const table = tablePlayer.table
-        table.activityTimestamp = this.server.getTimestamp()
         table.tableInfo.name = this.changeTableOptionsData.tableOptions.name
         table.tableInfo.deckKind = this.changeTableOptionsData.tableOptions.deckKind
 

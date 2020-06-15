@@ -8,6 +8,7 @@ import { logger } from '../logger'
 import { globalStats, TagMap } from '@opencensus/core'
 import { MEASURE_GAMES_PLAYED, TAG_PLAYERS_ON_TABLE } from '../monitoring'
 import { Table } from '../Table'
+import { Timestamp } from '../model/Timestamp'
 
 const log = logger.child({ component: 'RevealBetsCommand' })
 
@@ -29,7 +30,6 @@ export class RevealBetsCommand implements Command<RevealBetsData> {
             { revealBetsData: this.revealBetsData, tableId: table.tableInfo.id, playerId: tablePlayer.player.playerInfo.id }
         )
 
-        table.activityTimestamp = this.server.getTimestamp()
         table.tableInfo.revealed = true
         table.lastRevealedByPlayer = tablePlayer.player
 

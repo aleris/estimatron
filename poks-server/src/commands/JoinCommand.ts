@@ -15,6 +15,7 @@ import { globalStats } from '@opencensus/core'
 import { MEASURE_CREATED_TABLES, MEASURE_PLAYERS_JOINED } from '../monitoring'
 import { BetHelper } from '../model/Bet'
 import { TablePlayer } from '../model/TablePlayerInfo'
+import { Timestamp } from '../model/Timestamp'
 
 const log = logger.child({ component: 'JoinCommand' })
 
@@ -46,7 +47,7 @@ interface JoinCreateAction {
 
 class JoinCreateActionFactory {
     static of(server: Server, senderWebSocket: uWS.WebSocket, joinData: JoinData, ): JoinCreateAction {
-        const joinTimestamp = server.getTimestamp()
+        const joinTimestamp = Timestamp.current()
         const table = server.tables.get(joinData.tableInfo.id)
         if (table === undefined) {
             return new CreateTableAction(server, senderWebSocket, joinData, joinTimestamp)

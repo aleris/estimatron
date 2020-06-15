@@ -5,6 +5,7 @@ import { BetData } from '../model/BetData'
 import { WebSocketTablePlayerInfo } from './WebSocketTablePlayerInfo'
 import { OtherBetNotification } from '../notifications/OtherBetNotification'
 import { logger } from '../logger'
+import { Timestamp } from '../model/Timestamp'
 
 const log = logger.child({ component: 'BetCommand' })
 
@@ -25,7 +26,6 @@ export class BetCommand extends Command<BetData> {
             { betData: this.betData, tableId: tablePlayer.table.tableInfo.id, playerId: tablePlayer.player.playerInfo.id }
         )
 
-        tablePlayer.table.activityTimestamp = this.server.getTimestamp()
         tablePlayer.player.playerInfo.bet = this.betData.bet
 
         new OtherBetNotification(tablePlayer, this.betData.bet).send()
