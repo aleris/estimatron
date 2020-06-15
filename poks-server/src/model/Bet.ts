@@ -1,4 +1,5 @@
 import { PlayerInfo } from './PlayerInfo'
+import { Timestamp } from './Timestamp'
 
 export type estimation = string
 
@@ -14,14 +15,14 @@ export class BetHelper {
     static noBet(): Bet {
         return {
             estimation: BetHelper.NoEstimation,
-            timestamp: this.currentTimestamp()
+            timestamp: Timestamp.current()
         }
     }
 
     static betWith(estimation: estimation) {
         return {
             estimation,
-            timestamp: this.currentTimestamp()
+            timestamp: Timestamp.current()
         }
     }
 
@@ -39,10 +40,6 @@ export class BetHelper {
 
     static isHidden(estimation: estimation): boolean {
         return estimation === this.HiddenEstimation
-    }
-
-    private static currentTimestamp(): number {
-        return new Date().getTime()
     }
 
     static hide(bet: Bet) {
