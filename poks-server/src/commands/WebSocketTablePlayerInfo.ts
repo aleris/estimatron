@@ -4,6 +4,7 @@ import { Server } from '../Server'
 import { logger } from '../logger'
 import { Table } from '../Table'
 import { id } from '../model/id'
+import { Player } from '../Player'
 
 const log = logger.child({ component: 'WebSocketTablePlayerInfo' })
 
@@ -35,6 +36,11 @@ export class WebSocketTablePlayerInfo {
     static getTable(server: Server, ws: uWS.WebSocket): Table | undefined {
         const tableId = this.getTableInfoId(ws)
         return server.tables.get(tableId)
+    }
+
+    static getPlayer(table: Table, ws: uWS.WebSocket): Player | undefined {
+        const { playerId } = this.getTablePlayerInfoIds(ws)
+        return table.players.find(player => player.playerInfo.id === playerId)
     }
 
     private static getTablePlayerInfoIds(ws: uWS.WebSocket): TablePlayerIds {

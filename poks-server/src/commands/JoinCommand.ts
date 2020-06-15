@@ -13,10 +13,14 @@ import { Server } from '../Server'
 import { BetHelper } from '../model/Bet'
 import { TablePlayer } from '../model/TablePlayerInfo'
 import { Timestamp } from '../model/Timestamp'
+import { JoinDeniedReasons } from '../model/JoinDeniedNotificationData'
+import { JoinDeniedNotification } from '../notifications/JoinDeniedNotification'
 
 const log = logger.child({ component: 'JoinCommand' })
 
 export class JoinCommand implements Command<JoinData> {
+    static readonly MAX_PLAYERS_ON_TABLE = 6
+
     constructor(
         private readonly server: Server,
         private readonly senderWebSocket: uWS.WebSocket,
@@ -27,19 +31,34 @@ export class JoinCommand implements Command<JoinData> {
         log.info(`Execute JoinCommand`, { joinData: this.joinData })
 
         const joinCreateAction = JoinCreateActionFactory.of(this.server, this.senderWebSocket, this.joinData)
-        const tablePlayer = joinCreateAction.create()
+        const result = joinCreateAction.create()
 
+        const tablePlayer = result.tablePlayer
         WebSocketTablePlayerInfo.saveTablePlayerIds(this.senderWebSocket, tablePlayer)
 
         Notification.subscribeAll(this.senderWebSocket, tablePlayer.table)
 
-        new JoinConfirmedNotification(tablePlayer).send()
-        new OtherJoinedNotification(tablePlayer).send()
+        if (result.joinAccepted) {
+            new JoinConfirmedNotification(tablePlayer).send()
+            new OtherJoinedNotification(tablePlayer).send()
+        } else {
+            if (result.joinDeniedReason !== null) {
+                new JoinDeniedNotification(tablePlayer, result.joinDeniedReason).send()
+            } else {
+                log.error('Join denied reason must be set on result when join is not accepted')
+            }
+        }
     }
 }
 
+interface JoinCreateActionResult {
+    tablePlayer: TablePlayer,
+    joinAccepted: boolean,
+    joinDeniedReason: JoinDeniedReasons | null
+}
+
 interface JoinCreateAction {
-    create(): TablePlayer
+    create(): JoinCreateActionResult
 }
 
 class JoinCreateActionFactory {
@@ -69,7 +88,7 @@ class CreateTableAction implements JoinCreateAction {
         private readonly joinTimestamp: number
     ) { }
 
-    create(): TablePlayer {
+    create(): JoinCreateActionResult {
         const player = {
             ws: this.senderWebSocket,
             playerInfo: {
@@ -99,7 +118,7 @@ class CreateTableAction implements JoinCreateAction {
 
         const tablePlayer = { table, player }
 
-        return tablePlayer
+        return { tablePlayer, joinAccepted: true, joinDeniedReason: null }
     }
 }
 
@@ -111,7 +130,7 @@ class CreatePlayerAction implements JoinCreateAction {
         private readonly table: Table
     ) { }
 
-    create(): TablePlayer {
+    create(): JoinCreateActionResult {
         const player = {
             ws: this.senderWebSocket,
             playerInfo: {
@@ -120,14 +139,21 @@ class CreatePlayerAction implements JoinCreateAction {
                 gone: false
             }
         }
-        this.table.players.push(player)
-        log.info(`Added player ${PlayerHelper.nameAndId(player)} to table ${TableHelper.nameAndId(this.table)}`)
+        let joinAccepted
+        if (this.table.players.length < JoinCommand.MAX_PLAYERS_ON_TABLE) {
+            joinAccepted = true
+            this.table.players.push(player)
+            log.info(`Added player ${PlayerHelper.nameAndId(player)} to table ${TableHelper.nameAndId(this.table)}`)
+        } else {
+            joinAccepted = false
+            log.info(`Max players reached, player ${PlayerHelper.nameAndId(player)} not added to table ${TableHelper.nameAndId(this.table)}`)
+        }
         Monitoring.recordStatsPlayersJoined()
 
         const table =  this.table
         const tablePlayer = { table, player }
 
-        return tablePlayer
+        return { tablePlayer, joinAccepted, joinDeniedReason: JoinDeniedReasons.MaxPlayersOnATable }
     }
 }
 
@@ -140,7 +166,7 @@ class CreateNoneAction implements JoinCreateAction {
         private readonly player: Player
     ) { }
 
-    create(): TablePlayer {
+    create(): JoinCreateActionResult {
         log.info(`Player ${PlayerHelper.nameAndId(this.player)} exists in table ${TableHelper.nameAndId(this.table)}, updating server record.`)
         const table = this.table
         const player = this.player
@@ -148,6 +174,6 @@ class CreateNoneAction implements JoinCreateAction {
         player.playerInfo.gone = false
         const tablePlayer = { table, player }
 
-        return tablePlayer
+        return { tablePlayer, joinAccepted: true, joinDeniedReason: null }
     }
 }

@@ -5,7 +5,7 @@ import { TableOptions } from '@server/model/TableOptions'
 import { PlayerOptions } from '@server/model/PlayerOptions'
 import { JoinConfirmedNotificationData } from '@server/model/JoinConfirmedNotificationData'
 import { OtherJoinedNotificationData } from '@server/model/OtherJoinedNotificationData'
-import { JoinDeniedNotificationData } from '@server/model/JoinDeniedNotificationData'
+import { JoinDeniedNotificationData, JoinDeniedReasonMessages } from '@server/model/JoinDeniedNotificationData'
 import { OtherBetNotificationData } from '@server/model/OtherBetNotificationData'
 import { OtherLeftNotificationData } from '@server/model/OtherLeftNotificationData'
 import { RevealBetsNotificationData } from '@server/model/RevealBetsNotificationData'
@@ -20,6 +20,7 @@ import { PlayerOptionsPanelController } from '@/hud-components/player-options-pa
 import { PlayerOptionsDialogController } from '@/hud-components/player-options-dialog/PlayerOptionsDialogController'
 import { TableOptionsPanelController } from '@/hud-components/table-options-panel/TableOptionsPanelController'
 import { TableOptionsDialogController } from '@/hud-components/table-options-dialog/TableOptionsDialogController'
+import { Notification } from '@/hud-components/notification/Notification'
 
 export class TableController {
     private readonly sceneLayout: SceneLayout
@@ -31,6 +32,7 @@ export class TableController {
     private readonly playerOptionsDialogController: PlayerOptionsDialogController
     private readonly tableOptionsPanelController: TableOptionsPanelController
     private readonly tableOptionsDialogController: TableOptionsDialogController
+    private readonly notification: Notification
 
     constructor(canvasElementId: string) {
         const canvas = document.getElementById(canvasElementId) as HTMLCanvasElement
@@ -62,6 +64,10 @@ export class TableController {
 
         this.playerOptionsDialogController = new PlayerOptionsDialogController(this.sessionTable)
         this.playerOptionsDialogController.onClose = this.onPlayerOptionsClose.bind(this)
+
+        this.notification = new Notification()
+        this.notification.add('test message')
+        this.notification.add('test message longer and with more text that says nothing')
 
         this.refreshLayout()
         Ticker.addEventListener('tick', this.stage)
@@ -176,6 +182,7 @@ export class TableController {
 
     private onServerJoinDenied(notificationData: JoinDeniedNotificationData) {
         console.log('onServerJoinDenied', notificationData)
+        this.notification.add(JoinDeniedReasonMessages[notificationData.reason])
     }
 
     private onServerOtherBet(notificationData: OtherBetNotificationData) {

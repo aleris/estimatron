@@ -16,14 +16,23 @@ export class LeaveCommand implements Command<LeaveData> {
     ) { }
 
     execute() {
-        const tablePlayer = WebSocketTablePlayerInfo.getTablePlayer(this.server, this.contextWebSocket)
+        const table = WebSocketTablePlayerInfo.getTable(this.server, this.contextWebSocket)
+        if (table === undefined) {
+            return
+        }
+
+        const player = WebSocketTablePlayerInfo.getPlayer(table, this.contextWebSocket)
+        if (player === undefined) {
+            return
+        }
+
         log.info(
             `Execute LeaveCommand`,
-            { leaveData: this.leaveData, tableId: tablePlayer.table.tableInfo.id, playerId: tablePlayer.player.playerInfo.id }
+            { leaveData: this.leaveData, tableId: table.tableInfo.id, playerId: player.playerInfo.id }
         )
 
-        tablePlayer.player.playerInfo.gone = true
+        player.playerInfo.gone = true
 
-        new OtherLeftNotification(tablePlayer).send()
+        new OtherLeftNotification({table, player}).send()
     }
 }
