@@ -7,8 +7,7 @@ import { LeaveCommand } from './commands/LeaveCommand'
 import { Table } from './Table'
 import { WebSocketTablePlayerInfo } from './commands/WebSocketTablePlayerInfo'
 import { Timestamp } from './model/Timestamp'
-
-const HearBeatMessage = '~'
+import { HearBeatMessage } from './model/HearBeatMessage'
 
 const log = logger.child({ component: 'Server' })
 

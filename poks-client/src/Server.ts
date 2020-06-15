@@ -1,4 +1,5 @@
 import { MessageInfo, Messages } from '@server/model/Messages'
+import { HearBeatMessage } from '@server/model/HearBeatMessage'
 import { JoinData } from '@server/model/JoinData'
 import { BetData } from '@server/model/BetData'
 import { JoinConfirmedNotificationData } from '@server/model/JoinConfirmedNotificationData'
@@ -109,7 +110,7 @@ export class Server {
 
     private setupHeartbeat() {
         setInterval(() => {
-            this.ws.send('~')
+            this.ws.send(HearBeatMessage)
         }, 15000)
     }
 }
