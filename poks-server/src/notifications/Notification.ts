@@ -13,6 +13,13 @@ export abstract class Notification<T> {
         return `${table.tableInfo.id}-${kind}`
     }
 
+    static subscribeAll(ws: uWS.WebSocket, table: Table) {
+        ws.subscribe(Notification.getTopicName(table, Messages.RevealBetsNotification))
+        ws.subscribe(Notification.getTopicName(table, Messages.ResetTableNotification))
+        ws.subscribe(Notification.getTopicName(table, Messages.ChangeTableOptionsNotification))
+        ws.subscribe(Notification.getTopicName(table, Messages.ChangePlayerOptionsNotification))
+    }
+
     abstract get kind(): Messages
 
     abstract send(): void
@@ -28,13 +35,15 @@ export abstract class Notification<T> {
 
     protected sendToOthers(table: Table, player: Player, data: T) {
         const otherPlayers = this.getOtherPlayers(table, player.playerInfo.id)
+        if (otherPlayers.length === 0) {
+            log.debug(`No other players on table ${TableHelper.nameAndId(table)}`, { data })
+            return
+        }
         const message = this.getStringifiedMessage(data)
-        otherPlayers.forEach(toPlayer => {
-            log.debug(`Notifying ${Messages[this.kind]} from player ${
-                PlayerHelper.nameAndId(player)
-            } to player ${PlayerHelper.nameAndId(player)} on table ${TableHelper.nameAndId(table)}`, { data })
+        for (let toPlayer of otherPlayers) {
+            log.debug(`Notifying ${Messages[this.kind]} from player ${PlayerHelper.nameAndId(player)} to player ${PlayerHelper.nameAndId(toPlayer)} on table ${TableHelper.nameAndId(table)}`, { data })
             this.sendToWebSocket(toPlayer.ws, message)
-        })
+        }
     }
 
     protected sendToPlayer(table: Table, player: Player, data: T) {
