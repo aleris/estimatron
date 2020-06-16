@@ -1,24 +1,24 @@
 import { SessionTable } from '@/data/SessionTable'
 
 export class PlayerOptionsPanelController {
-    private readonly playerOptionsButton: HTMLElement | null
-    private readonly playerOptionsPanelPlayerName: HTMLElement | null
+    private readonly optionsButton: HTMLElement | null
+    private readonly playerName: HTMLElement | null
 
     public onPlayerOptionsButtonClick: () => void = () => {}
 
     constructor(private readonly sessionTable: SessionTable) {
-        this.playerOptionsButton = document.getElementById('playerOptionsButton')
-        this.playerOptionsButton?.addEventListener('click', () => this.onPlayerOptionsButtonClick())
-        this.playerOptionsPanelPlayerName = document.getElementById('playerOptionsPanelPlayerName')
+        this.optionsButton = document.getElementById('playerOptionsPanel--optionsButton')
+        this.optionsButton?.addEventListener('click', () => this.onPlayerOptionsButtonClick())
+        this.playerName = document.getElementById('playerOptionsPanel--playerName')
     }
 
     refresh() {
-        if (this.playerOptionsPanelPlayerName) {
-            this.playerOptionsPanelPlayerName.textContent = this.sessionTable.playerInfo.name
+        if (this.playerName) {
+            this.playerName.textContent = this.sessionTable.playerInfo.name
         }
     }
 
     refocusAction() {
-        setTimeout(() => this.playerOptionsButton?.focus(), 0)
+        setTimeout(() => this.optionsButton?.focus(), 0)
     }
 }

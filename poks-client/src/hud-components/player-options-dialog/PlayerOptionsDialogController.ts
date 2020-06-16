@@ -3,19 +3,19 @@ import { SessionTable } from '@/data/SessionTable'
 import { OptionsDialog } from '@/hud-components/OptionsDialog'
 
 export class PlayerOptionsDialogController extends OptionsDialog<PlayerOptions> {
-    private readonly playerOptionsDialog: HTMLElement | null
-    private readonly playerOptionsCloseButton: HTMLElement | null
-    private readonly playerOptionsApplyButton: HTMLElement | null
+    protected readonly dialogElement: HTMLElement | null
+    protected readonly closeButton: HTMLElement | null
+    protected readonly applyButton: HTMLElement | null
     private readonly playerOptionsPlayerName: HTMLInputElement | null
     private readonly playerOptionsObserverMode: HTMLInputElement | null
 
     constructor(private readonly sessionTable: SessionTable) {
         super()
-        this.playerOptionsDialog = document.getElementById('playerOptionsDialog')
-        this.playerOptionsCloseButton = document.getElementById('playerOptionsCloseButton')
-        this.playerOptionsApplyButton = document.getElementById('playerOptionsApplyButton')
-        this.playerOptionsPlayerName = document.getElementById('playerOptionsPlayerName') as HTMLInputElement
-        this.playerOptionsObserverMode = document.getElementById('playerOptionsObserverMode') as HTMLInputElement
+        this.dialogElement = document.getElementById('playerOptionsDialog')
+        this.closeButton = document.getElementById('playerOptionsDialog--closeButton')
+        this.applyButton = document.getElementById('playerOptionsDialog--applyButton')
+        this.playerOptionsPlayerName = document.getElementById('playerOptionsDialog--playerName') as HTMLInputElement
+        this.playerOptionsObserverMode = document.getElementById('playerOptionsDialog--observerMode') as HTMLInputElement
 
         this.addBaseListeners()
     }
@@ -35,17 +35,5 @@ export class PlayerOptionsDialogController extends OptionsDialog<PlayerOptions> 
             name: this.playerOptionsPlayerName?.value || '',
             observerMode: this.playerOptionsObserverMode?.checked || false
         }
-    }
-
-    protected get dialogElement(): HTMLElement | null {
-        return this.playerOptionsDialog
-    }
-
-    protected get closeButton(): HTMLElement | null {
-        return this.playerOptionsCloseButton
-    }
-
-    protected get applyButton(): HTMLElement | null {
-        return this.playerOptionsApplyButton
     }
 }
