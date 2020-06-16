@@ -31,7 +31,7 @@ export class Server {
 
     constructor() {
         this.ws = new WebSocket(
-            `ws://localhost:29087`
+            `wss://localhost:29087`
         )
         this.ws.onopen = this.wsOnOpen.bind(this)
         this.ws.onmessage = this.wsOnMessage.bind(this)
