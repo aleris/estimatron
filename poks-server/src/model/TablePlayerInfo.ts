@@ -1,6 +1,6 @@
 import { id } from './id'
-import { Table } from '../Table'
-import { Player } from '../Player'
+import { Table } from '../server/Table'
+import { Player } from '../server/Player'
 
 export interface TablePlayerIds {
     tableId: id

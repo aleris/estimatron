@@ -1,7 +1,7 @@
 import { Messages } from '../model/Messages'
 import { Notification } from './Notification'
 import { OtherJoinedNotificationData } from '../model/OtherJoinedNotificationData'
-import { PlayerHelper } from '../Player'
+import { PlayerHelper } from '../server/Player'
 import { BetHelper } from '../model/Bet'
 import { logger } from '../logger'
 import { TablePlayer } from '../model/TablePlayerInfo'

@@ -1,4 +1,4 @@
-import * as uWS from 'uWebSockets.js'
+import { WebSocket } from 'uWebSockets.js'
 import { logger } from '../logger'
 import { Monitoring } from '../Monitoring'
 import { JoinData } from '../model/JoinData'
@@ -6,10 +6,10 @@ import { Command } from './Command'
 import { Notification } from '../notifications/Notification'
 import { OtherJoinedNotification } from '../notifications/OtherJoinedNotification'
 import { JoinConfirmedNotification } from '../notifications/JoinConfirmedNotification'
-import { WebSocketTablePlayerInfo } from './WebSocketTablePlayerInfo'
-import { Player, PlayerHelper } from '../Player'
-import { Table, TableHelper } from '../Table'
-import { Server } from '../Server'
+import { TablePlayerHelper } from './TablePlayerHelper'
+import { Player, PlayerHelper } from '../server/Player'
+import { Table, TableHelper } from '../server/Table'
+import { Server } from '../server/Server'
 import { BetHelper } from '../model/Bet'
 import { TablePlayer } from '../model/TablePlayerInfo'
 import { Timestamp } from '../model/Timestamp'
@@ -23,7 +23,7 @@ export class JoinCommand implements Command<JoinData> {
 
     constructor(
         private readonly server: Server,
-        private readonly senderWebSocket: uWS.WebSocket,
+        private readonly senderWebSocket: WebSocket,
         private readonly joinData: JoinData
     ) { }
 
@@ -34,7 +34,7 @@ export class JoinCommand implements Command<JoinData> {
         const result = joinCreateAction.create()
 
         const tablePlayer = result.tablePlayer
-        WebSocketTablePlayerInfo.saveTablePlayerIds(this.senderWebSocket, tablePlayer)
+        TablePlayerHelper.saveTablePlayerIds(this.senderWebSocket, tablePlayer)
 
         Notification.subscribeAll(this.senderWebSocket, tablePlayer.table)
 
@@ -44,6 +44,7 @@ export class JoinCommand implements Command<JoinData> {
         } else {
             if (result.joinDeniedReason !== null) {
                 new JoinDeniedNotification(tablePlayer, result.joinDeniedReason).send()
+                setTimeout(() => this.senderWebSocket.close(), 0)
             } else {
                 log.error('Join denied reason must be set on result when join is not accepted')
             }
@@ -62,15 +63,15 @@ interface JoinCreateAction {
 }
 
 class JoinCreateActionFactory {
-    static of(server: Server, senderWebSocket: uWS.WebSocket, joinData: JoinData, ): JoinCreateAction {
+    static of(server: Server, senderWebSocket: WebSocket, joinData: JoinData, ): JoinCreateAction {
         const joinTimestamp = Timestamp.current()
-        const table = server.tables.get(joinData.tableInfo.id)
+        const table = server.serverStorage.getTable(joinData.tableInfo.id)
         if (table === undefined) {
             return new CreateTableAction(server, senderWebSocket, joinData, joinTimestamp)
         }
 
         const playerId = joinData.playerInfo.id
-        const player = table.players.find(player => player.playerInfo.id === playerId)
+        const player = TablePlayerHelper.findPlayer(table, playerId)
 
         if (player === undefined) {
             return new CreatePlayerAction(server, senderWebSocket, joinData, table)
@@ -83,7 +84,7 @@ class JoinCreateActionFactory {
 class CreateTableAction implements JoinCreateAction {
     constructor(
         private readonly server: Server,
-        private readonly senderWebSocket: uWS.WebSocket,
+        private readonly senderWebSocket: WebSocket,
         private readonly joinData: JoinData,
         private readonly joinTimestamp: number
     ) { }
@@ -112,7 +113,7 @@ class CreateTableAction implements JoinCreateAction {
 
         log.info(`Adding table ${TableHelper.nameAndId(table)} with player ${PlayerHelper.nameAndId(player)}`)
 
-        this.server.tables.set(this.joinData.tableInfo.id, table)
+        this.server.serverStorage.saveTable(table)
 
         Monitoring.recordStatsCreatedTables()
 
@@ -125,7 +126,7 @@ class CreateTableAction implements JoinCreateAction {
 class CreatePlayerAction implements JoinCreateAction {
     constructor(
         private readonly server: Server,
-        private readonly senderWebSocket: uWS.WebSocket,
+        private readonly senderWebSocket: WebSocket,
         private readonly joinData: JoinData,
         private readonly table: Table
     ) { }
@@ -160,7 +161,7 @@ class CreatePlayerAction implements JoinCreateAction {
 class CreateNoneAction implements JoinCreateAction {
     constructor(
         private readonly server: Server,
-        private readonly senderWebSocket: uWS.WebSocket,
+        private readonly senderWebSocket: WebSocket,
         private readonly joinData: JoinData,
         private readonly table: Table,
         private readonly player: Player

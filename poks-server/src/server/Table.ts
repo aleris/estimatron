@@ -1,4 +1,4 @@
-import { TableInfo, TableInfoHelper } from './model/TableInfo'
+import { TableInfo, TableInfoHelper } from '../model/TableInfo'
 import { Player } from './Player'
 
 export interface Table {

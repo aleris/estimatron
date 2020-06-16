@@ -1,9 +1,9 @@
-import * as uWS from 'uWebSockets.js'
-import { Server } from '../Server'
+import { WebSocket } from 'uWebSockets.js'
+import { Server } from '../server/Server'
 import { LeaveData } from '../model/LeaveData'
 import { OtherLeftNotification } from '../notifications/OtherLeftNotification'
 import { Command } from './Command'
-import { WebSocketTablePlayerInfo } from './WebSocketTablePlayerInfo'
+import { TablePlayerHelper } from './TablePlayerHelper'
 import { logger } from '../logger'
 
 const log = logger.child({ component: 'LeaveCommand' })
@@ -11,17 +11,17 @@ const log = logger.child({ component: 'LeaveCommand' })
 export class LeaveCommand implements Command<LeaveData> {
     constructor(
         private readonly server: Server,
-        private readonly contextWebSocket: uWS.WebSocket,
+        private readonly contextWebSocket: WebSocket,
         private readonly leaveData: LeaveData
     ) { }
 
     execute() {
-        const table = WebSocketTablePlayerInfo.getTable(this.server, this.contextWebSocket)
+        const table = TablePlayerHelper.getTable(this.server, this.contextWebSocket)
         if (table === undefined) {
             return
         }
 
-        const player = WebSocketTablePlayerInfo.getPlayer(table, this.contextWebSocket)
+        const player = TablePlayerHelper.getPlayer(table, this.contextWebSocket)
         if (player === undefined) {
             return
         }

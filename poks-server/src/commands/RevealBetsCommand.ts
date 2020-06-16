@@ -1,7 +1,7 @@
-import * as uWS from 'uWebSockets.js'
-import { Server } from '../Server'
+import { WebSocket } from 'uWebSockets.js'
+import { Server } from '../server/Server'
 import { Command } from './Command'
-import { WebSocketTablePlayerInfo } from './WebSocketTablePlayerInfo'
+import { TablePlayerHelper } from './TablePlayerHelper'
 import { RevealBetsNotification } from '../notifications/RevealBetsNotification'
 import { RevealBetsData } from '../model/RevealBetsData'
 import { logger } from '../logger'
@@ -13,13 +13,12 @@ export class RevealBetsCommand implements Command<RevealBetsData> {
 
     constructor(
         private readonly server: Server,
-        private readonly senderWebSocket: uWS.WebSocket,
+        private readonly senderWebSocket: WebSocket,
         private readonly revealBetsData: RevealBetsData
     ) { }
 
     execute() {
-        const tablePlayer = WebSocketTablePlayerInfo.getTablePlayer(this.server, this.senderWebSocket)
-
+        const tablePlayer = TablePlayerHelper.getTablePlayer(this.server, this.senderWebSocket)
 
         const table = tablePlayer.table
         log.info(

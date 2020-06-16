@@ -1,37 +1,35 @@
-import { logger } from './logger'
-import { Monitoring } from './Monitoring'
-import { ServerCommandFactory } from './commands/ServerCommandFactory'
+import { logger } from '../logger'
+import { Monitoring } from '../Monitoring'
 import { TemplatedApp, WebSocket, HttpRequest, HttpResponse } from 'uWebSockets.js'
-import { MessageInfo, Messages } from './model/Messages'
-import { LeaveCommand } from './commands/LeaveCommand'
-import { Table } from './Table'
-import { WebSocketTablePlayerInfo } from './commands/WebSocketTablePlayerInfo'
-import { Timestamp } from './model/Timestamp'
-import { HearBeatMessage } from './model/HearBeatMessage'
+import { ServerCommandFactory } from '../commands/ServerCommandFactory'
+import { LeaveCommand } from '../commands/LeaveCommand'
+import { TablePlayerHelper } from '../commands/TablePlayerHelper'
+import { MessageInfo, Messages } from '../model/Messages'
+import { Timestamp } from '../model/Timestamp'
+import { HearBeatMessage } from '../model/HearBeatMessage'
+import { ServerStorage } from './ServerStorage'
 
 const log = logger.child({ component: 'Server' })
 
 export class Server {
-    public readonly tables = new Map<string, Table>()
-
     private startedOn: Date | null = null
-    private deleteUnusedTablesSchedule: NodeJS.Timeout | undefined
+    private latestActivity: Date | null = null
 
     constructor(
         private readonly port: number,
         private readonly app: TemplatedApp,
-        private readonly runCleanJob = false
+        public readonly serverStorage: ServerStorage
     ) { }
 
     start() {
         this.startedOn = new Date()
+        this.latestActivity = this.startedOn
+
+        this.serverStorage.mount()
 
         this.app
             .get('/_admin/status', (res, req) => {
                 this.adminStatus(res, req)
-            })
-            .get('/_admin/tables', (res, req) => {
-                this.adminTables(res, req)
             })
             .ws('/*', {
                 /* Options */
@@ -59,25 +57,19 @@ export class Server {
                     log.error(`Server failed to start. Failed to listen on port ${this.port}`);
                 }
             });
-
-        const tenMinutes = 10 * 60 * 1000
-        if (this.runCleanJob) {
-            this.deleteUnusedTablesSchedule = setInterval(this.deleteUnusedTables, tenMinutes)
-        }
     }
 
     public stop() {
-        if (this.deleteUnusedTablesSchedule) {
-            clearInterval(this.deleteUnusedTablesSchedule)
-        }
+        this.serverStorage.unmount()
     }
 
     private adminStatus(res: HttpResponse, req: HttpRequest) {
-        res.end(JSON.stringify({status: 'UP', tablesSize: this.tables.size, startedOn: this.startedOn}))
-    }
-
-    private adminTables(res: HttpResponse, req: HttpRequest) {
-        res.end(JSON.stringify([...this.tables], null, '  '))
+        res.end(JSON.stringify({
+            status: 'UP',
+            tablesCount: this.serverStorage.tablesCount,
+            startedOn: this.startedOn,
+            latestActivity: this.latestActivity
+        }))
     }
 
     private close(ws: WebSocket, code: number, message: ArrayBuffer) {
@@ -86,7 +78,7 @@ export class Server {
     }
 
     private drain(ws: WebSocket) {
-        log.warn('Drain', {getBufferedAmount: ws.getBufferedAmount()})
+        log.warn('Drain', { getBufferedAmount: ws.getBufferedAmount() })
     }
 
     private message(message: ArrayBuffer, ws: WebSocket) {
@@ -121,12 +113,9 @@ export class Server {
         log.info(`Connection opened on ${req.getUrl()}`)
     }
 
-    private deleteUnusedTables() {
-        log.debug('Deleting unused tables')
-    }
-
     private updateActivityTimestamp(ws: WebSocket) {
-        const table = WebSocketTablePlayerInfo.getTable(this, ws)
+        this.latestActivity = new Date()
+        const table = TablePlayerHelper.getTable(this, ws)
         if (table !== undefined) {
             table.activityTimestamp = Timestamp.current()
         }

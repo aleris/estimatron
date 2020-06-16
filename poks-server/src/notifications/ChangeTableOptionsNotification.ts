@@ -1,7 +1,6 @@
 import { Messages } from '../model/Messages'
 import { Notification } from './Notification'
-import { Table } from '../Table'
-import { Player, PlayerHelper } from '../Player'
+import { PlayerHelper } from '../server/Player'
 import { logger } from '../logger'
 import { ChangeTableOptionsNotificationData } from '../model/ChangeTableOptionsNotificationData'
 import { TablePlayer } from '../model/TablePlayerInfo'

@@ -1,9 +1,9 @@
-import * as uWS from 'uWebSockets.js'
-import { Messages } from '../model/Messages'
 import { id } from '../model/id'
-import { Table, TableHelper } from '../Table'
-import { Player, PlayerHelper } from '../Player'
+import { Messages } from '../model/Messages'
+import { Table, TableHelper } from '../server/Table'
+import { Player, PlayerHelper } from '../server/Player'
 import { logger } from '../logger'
+import { WebSocket } from 'uWebSockets.js'
 
 const log = logger.child({ component: 'Notification' })
 
@@ -13,7 +13,7 @@ export abstract class Notification<T> {
         return `${table.tableInfo.id}-${kind}`
     }
 
-    static subscribeAll(ws: uWS.WebSocket, table: Table) {
+    static subscribeAll(ws: WebSocket, table: Table) {
         ws.subscribe(Notification.getTopicName(table, Messages.RevealBetsNotification))
         ws.subscribe(Notification.getTopicName(table, Messages.ResetTableNotification))
         ws.subscribe(Notification.getTopicName(table, Messages.ChangeTableOptionsNotification))
@@ -59,7 +59,7 @@ export abstract class Notification<T> {
         return JSON.stringify(message)
     }
 
-    private sendToWebSocket(ws: uWS.WebSocket, message: string): void {
+    private sendToWebSocket(ws: WebSocket, message: string): void {
         try {
             ws.send(message)
         } catch (e) {

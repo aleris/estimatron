@@ -1,8 +1,8 @@
-import * as uWS from 'uWebSockets.js'
-import { PlayerInfo, PlayerInfoHelper } from './model/PlayerInfo'
+import { WebSocket } from 'uWebSockets.js'
+import { PlayerInfo, PlayerInfoHelper } from '../model/PlayerInfo'
 
 export interface Player {
-    ws: uWS.WebSocket
+    ws: WebSocket
     playerInfo: PlayerInfo
 }
 

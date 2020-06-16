@@ -1,7 +1,6 @@
 import { globalStats, MeasureUnit, AggregationType, TagKey, TagMap } from '@opencensus/core'
 import * as Exporter from '@opencensus/exporter-stackdriver'
 import { logger } from './logger'
-import { Table } from './Table'
 
 export class Monitoring {
     private static readonly MEASURE_OPENED_CONNECTIONS = globalStats.createMeasureInt64(

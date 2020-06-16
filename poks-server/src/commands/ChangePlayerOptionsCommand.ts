@@ -1,7 +1,7 @@
-import * as uWS from 'uWebSockets.js'
-import { Server } from '../Server'
+import { WebSocket } from 'uWebSockets.js'
+import { Server } from '../server/Server'
 import { Command } from './Command'
-import { WebSocketTablePlayerInfo } from './WebSocketTablePlayerInfo'
+import { TablePlayerHelper } from './TablePlayerHelper'
 import { logger } from '../logger'
 import { ChangePlayerOptionsData } from '../model/ChangePlayerOptionsData'
 import { ChangePlayerOptionsNotification } from '../notifications/ChangePlayerOptionsNotification'
@@ -11,12 +11,12 @@ const log = logger.child({ component: 'ChangePlayerOptionsCommand' })
 export class ChangePlayerOptionsCommand implements Command<ChangePlayerOptionsData> {
     constructor(
         private readonly server: Server,
-        private readonly senderWebSocket: uWS.WebSocket,
+        private readonly senderWebSocket: WebSocket,
         private readonly changePlayerOptionsData: ChangePlayerOptionsData
     ) { }
 
     execute() {
-        const tablePlayer = WebSocketTablePlayerInfo.getTablePlayer(this.server, this.senderWebSocket)
+        const tablePlayer = TablePlayerHelper.getTablePlayer(this.server, this.senderWebSocket)
 
         log.info(
             `Execute ChangePlayerOptionsCommand`,

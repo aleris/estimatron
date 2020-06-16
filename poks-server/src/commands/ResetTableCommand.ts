@@ -1,7 +1,7 @@
-import * as uWS from 'uWebSockets.js'
-import { Server } from '../Server'
+import { WebSocket } from 'uWebSockets.js'
+import { Server } from '../server/Server'
 import { Command } from './Command'
-import { WebSocketTablePlayerInfo } from './WebSocketTablePlayerInfo'
+import { TablePlayerHelper } from './TablePlayerHelper'
 import { ResetTableData } from '../model/ResetTableData'
 import { BetHelper } from '../model/Bet'
 import { ResetTableNotification } from '../notifications/ResetTableNotification'
@@ -12,12 +12,12 @@ const log = logger.child({ component: 'ResetTableCommand' })
 export class ResetTableCommand implements Command<ResetTableData> {
     constructor(
         private readonly server: Server,
-        private readonly senderWebSocket: uWS.WebSocket,
+        private readonly senderWebSocket: WebSocket,
         private readonly resetTableData: ResetTableData
     ) { }
 
     execute() {
-        const tablePlayer = WebSocketTablePlayerInfo.getTablePlayer(this.server, this.senderWebSocket)
+        const tablePlayer = TablePlayerHelper.getTablePlayer(this.server, this.senderWebSocket)
 
         log.info(
             `Execute ResetTableCommand`,
@@ -26,6 +26,7 @@ export class ResetTableCommand implements Command<ResetTableData> {
 
         tablePlayer.table.tableInfo.revealed = false
         tablePlayer.table.players.forEach(existingPlayer => existingPlayer.playerInfo.bet = BetHelper.noBet())
+        tablePlayer.table.lastResetByPlayer = tablePlayer.player
 
         new ResetTableNotification(tablePlayer).send()
     }

@@ -1,7 +1,7 @@
 import { Messages } from '../model/Messages'
 import { JoinConfirmedNotificationData } from '../model/JoinConfirmedNotificationData'
 import { Notification } from './Notification'
-import { PlayerHelper } from '../Player'
+import { PlayerHelper } from '../server/Player'
 import { BetHelper } from '../model/Bet'
 import { logger } from '../logger'
 import { TablePlayer } from '../model/TablePlayerInfo'

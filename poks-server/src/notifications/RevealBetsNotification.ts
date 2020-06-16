@@ -1,7 +1,7 @@
 import { Messages } from '../model/Messages'
 import { Notification } from './Notification'
 import { RevealBetsNotificationData } from '../model/RevealBetsNotificationData'
-import { PlayerHelper } from '../Player'
+import { PlayerHelper } from '../server/Player'
 import { logger } from '../logger'
 import { TablePlayer } from '../model/TablePlayerInfo'
 

@@ -1,5 +1,5 @@
-import * as uWS from 'uWebSockets.js'
-import { Server } from '../Server'
+import { WebSocket } from 'uWebSockets.js'
+import { Server } from '../server/Server'
 import { MessageData, Messages } from '../model/Messages'
 import { BetData } from '../model/BetData'
 import { JoinData } from '../model/JoinData'
@@ -19,7 +19,7 @@ import { ChangePlayerOptionsData } from '../model/ChangePlayerOptionsData'
 export class ServerCommandFactory {
     constructor() { }
 
-    static of<T>(server: Server, contextWebSocket: uWS.WebSocket, messageData: MessageData<T>) {
+    static of<T>(server: Server, contextWebSocket: WebSocket, messageData: MessageData<T>) {
         switch (messageData.kind) {
             case Messages.Join:
                 return new JoinCommand(
