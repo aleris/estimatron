@@ -19,7 +19,7 @@ import { JoinDeniedNotification } from '../notifications/JoinDeniedNotification'
 const log = logger.child({ component: 'JoinCommand' })
 
 export class JoinCommand implements Command<JoinData> {
-    static readonly MAX_PLAYERS_ON_TABLE = 6
+    static readonly MAX_PLAYERS_ON_TABLE = 1
 
     constructor(
         private readonly server: Server,

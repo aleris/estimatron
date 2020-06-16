@@ -1,8 +1,10 @@
 export class Notification {
     private readonly notificationList: HTMLElement | null
+    private readonly notificationPermanent: HTMLElement | null
 
     constructor() {
-        this.notificationList = document.getElementById('notification::list')
+        this.notificationList = document.getElementById('notification--list')
+        this.notificationPermanent = document.getElementById('notification--permanent')
     }
 
     add(message: string) {
@@ -20,5 +22,16 @@ export class Notification {
         // setTimeout(() => {
         //     this.notificationList?.removeChild(li)
         // }, 5000)
+    }
+
+    permanent(message: string) {
+        const notificationPermanent = this.notificationPermanent
+        if (notificationPermanent !== null) {
+            notificationPermanent.classList.remove('outside')
+            const messageElement = notificationPermanent.getElementsByClassName('message').item(0)
+            if (messageElement !== null) {
+                messageElement.textContent = message
+            }
+        }
     }
 }

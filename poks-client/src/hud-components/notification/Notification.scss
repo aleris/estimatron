@@ -18,8 +18,9 @@
       display: flex;
       justify-content: space-between;
       border-radius: 10px;
+      box-shadow: 1px 1px 3px 1px #424242;
+
       span {
-        font-size: 16px;
       }
 
       button {
@@ -49,5 +50,31 @@
         }
       }
     }
+  }
+}
+
+#notification--permanent {
+  position: absolute;
+  width: 100%;
+  bottom: 30%;
+  transition: bottom 0.4s ease, visibility 0.4s ease;
+  visibility: visible;
+
+  .message {
+    display: block;
+    margin: 0 auto;
+    width: 300px;
+    background-color: #630f0f;
+    color: #fff;
+    text-align: center;
+    border-radius: 10px;
+    padding: 20px;
+    font-weight: bold;
+    box-shadow: 1px 1px 3px 1px #424242;;
+  }
+
+  &.outside {
+    bottom: 0;
+    visibility: hidden;
   }
 }

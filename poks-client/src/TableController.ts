@@ -66,8 +66,6 @@ export class TableController {
         this.playerOptionsDialogController.onClose = this.onPlayerOptionsClose.bind(this)
 
         this.notification = new Notification()
-        this.notification.add('test message')
-        this.notification.add('test message longer and with more text that says nothing')
 
         this.refreshLayout()
         Ticker.addEventListener('tick', this.stage)
@@ -182,7 +180,7 @@ export class TableController {
 
     private onServerJoinDenied(notificationData: JoinDeniedNotificationData) {
         console.log('onServerJoinDenied', notificationData)
-        this.notification.add(JoinDeniedReasonMessages[notificationData.reason])
+        this.notification.permanent(JoinDeniedReasonMessages[notificationData.reason])
     }
 
     private onServerOtherBet(notificationData: OtherBetNotificationData) {
