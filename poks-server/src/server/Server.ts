@@ -18,7 +18,8 @@ export class Server {
     constructor(
         private readonly port: number,
         private readonly app: TemplatedApp,
-        public readonly serverStorage: ServerStorage
+        public readonly serverStorage: ServerStorage,
+        public readonly cork = true
     ) { }
 
     start() {
@@ -41,7 +42,13 @@ export class Server {
                     this.open(req)
                 },
                 message: (ws, message, isBinary) => {
-                    this.message(message, ws)
+                    if (this.cork) {
+                        ws.cork(() => {
+                            this.message(message, ws)
+                        })
+                    } else {
+                        this.message(message, ws)
+                    }
                 },
                 drain: (ws) => {
                     this.drain(ws)

@@ -9,5 +9,5 @@ Monitoring.initialize()
 
 const port = 29087
 logger.info(`Starting server on port ${port}...`)
-const server = new Server(port, uWS.App(), new MemoryServerStorage(), true)
+const server = new Server(port, uWS.App(), new MemoryServerStorage())
 server.start()
