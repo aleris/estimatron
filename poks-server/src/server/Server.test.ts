@@ -28,6 +28,8 @@ import { ChangePlayerOptionsNotificationData } from '../model/ChangePlayerOption
 import { ChangeTableOptionsData } from '../model/ChangeTableOptionsData'
 import { ChangeTableOptionsNotificationData } from '../model/ChangeTableOptionsNotificationData'
 import { DeckKind } from '../model/Decks'
+import { JoinDeniedNotificationData, JoinDeniedReasons } from '../model/JoinDeniedNotificationData'
+import { JoinCommand } from '../commands/JoinCommand'
 
 jest.mock('../model/Timestamp', () => ({
     Timestamp: {
@@ -38,7 +40,7 @@ jest.mock('../model/Timestamp', () => ({
 describe(Server.name, () => {
     const app = mock<TemplatedApp>()
     const serverStorage = new MemoryServerStorage()
-    const server = new Server(123, app, serverStorage)
+    const server = new Server(123, app, serverStorage, false)
     let wsSocketBehavior: WebSocketBehavior | undefined
 
     beforeAll(() => {
@@ -164,6 +166,36 @@ describe(Server.name, () => {
         expect(server.serverStorage.getTable('table-id-1')?.players.length).toStrictEqual(2)
         expect(server.serverStorage.getTable('table-id-1')?.players[0].playerInfo.id).toStrictEqual('player-id-1')
         expect(server.serverStorage.getTable('table-id-1')?.players[1].playerInfo.id).toStrictEqual('player-id-2')
+    })
+
+    test('join deny when table full', () => {
+        const wsPlayer1 = mock<WebSocket>()
+        const tablePlayer1 = createTestTablePlayer(wsPlayer1)
+        for (let i = 2; i <= JoinCommand.MAX_PLAYERS_ON_TABLE; i++) {
+            tablePlayer1.table.players.push(createTestPlayer(mock<WebSocket>(), i))
+        }
+        serverStorage.saveTable(tablePlayer1.table)
+
+        const wsPlayer7 = mock<WebSocket>()
+        const player7 = createTestPlayer(wsPlayer7, 7)
+        const message: MessageData<JoinData> = {
+            kind: Messages.Join,
+            data: {
+                tableInfo: tablePlayer1.table.tableInfo,
+                playerInfo: player7.playerInfo
+            }
+        }
+        sendTestMessage(wsSocketBehavior!, wsPlayer7, message)
+
+        const joinDenyNotification: MessageData<JoinDeniedNotificationData> = {
+            kind: Messages.JoinDeniedNotification,
+            data: {
+                reason: JoinDeniedReasons.MaxPlayersOnATable
+            }
+        }
+        const serializedNotification = JSON.stringify(joinDenyNotification)
+        expect(wsPlayer7.send).toHaveBeenCalledWith(serializedNotification)
+        expect(server.serverStorage.getTable('table-id-1')?.players.length).toStrictEqual(6)
     })
 
     test('leave on connection closed', () => {
