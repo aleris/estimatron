@@ -70,13 +70,13 @@ export class Server {
         }))
     }
 
-    private wsOnOpen() {
-        console.log('ws connection opened')
+    private wsOnOpen(event: Event) {
+        console.log('ws connection opened', event)
         this.setupHeartbeat()
         this.onConnectionOpened()
     }
 
-    private wsOnMessage(event: any) {
+    private wsOnMessage(event: MessageEvent) {
         const messageData = JSON.parse(event.data)
         const commandInfo = messageData as MessageInfo
         if (commandInfo.kind) {
@@ -95,16 +95,16 @@ export class Server {
                     throw new Error(`cannot handle command ${commandInfo.kind}`)
             }
         } else {
-            throw new Error(`cannot handle ws message ${event}`)
+            console.error(`cannot handle ws message`, event)
         }
     }
 
-    private wsOnClose() {
-        console.log('ws connection closed')
+    private wsOnClose(event: CloseEvent) {
+        console.log('ws connection closed', event)
         this.onConnectionClosed()
     }
 
-    private wsOnError(event: any) {
+    private wsOnError(event: Event) {
         console.log('ws error', event)
     }
 

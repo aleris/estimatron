@@ -15,11 +15,12 @@ import { TablePlayer } from '../model/TablePlayerInfo'
 import { Timestamp } from '../model/Timestamp'
 import { JoinDeniedReasons } from '../model/JoinDeniedNotificationData'
 import { JoinDeniedNotification } from '../notifications/JoinDeniedNotification'
+import { CloseCodes } from '../model/CloseCodes'
 
 const log = logger.child({ component: 'JoinCommand' })
 
 export class JoinCommand implements Command<JoinData> {
-    static readonly MAX_PLAYERS_ON_TABLE = 1
+    static readonly MAX_PLAYERS_ON_TABLE = 6
 
     constructor(
         private readonly server: Server,
@@ -44,7 +45,7 @@ export class JoinCommand implements Command<JoinData> {
         } else {
             if (result.joinDeniedReason !== null) {
                 new JoinDeniedNotification(tablePlayer, result.joinDeniedReason).send()
-                setTimeout(() => this.senderWebSocket.close(), 0)
+                this.senderWebSocket.end(CloseCodes.JoinDeny, JoinDeniedReasons[result.joinDeniedReason])
             } else {
                 log.error('Join denied reason must be set on result when join is not accepted')
             }

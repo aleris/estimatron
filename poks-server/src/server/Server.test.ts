@@ -30,6 +30,7 @@ import { ChangeTableOptionsNotificationData } from '../model/ChangeTableOptionsN
 import { DeckKind } from '../model/Decks'
 import { JoinDeniedNotificationData, JoinDeniedReasons } from '../model/JoinDeniedNotificationData'
 import { JoinCommand } from '../commands/JoinCommand'
+import { CloseCodes } from '../model/CloseCodes'
 
 jest.mock('../model/Timestamp', () => ({
     Timestamp: {
@@ -195,7 +196,8 @@ describe(Server.name, () => {
         }
         const serializedNotification = JSON.stringify(joinDenyNotification)
         expect(wsPlayer7.send).toHaveBeenCalledWith(serializedNotification)
-        expect(server.serverStorage.getTable('table-id-1')?.players.length).toStrictEqual(6)
+        expect(wsPlayer7.end).toHaveBeenCalledWith(CloseCodes.JoinDeny, JoinDeniedReasons[JoinDeniedReasons.MaxPlayersOnATable])
+        expect(server.serverStorage.getTable('table-id-1')?.players.length).toStrictEqual(JoinCommand.MAX_PLAYERS_ON_TABLE)
     })
 
     test('leave on connection closed', () => {

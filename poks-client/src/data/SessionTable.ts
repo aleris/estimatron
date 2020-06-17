@@ -111,7 +111,7 @@ export class SessionTable {
 
     private getLocalPlayerOrNew() {
         let player = StorageRepository.player.get()
-        if (!player) {
+        if (player === undefined) {
             player = {
                 id: IdGenerator.randomUniqueId(),
                 name: NameGenerator.randomReadableName(),
