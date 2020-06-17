@@ -16,12 +16,12 @@
   "author": "Adrian Toșcă",
   "license": "AGPL",
   "dependencies": {
-    "@google-cloud/logging-winston": "^3.0.6",
-    "@opencensus/core": "0.0.21",
-    "@opencensus/exporter-stackdriver": "0.0.21",
-    "dotenv": "^8.2.0",
-    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v17.6.0",
-    "winston": "^3.2.1"
+    "@google-cloud/logging-winston": "3.0.6",
+    "@opencensus/core": "0.0.22",
+    "@opencensus/exporter-stackdriver": "0.0.22",
+    "dotenv": "8.2.0",
+    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v18.1.0",
+    "winston": "3.2.1"
   },
   "devDependencies": {
     "@types/continuation-local-storage": "^3.2.2",

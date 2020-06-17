@@ -41,7 +41,7 @@ export abstract class Notification<T> {
         }
         const message = this.getStringifiedMessage(data)
         for (let toPlayer of otherPlayers) {
-            log.debug(`Notifying ${Messages[this.kind]} from player ${PlayerHelper.nameAndId(player)} to player ${PlayerHelper.nameAndId(toPlayer)} on table ${TableHelper.nameAndId(table)}`, { data })
+            log.debug(`Notifying ${Messages[this.kind]} to player ${PlayerHelper.nameAndId(toPlayer)} from player ${PlayerHelper.nameAndId(player)} on table ${TableHelper.nameAndId(table)}`, { data })
             this.sendToWebSocket(toPlayer.ws, message)
         }
     }

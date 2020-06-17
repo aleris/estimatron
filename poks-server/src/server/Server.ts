@@ -39,7 +39,7 @@ export class Server {
                 idleTimeout: 31,
                 /* Handlers */
                 open: (ws, req) => {
-                    this.open(req)
+                    this.open(ws, req)
                 },
                 message: (ws, message, isBinary) => {
                     if (this.cork) {
@@ -115,9 +115,10 @@ export class Server {
         }
     }
 
-    private open(req: HttpRequest) {
+    private open(ws: WebSocket, req: HttpRequest) {
         Monitoring.recordStatsOpenedConnections()
-        log.info(`Connection opened on ${req.getUrl()}`)
+        const remoteAddressString = Buffer.from(ws.getRemoteAddressAsText()).toString()
+        log.info(`Connection opened from ${remoteAddressString}`)
     }
 
     private updateActivityTimestamp(ws: WebSocket) {
