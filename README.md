@@ -1,3 +1,8 @@
+## Tests
+Run single test:
+
+    `npm test -- -t 'Server bet'`
+
 ## SSL
 
 generate self signed cert:

@@ -1,9 +1,9 @@
 import { mock } from 'jest-mock-extended'
-import { createTestPlayer, createTestTablePlayer } from '../TestUtils'
 import { TablePlayerHelper } from './TablePlayerHelper'
 import { TemplatedApp, WebSocket } from 'uWebSockets.js'
 import { Server } from '../server/Server'
 import { MemoryServerStorage } from '../server/MemoryServerStorage'
+import { createTestPlayer, createTestTablePlayer } from '../server/TablePlayer.test-utils'
 
 describe(TablePlayerHelper.name, () => {
     test('saveTablePlayerIds', () => {

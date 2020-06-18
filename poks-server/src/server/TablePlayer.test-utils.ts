@@ -1,29 +1,9 @@
 import { WebSocket, WebSocketBehavior } from 'uWebSockets.js'
-import { Player } from './server/Player'
-import { Table } from './server/Table'
-import { BetHelper } from './model/Bet'
-import { DeckKind } from './model/Decks'
-import { TablePlayer } from './model/TablePlayerInfo'
-import { MessageData } from './model/Messages'
-
-export function createTestTableInfo(index = 1) {
-    return {
-        id: `table-id-${index}`,
-        name: `table-name-${index}`,
-        deckKind: DeckKind.Fibonacci,
-        revealed: false
-    }
-}
-
-export function createTestPlayerInfo(index = 1) {
-    return {
-        id: `player-id-${index}`,
-        name: `player-name-${index}`,
-        bet: BetHelper.noBet(),
-        observerMode: false,
-        gone: false
-    }
-}
+import { MessageData } from '../model/Messages'
+import { Player } from './Player'
+import { Table } from './Table'
+import { TablePlayer } from './TablePlayer'
+import { createTestPlayerInfo, createTestTableInfo } from '../model/TablePlayerInfo.test-utils'
 
 export function createTestTablePlayer(ws: WebSocket, index = 1): TablePlayer {
     const playerInfo = createTestPlayerInfo(index)

@@ -3,7 +3,7 @@ import { OtherLeftNotificationData } from '../model/OtherLeftNotificationData'
 import { Notification } from './Notification'
 import { PlayerHelper } from '../server/Player'
 import { logger } from '../logger'
-import { TablePlayer } from '../model/TablePlayerInfo'
+import { TablePlayer } from '../server/TablePlayer'
 
 const log = logger.child({ component: 'OtherLeftNotification' })
 

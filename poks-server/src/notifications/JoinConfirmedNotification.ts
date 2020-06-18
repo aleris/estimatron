@@ -4,7 +4,7 @@ import { Notification } from './Notification'
 import { PlayerHelper } from '../server/Player'
 import { BetHelper } from '../model/Bet'
 import { logger } from '../logger'
-import { TablePlayer } from '../model/TablePlayerInfo'
+import { TablePlayer } from '../server/TablePlayer'
 
 const log = logger.child({ component: 'JoinConfirmedNotification' })
 

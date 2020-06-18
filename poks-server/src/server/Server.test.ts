@@ -1,12 +1,5 @@
 import { TemplatedApp, WebSocket, WebSocketBehavior } from 'uWebSockets.js'
 import { mock } from 'jest-mock-extended'
-import {
-    createTestPlayer,
-    createTestPlayerInfo,
-    createTestTableInfo,
-    createTestTablePlayer,
-    sendTestMessage
-} from '../TestUtils'
 import { MemoryServerStorage } from './MemoryServerStorage'
 import { Server } from './Server'
 import { Notification } from '../notifications/Notification'
@@ -31,6 +24,8 @@ import { DeckKind } from '../model/Decks'
 import { JoinDeniedNotificationData, JoinDeniedReasons } from '../model/JoinDeniedNotificationData'
 import { JoinCommand } from '../commands/JoinCommand'
 import { CloseCodes } from '../model/CloseCodes'
+import { createTestPlayerInfo, createTestTableInfo } from '../model/TablePlayerInfo.test-utils'
+import { createTestPlayer, createTestTablePlayer, sendTestMessage } from './TablePlayer.test-utils'
 
 jest.mock('../model/Timestamp', () => ({
     Timestamp: {

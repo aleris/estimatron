@@ -1,7 +1,7 @@
 import { MemoryServerStorage } from './MemoryServerStorage'
-import { createTestTablePlayer } from '../TestUtils'
 import { WebSocket } from 'uWebSockets.js'
 import { mock } from 'jest-mock-extended'
+import { createTestTablePlayer } from './TablePlayer.test-utils'
 
 describe(MemoryServerStorage.name, () => {
     test('saveTable create and getTable', () => {

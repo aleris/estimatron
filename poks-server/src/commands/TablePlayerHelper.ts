@@ -1,9 +1,10 @@
 import { WebSocket } from 'uWebSockets.js'
-import { TablePlayer, TablePlayerIds } from '../model/TablePlayerInfo'
+import { TablePlayerIds } from '../model/TablePlayerInfo'
 import { logger } from '../logger'
 import { Server } from '../server/Server'
 import { Table } from '../server/Table'
 import { Player } from '../server/Player'
+import { TablePlayer } from '../server/TablePlayer'
 import { id } from '../model/id'
 
 const log = logger.child({ component: 'TablePlayerHelper' })

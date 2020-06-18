@@ -1,7 +1,7 @@
 import { Messages } from '../model/Messages'
 import { Notification } from './Notification'
 import { logger } from '../logger'
-import { TablePlayer } from '../model/TablePlayerInfo'
+import { TablePlayer } from '../server/TablePlayer'
 import { JoinDeniedNotificationData, JoinDeniedReasons } from '../model/JoinDeniedNotificationData'
 import { TableInfoHelper } from '../model/TableInfo'
 

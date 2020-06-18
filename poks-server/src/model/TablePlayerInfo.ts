@@ -1,13 +1,13 @@
 import { id } from './id'
-import { Table } from '../server/Table'
-import { Player } from '../server/Player'
+import { TableInfo } from './TableInfo'
+import { PlayerInfo } from './PlayerInfo'
+
+export interface TablePlayerInfo {
+    tableInfo: TableInfo
+    playerInfo: PlayerInfo
+}
 
 export interface TablePlayerIds {
     tableId: id
     playerId: id
-}
-
-export interface TablePlayer {
-    table: Table
-    player: Player
 }

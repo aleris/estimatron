@@ -1,7 +1,7 @@
 {
   "name": "poks-server",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.0.1",
+  "description": "Scrum poker table server",
   "main": "dist/main.js",
   "scripts": {
     "lint": "tslint -c tslint.json -p tsconfig.json --fix",
@@ -12,9 +12,20 @@
     "start": "node .",
     "test": "NODE_ENV=test jest"
   },
-  "keywords": [],
+  "keywords": [
+    "scrum",
+    "poker",
+    "agile",
+    "estimation",
+    "online"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aleris/poks"
+  },
+  "private": true,
   "author": "Adrian Toșcă",
-  "license": "AGPL",
+  "license": "AGPL-3.0-or-later",
   "dependencies": {
     "@google-cloud/logging-winston": "3.0.6",
     "@opencensus/core": "0.0.22",
