@@ -1,5 +1,4 @@
 import { MessageInfo, Messages } from '@server/model/Messages'
-import { HearBeatMessage } from '@server/model/HearBeatMessage'
 import { JoinData } from '@server/model/JoinData'
 import { BetData } from '@server/model/BetData'
 import { JoinConfirmedNotificationData } from '@server/model/JoinConfirmedNotificationData'
@@ -13,10 +12,9 @@ import { RevealBetsNotificationData } from '@server/model/RevealBetsNotification
 import { ResetTableNotificationData } from '@server/model/ResetTableNotificationData'
 import { ChangeTableOptionsNotificationData } from '@server/model/ChangeTableOptionsNotificationData'
 import { ChangePlayerOptionsNotificationData } from '@server/model/ChangePlayerOptionsNotificationData'
+import { WebSocketHeartBeat } from '@/WebSocketHeartBeat'
 
 export class Server {
-    private readonly ws: WebSocket
-
     public onConnectionOpened: () => void = () => {}
     public onConnectionClosed: () => void = () => {}
     public onJoinConfirmed: (notificationData: JoinConfirmedNotificationData) => void = () => {}
@@ -26,17 +24,14 @@ export class Server {
     public onOtherLeft: (notificationData: OtherLeftNotificationData) => void = () => {}
     public onRevealBets: (notificationData: RevealBetsNotificationData) => void = () => {}
     public onResetTable: (notificationData: ResetTableNotificationData) => void = () => {}
-    public onTableOptionsChanged: (notificationData: ChangeTableOptionsNotificationData) => void = () => {}
-    public onPlayerOptionsChanged: (notificationData: ChangePlayerOptionsNotificationData) => void = () => {}
+    public onChangeTableOptions: (notificationData: ChangeTableOptionsNotificationData) => void = () => {}
+    public onChangePlayerOptions: (notificationData: ChangePlayerOptionsNotificationData) => void = () => {}
 
-    constructor() {
-        this.ws = new WebSocket(
-            `wss://localhost:29087`
-        )
-        this.ws.onopen = this.wsOnOpen.bind(this)
-        this.ws.onmessage = this.wsOnMessage.bind(this)
-        this.ws.onclose = this.wsOnClose.bind(this)
-        this.ws.onerror = this.wsOnError.bind(this)
+    constructor(private readonly webSocket: WebSocket, private readonly heartBeat: WebSocketHeartBeat) {
+        this.webSocket.onopen = this.wsOnOpen.bind(this)
+        this.webSocket.onmessage = this.wsOnMessage.bind(this)
+        this.webSocket.onclose = this.wsOnClose.bind(this)
+        this.webSocket.onerror = this.wsOnError.bind(this)
     }
 
     sendJoinTable(joinData: JoinData) {
@@ -64,15 +59,15 @@ export class Server {
     }
 
     private send<T>(kind: Messages, data: T) {
-        this.ws.send(JSON.stringify({
+        this.webSocket.send(JSON.stringify({
             kind,
             data
         }))
     }
 
     private wsOnOpen(event: Event) {
-        console.log('ws connection opened', event)
-        this.setupHeartbeat()
+        console.log('webSocket connection opened', event)
+        this.heartBeat.start()
         this.onConnectionOpened()
     }
 
@@ -89,8 +84,8 @@ export class Server {
                 case Messages.OtherLeftNotification: return this.onOtherLeft(messageData.data)
                 case Messages.RevealBetsNotification: return this.onRevealBets(messageData.data)
                 case Messages.ResetTableNotification: return this.onResetTable(messageData.data)
-                case Messages.ChangeTableOptionsNotification: return this.onTableOptionsChanged(messageData.data)
-                case Messages.ChangePlayerOptionsNotification: return this.onPlayerOptionsChanged(messageData.data)
+                case Messages.ChangeTableOptionsNotification: return this.onChangeTableOptions(messageData.data)
+                case Messages.ChangePlayerOptionsNotification: return this.onChangePlayerOptions(messageData.data)
                 default:
                     throw new Error(`cannot handle command ${commandInfo.kind}`)
             }
@@ -100,17 +95,12 @@ export class Server {
     }
 
     private wsOnClose(event: CloseEvent) {
-        console.log('ws connection closed', event)
+        console.log('webSocket connection closed', event)
+        this.heartBeat.stop()
         this.onConnectionClosed()
     }
 
     private wsOnError(event: Event) {
-        console.log('ws error', event)
-    }
-
-    private setupHeartbeat() {
-        setInterval(() => {
-            this.ws.send(HearBeatMessage)
-        }, 15000)
+        console.log('webSocket error', event)
     }
 }

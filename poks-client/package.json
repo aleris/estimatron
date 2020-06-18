@@ -1,7 +1,7 @@
 {
   "name": "poks",
   "version": "0.0.1",
-  "description": "Scrum poker table",
+  "description": "Scrum poker table client",
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server --port 9000 --inline --progress --profile --colors --watch --content-base src/ --mode development",
@@ -11,11 +11,11 @@
     "build:types": "tsc --emitDeclarationOnly",
     "build:js": "babel src --out-dir dist --extensions \".ts,.tsx\" --source-maps inline",
     "build.all": "npm run build.prod && npm run build.esnext",
-    "test": "karma start karma.config.js",
+    "test": "jest",
     "tsc": "tsc"
   },
   "keywords": [
-    "scum",
+    "scrum",
     "poker",
     "agile",
     "estimation",
@@ -25,8 +25,13 @@
     "type": "git",
     "url": "https://github.com/aleris/poks"
   },
+  "private": true,
   "author": "Adrian Toșcă",
   "license": "AGPL-3.0-or-later",
+  "dependencies": {
+    "@createjs/easeljs": "^2.0.0-beta.4",
+    "uuid": "^8.0.0"
+  },
   "devDependencies": {
     "@babel/cli": "7.8.4",
     "@babel/core": "7.9.6",
@@ -34,7 +39,7 @@
     "@babel/plugin-proposal-object-rest-spread": "7.9.6",
     "@babel/preset-env": "7.9.6",
     "@babel/preset-typescript": "7.9.0",
-    "@types/jasmine": "3.5.10",
+    "@types/jest": "^26.0.0",
     "@types/node": "13.13.5",
     "@types/uuid": "^7.0.3",
     "awesome-typescript-loader": "5.2.1",
@@ -43,26 +48,19 @@
     "file-loader": "^6.0.0",
     "html-loader": "^1.1.0",
     "html-webpack-plugin": "^4.3.0",
-    "jasmine-core": "3.5.0",
-    "karma": "5.0.5",
-    "karma-jasmine": "3.1.1",
-    "karma-phantomjs-launcher": "1.0.4",
-    "karma-webpack": "4.0.2",
+    "jest": "^26.0.1",
+    "jest-mock-extended": "^1.0.9",
     "mini-css-extract-plugin": "^0.9.0",
     "node-sass": "^4.14.1",
     "sass": "^1.26.8",
     "sass-loader": "^8.0.2",
     "source-map-loader": "0.2.4",
+    "ts-jest": "^26.1.0",
     "tslint": "6.1.2",
     "tslint-loader": "3.5.4",
     "typescript": "3.8.3",
     "webpack": "4.43.0",
     "webpack-cli": "3.3.11",
     "webpack-dev-server": "3.11.0"
-  },
-  "dependencies": {
-    "@createjs/easeljs": "^2.0.0-beta.4",
-    "firebase": "^7.14.2",
-    "uuid": "^8.0.0"
   }
 }

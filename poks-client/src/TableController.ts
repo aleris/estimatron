@@ -21,6 +21,9 @@ import { PlayerOptionsDialogController } from '@/hud-components/player-options-d
 import { TableOptionsPanelController } from '@/hud-components/table-options-panel/TableOptionsPanelController'
 import { TableOptionsDialogController } from '@/hud-components/table-options-dialog/TableOptionsDialogController'
 import { Notification } from '@/hud-components/notification/Notification'
+import { WebSocketHeartBeat } from '@/WebSocketHeartBeat'
+import { LocalStorageRepository } from '@/data/StorageRepository'
+import { LocalTablePlayer } from '@/data/LocalTablePlayer'
 
 export class TableController {
     private readonly sceneLayout: SceneLayout
@@ -35,6 +38,12 @@ export class TableController {
     private readonly notification: Notification
 
     constructor(canvasElementId: string) {
+        this.notification = new Notification()
+
+        if (!LocalStorageRepository.isAvailable) {
+            this.notification.add('Local storage is disabled. Table options are not saved and player options are partially preserved using the url.')
+        }
+
         const canvas = document.getElementById(canvasElementId) as HTMLCanvasElement
 
         this.sceneLayout = new SceneLayout(canvas)
@@ -65,12 +74,12 @@ export class TableController {
         this.playerOptionsDialogController = new PlayerOptionsDialogController(this.sessionTable)
         this.playerOptionsDialogController.onClose = this.onPlayerOptionsClose.bind(this)
 
-        this.notification = new Notification()
-
         this.refreshLayout()
         Ticker.addEventListener('tick', this.stage)
 
-        this.server = new Server()
+        const webSocket = new WebSocket(`wss://localhost:29087`)
+        const webSocketHeartBeat = new WebSocketHeartBeat(webSocket)
+        this.server = new Server(webSocket, webSocketHeartBeat)
         this.server.onConnectionOpened = this.onServerConnectionOpened.bind(this)
         this.server.onJoinConfirmed = this.onServerJoinConfirmed.bind(this)
         this.server.onOtherJoined = this.onServerOtherJoined.bind(this)
@@ -79,8 +88,8 @@ export class TableController {
         this.server.onOtherLeft = this.onServerOtherLeft.bind(this)
         this.server.onRevealBets = this.onServerRevealBets.bind(this)
         this.server.onResetTable = this.onServerResetTable.bind(this)
-        this.server.onTableOptionsChanged = this.onServerTableOptionsChanged.bind(this)
-        this.server.onPlayerOptionsChanged = this.onServerPlayerOptionsChanged.bind(this)
+        this.server.onChangeTableOptions = this.onServerTableOptionsChanged.bind(this)
+        this.server.onChangePlayerOptions = this.onServerPlayerOptionsChanged.bind(this)
     }
 
     public onWindowResize() {
@@ -145,7 +154,7 @@ export class TableController {
     }
 
     private onTableOptionsClose(tableOptions: TableOptions | null) {
-        console.log('onTableOptionsChanged', tableOptions)
+        console.log('onChangeTableOptions', tableOptions)
         this.tableOptionsPanelController.refocusAction()
         if (tableOptions) {
             this.server.sendChangeTableOptions({tableOptions})
@@ -153,7 +162,7 @@ export class TableController {
     }
 
     private onPlayerOptionsClose(playerOptions: PlayerOptions | null) {
-        console.log('onPlayerOptionsChanged', playerOptions)
+        console.log('onChangePlayerOptions', playerOptions)
         this.playerOptionsPanelController.refocusAction()
         if (playerOptions) {
             this.server.sendChangePlayerOptions({playerOptions})
