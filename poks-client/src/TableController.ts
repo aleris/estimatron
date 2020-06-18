@@ -36,6 +36,7 @@ export class TableController {
     private readonly tableOptionsPanelController: TableOptionsPanelController
     private readonly tableOptionsDialogController: TableOptionsDialogController
     private readonly notification: Notification
+    private readonly localTablePlayer: LocalTablePlayer
 
     constructor(canvasElementId: string) {
         this.notification = new Notification()
@@ -54,7 +55,8 @@ export class TableController {
             Touch.enable(this.stage)
         }
 
-        this.sessionTable = new SessionTable()
+        this.localTablePlayer = new LocalTablePlayer()
+        this.sessionTable = new SessionTable(this.localTablePlayer)
 
         this.tableContainer = new TableContainer(this.sceneLayout, this.sessionTable)
         this.tableContainer.onChangeMyBet = this.onChangeMyBet.bind(this)
@@ -233,6 +235,7 @@ export class TableController {
         this.sessionTable.updateTableOptions(notificationData.tableOptions)
         this.tableOptionsPanelController.refresh()
         this.tableContainer.updateDeckCardsIfChanged()
+        this.localTablePlayer.updateLocationHash(this.sessionTable.tableInfo, this.sessionTable.playerInfo)
     }
 
     private onServerPlayerOptionsChanged(notificationData: ChangePlayerOptionsNotificationData) {
@@ -240,5 +243,6 @@ export class TableController {
         this.sessionTable.updatePlayerOptions(notificationData.playerOptions)
         this.playerOptionsPanelController.refresh()
         this.tableContainer.refreshPlayers()
+        this.localTablePlayer.updateLocationHash(this.sessionTable.tableInfo, this.sessionTable.playerInfo)
     }
 }

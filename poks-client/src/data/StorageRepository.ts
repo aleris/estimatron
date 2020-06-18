@@ -1,45 +1,53 @@
 import { PlayerInfo } from '@server/model/PlayerInfo'
 import { TableInfo } from '@server/model/TableInfo'
+import { IdGenerator } from '@/data/IdGenerator'
 
-export class Repository<T> {
-    set(key: string, value: T) {
-        localStorage.setItem(key, JSON.stringify(value))
+export class LocalStorageRepository<T> {
+    private static _isAvailable: boolean | null = null
+
+    static get isAvailable(): boolean {
+        if (this._isAvailable === null) {
+            try {
+                const testKey = IdGenerator.randomUniqueId()
+                localStorage.setItem(testKey, '')
+                localStorage.removeItem(testKey)
+                this._isAvailable = true
+            } catch (e) {
+                this._isAvailable = false
+            }
+        }
+        return this._isAvailable
     }
 
-    get(key: string): T | undefined {
-        const value = localStorage.getItem(key)
-        return value === null ? undefined : JSON.parse(value)
-    }
-}
-
-export class SingleObjectRepository<T> {
-    private repository = new Repository<T>()
+    static player = new LocalStorageRepository<PlayerInfo>('player')
+    static table = new LocalStorageRepository<TableInfo>('tables')
 
     constructor(private repositoryKey: string) { }
 
-    get(): T | undefined {
-        return this.repository.get(this.repositoryKey)
-    }
-
-    set(value: T) {
-        return this.repository.set(this.repositoryKey, value)
-    }
-}
-
-export class MultipleObjectRepository<T> {
-    constructor(private repositoryKey: string) { }
-
-    get(itemKey: string): T | undefined {
+    get(itemKey: string | null = null): T | undefined {
+        if (!LocalStorageRepository.isAvailable) {
+            return undefined
+        }
         const serializedValue = localStorage.getItem(this.repositoryKey)
         if (!serializedValue) {
             return undefined
         }
         const objectValue = JSON.parse(serializedValue)
+        if (itemKey === null) {
+            return objectValue
+        }
         const map = new Map<string, T>(objectValue)
         return map.get(itemKey)
     }
 
-    set(itemKey: string, value: T) {
+    set(value: T, itemKey: string | null = null) {
+        if (!LocalStorageRepository.isAvailable) {
+            return
+        }
+        if (null == itemKey) {
+            localStorage.setItem(this.repositoryKey, JSON.stringify(value))
+            return
+        }
         const serializedValue = localStorage.getItem(this.repositoryKey)
         let map
         if (!serializedValue) {
@@ -49,12 +57,8 @@ export class MultipleObjectRepository<T> {
             map = new Map<string, T>(objectValue)
         }
         map.set(itemKey, value)
+        // TODO: remove older up to max items
         const serializableMap = Array.from(map.entries())
         localStorage.setItem(this.repositoryKey, JSON.stringify(serializableMap))
     }
-}
-
-export class StorageRepository {
-    static player = new SingleObjectRepository<PlayerInfo>('player')
-    static table = new MultipleObjectRepository<TableInfo>('tables')
 }
