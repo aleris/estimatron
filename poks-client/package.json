@@ -12,6 +12,7 @@
     "build:js": "babel src --out-dir dist --extensions \".ts,.tsx\" --source-maps inline",
     "build.all": "npm run build.prod && npm run build.esnext",
     "test": "jest",
+    "test:int": "cypress run",
     "tsc": "tsc"
   },
   "keywords": [

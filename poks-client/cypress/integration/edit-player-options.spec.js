@@ -15,18 +15,21 @@ describe('Player Options', () => {
 
     specify('dialog close button closes the dialog', () => {
         cy.get('#playerOptionsPanel--optionsButton').click()
+        cy.get('#playerOptionsDialog').should('be.visible')
         cy.get('#playerOptionsDialog--closeButton').click()
         cy.get('#playerOptionsDialog').should('not.be.visible')
     })
 
     specify('esc closes the dialog', () => {
         cy.get('#playerOptionsPanel--optionsButton').click()
-        cy.focused().trigger('keydown', { key: 'Escape' })
+        cy.get('#playerOptionsDialog').should('be.visible')
+        cy.get('#playerOptionsDialog').trigger('keydown', { key: 'Escape' })
         cy.get('#playerOptionsDialog').should('not.be.visible')
     })
 
     specify('player name input contains same text as panel player name', () => {
         cy.get('#playerOptionsPanel--optionsButton').click()
+        cy.get('#playerOptionsDialog').should('be.visible')
         cy.get('#playerOptionsDialog--playerName').then(($input) => {
             const val = $input.val()
             cy.get('#playerOptionsPanel--playerName').then(($text) => {
@@ -38,6 +41,7 @@ describe('Player Options', () => {
 
     specify('when modifying player name and click apply it modifies panel player name', () => {
         cy.get('#playerOptionsPanel--optionsButton').click()
+        cy.get('#playerOptionsDialog').should('be.visible')
         cy.get('#playerOptionsDialog--playerName').clear()
         cy.get('#playerOptionsDialog--playerName').type('Modified Name')
         cy.get('#playerOptionsDialog--applyButton').click()
@@ -46,6 +50,7 @@ describe('Player Options', () => {
 
     specify('apply without any modification closes dialog', () => {
         cy.get('#playerOptionsPanel--optionsButton').click()
+        cy.get('#playerOptionsDialog').should('be.visible')
         cy.get('#playerOptionsDialog--applyButton').click()
         cy.get('#playerOptionsDialog').should('not.be.visible')
     })
