@@ -7,7 +7,7 @@ const basePath = path.resolve(__dirname, '..') + '/'
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  testPathIgnorePatterns: ["/dist/", "/node_modules/"],
+  testPathIgnorePatterns: ["/dist/", "/node_modules/", "/cypress/"],
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: basePath }),
   'globals': {
     'window': {}
