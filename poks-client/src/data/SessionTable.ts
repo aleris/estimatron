@@ -15,7 +15,7 @@ export class SessionTable {
         this.playerInfoId = tablePlayerInfo.playerInfo.id
         this.players.push(tablePlayerInfo.playerInfo)
         this.tableInfo = tablePlayerInfo.tableInfo
-        localTablePlayer.updateLocationHash(tablePlayerInfo.tableInfo, tablePlayerInfo.playerInfo)
+        localTablePlayer.update(tablePlayerInfo.tableInfo, tablePlayerInfo.playerInfo)
     }
 
     get playerInfo() {

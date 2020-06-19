@@ -71,8 +71,10 @@ export class LocalTablePlayer {
         }
     }
 
-    updateLocationHash(tableInfo: TableInfo, playerInfo: PlayerInfo) {
+    update(tableInfo: TableInfo, playerInfo: PlayerInfo) {
         if (LocalStorageRepository.isAvailable) {
+            LocalStorageRepository.player.set(playerInfo)
+            LocalStorageRepository.table.set(tableInfo, tableInfo.id)
             window.location.hash = tableInfo.id
         } else {
             window.location.hash = `${tableInfo.id}∧${playerInfo.id}∧${playerInfo.name}∧${playerInfo.observerMode}`

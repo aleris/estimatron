@@ -235,7 +235,7 @@ export class TableController {
         this.sessionTable.updateTableOptions(notificationData.tableOptions)
         this.tableOptionsPanelController.refresh()
         this.tableContainer.updateDeckCardsIfChanged()
-        this.localTablePlayer.updateLocationHash(this.sessionTable.tableInfo, this.sessionTable.playerInfo)
+        this.localTablePlayer.update(this.sessionTable.tableInfo, this.sessionTable.playerInfo)
     }
 
     private onServerPlayerOptionsChanged(notificationData: ChangePlayerOptionsNotificationData) {
@@ -243,6 +243,6 @@ export class TableController {
         this.sessionTable.updatePlayerOptions(notificationData.playerOptions)
         this.playerOptionsPanelController.refresh()
         this.tableContainer.refreshPlayers()
-        this.localTablePlayer.updateLocationHash(this.sessionTable.tableInfo, this.sessionTable.playerInfo)
+        this.localTablePlayer.update(this.sessionTable.tableInfo, this.sessionTable.playerInfo)
     }
 }
