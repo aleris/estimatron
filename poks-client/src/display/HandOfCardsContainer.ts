@@ -37,8 +37,6 @@ export class HandOfCardsContainer extends Container implements RefreshLayout {
     }
 
     refreshLayout(): void {
-        this.updateDeckCardsIfChanged()
-
         this.placeOtherPlayerCards()
 
         this.placeMyCards()
@@ -98,19 +96,7 @@ export class HandOfCardsContainer extends Container implements RefreshLayout {
             const cardShape = new CardShape(estimation, i)
             this.cards.push(cardShape)
             this.addChild(cardShape)
-
-            cardShape.addEventListener(
-                'mousedown',
-                (event: any) => this.grab(cardShape, new Point(event.stageX, event.stageY))
-            )
-            cardShape.addEventListener(
-                'pressmove',
-                (event: any) => this.drag(cardShape, new Point(event.stageX, event.stageY))
-            )
-            cardShape.addEventListener(
-                'pressup',
-                (event: any) => this.drop(cardShape, new Point(event.stageX, event.stageY))
-            )
+            this.addCardEvents(cardShape)
         }
     }
 
@@ -153,11 +139,27 @@ export class HandOfCardsContainer extends Container implements RefreshLayout {
         }
     }
 
+    private addCardEvents(cardShape: CardShape) {
+        cardShape.addEventListener(
+            'mousedown',
+            (event: any) => this.grab(cardShape, new Point(event.stageX, event.stageY))
+        )
+        cardShape.addEventListener(
+            'pressmove',
+            (event: any) => this.drag(cardShape, new Point(event.stageX, event.stageY))
+        )
+        cardShape.addEventListener(
+            'pressup',
+            (event: any) => this.drop(cardShape, new Point(event.stageX, event.stageY))
+        )
+    }
+
     public updateDeckCardsIfChanged() {
         const tableInfo = this.sessionTable.tableInfo
         if (tableInfo !== null) {
             if (this.deckKind !== tableInfo.deckKind) {
                 this.updateCardsFromDeck(tableInfo.deckKind)
+                this.placeMyCards()
             }
         }
     }
