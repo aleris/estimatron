@@ -47,6 +47,8 @@ export class HandOfCardsContainer extends Container implements RefreshLayout {
     }
 
     revealBets() {
+        const playerCount = this.sessionTable.players.length
+        const maxDelayTime = Math.min(500, 100 * playerCount)
         for (let player of this.sessionTable.players) {
             const betCard = this.betsByPlayerIdMap.get(player.id)
             if (betCard !== undefined) {
@@ -56,28 +58,32 @@ export class HandOfCardsContainer extends Container implements RefreshLayout {
                 if (shouldFlip) {
                     setTimeout(() => {
                         betCard.animateFlip()
-                    }, 50 + Math.floor(Math.random() * 500))
+                    }, Math.floor(Math.random() * maxDelayTime))
                 }
             }
         }
     }
 
     resetBets() {
+        const playerCount = this.sessionTable.players.length
+        const maxDelayTime = Math.min(500, 100 * playerCount)
         for (let player of this.sessionTable.players) {
             const betCard = this.betsByPlayerIdMap.get(player.id)
             if (betCard !== undefined) {
                 setTimeout(() => {
                     this.removeBetForOtherPlayer(player, true)
-                }, 50 + Math.floor(Math.random() * 500))
+                }, Math.floor(Math.random() * maxDelayTime))
             }
         }
 
-        if (this.betCard !== null) {
-            if (null !== this.betCard.handPosition) {
-                this.betCard.dropTo(this.betCard.handPosition)
+        setTimeout(() => {
+            if (this.betCard !== null) {
+                if (null !== this.betCard.handPosition) {
+                    this.betCard.dropTo(this.betCard.handPosition)
+                    this.betCard = null
+                }
             }
-        }
-        this.betCard = null
+        }, Math.floor(Math.random() * maxDelayTime))
     }
 
     updateCardsFromDeck(deckKind: DeckKind) {
