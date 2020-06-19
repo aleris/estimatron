@@ -19,6 +19,12 @@ describe('Table Options', () => {
         cy.get('#tableOptionsDialog').should('not.be.visible')
     })
 
+    specify('esc closes the dialog', () => {
+        cy.get('#tableOptionsPanel--optionsButton').click()
+        cy.focused().trigger('keydown', { key: 'Escape' })
+        cy.get('#tableOptionsDialog').should('not.be.visible')
+    })
+
     specify('table name input contains same text as panel table name', () => {
         cy.get('#tableOptionsPanel--optionsButton').click()
         cy.get('#tableOptionsDialog--tableName').then(($input) => {

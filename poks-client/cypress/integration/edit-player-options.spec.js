@@ -19,6 +19,12 @@ describe('Player Options', () => {
         cy.get('#playerOptionsDialog').should('not.be.visible')
     })
 
+    specify('esc closes the dialog', () => {
+        cy.get('#playerOptionsPanel--optionsButton').click()
+        cy.focused().trigger('keydown', { key: 'Escape' })
+        cy.get('#playerOptionsDialog').should('not.be.visible')
+    })
+
     specify('player name input contains same text as panel player name', () => {
         cy.get('#playerOptionsPanel--optionsButton').click()
         cy.get('#playerOptionsDialog--playerName').then(($input) => {
