@@ -1,13 +1,23 @@
 #playerOptionsDialog {
   width: 600px;
-  height: 240px;
-  margin-top: -120px;
+  height: 300px;
+  margin-top: -150px;
   margin-left: -300px;
   transition: left 0.4s ease, top 0.4s ease, visibility 0.4s ease;
   visibility: visible;
 
   &.outside {
-    top: -200px;
+    top: -300px;
     visibility: hidden;
+  }
+}
+
+@media screen and (max-width: 600px), screen and (max-height: 330px) {
+  #playerOptionsDialog {
+    width: 100%;
+    top: 0;
+    left: 0;
+    margin-top: 0;
+    margin-left: 0;
   }
 }

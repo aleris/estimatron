@@ -1,7 +1,7 @@
 #tableOptionsDialog {
   width: 600px;
-  height: 280px;
-  margin-top: -140px;
+  height: 330px;
+  margin-top: -165px;
   margin-left: -300px;
   transition: left 0.4s ease, top 0.4s ease, visibility 0.4s ease;
   visibility: visible;
@@ -12,5 +12,15 @@
     margin-left: 0;
     margin-top: 0;
     visibility: hidden;
+  }
+}
+
+@media screen and (max-width: 600px), screen and (max-height: 330px) {
+  #tableOptionsDialog {
+    width: 100%;
+    top: 0;
+    left: 0;
+    margin-top: 0;
+    margin-left: 0;
   }
 }
