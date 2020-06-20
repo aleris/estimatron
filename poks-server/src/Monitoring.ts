@@ -36,6 +36,35 @@ export class Monitoring {
     )
 
     static initialize() {
+        const monitoringEnabled = Boolean(process.env.MONITORING_ENABLED) || false
+        if (!monitoringEnabled) {
+            logger.info('Monitoring is not enabled')
+            return
+        }
+
+        this.registerViews()
+
+        const projectId = process.env.GOOGLE_PROJECT_ID
+
+        if (!projectId || !process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+            throw Error('Unable to proceed without GOOGLE_PROJECT_ID and GOOGLE_APPLICATION_CREDENTIALS set')
+        }
+
+        const MONITORING_EXPORT_INTERVAL = process.env.MONITORING_EXPORT_INTERVAL
+            ? parseInt(process.env.MONITORING_EXPORT_INTERVAL, 10)
+            : 10
+
+        const exporter = new Exporter.StackdriverStatsExporter({
+            projectId,
+            period: MONITORING_EXPORT_INTERVAL * 60 * 1000,
+        })
+
+        globalStats.registerExporter(exporter)
+
+        logger.info(`Monitoring initialized with export period of ${MONITORING_EXPORT_INTERVAL} min`)
+    }
+
+    private static registerViews() {
         globalStats.registerView(globalStats.createView(
             'opened_connections_count',
             this.MEASURE_OPENED_CONNECTIONS,
@@ -82,25 +111,6 @@ export class Monitoring {
             'The count of the number of games played as determined by reveal cards.',
             []
         ))
-
-        const projectId = process.env.GOOGLE_PROJECT_ID
-
-        if (!projectId || !process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-            throw Error('Unable to proceed without GOOGLE_PROJECT_ID and GOOGLE_APPLICATION_CREDENTIALS set')
-        }
-
-        const MONITORING_EXPORT_INTERVAL = process.env.MONITORING_EXPORT_INTERVAL
-            ? parseInt(process.env.MONITORING_EXPORT_INTERVAL, 10)
-            : 10
-
-        const exporter = new Exporter.StackdriverStatsExporter({
-            projectId,
-            period: MONITORING_EXPORT_INTERVAL * 60 * 1000,
-        })
-
-        globalStats.registerExporter(exporter)
-
-        logger.info(`Monitoring enabled with export period of ${MONITORING_EXPORT_INTERVAL} min`)
     }
 
     static recordStatsOpenedConnections() {
