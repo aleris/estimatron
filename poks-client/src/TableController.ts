@@ -30,7 +30,6 @@ export class TableController {
     private readonly sessionTable: SessionTable
     private readonly tableContainer: TableContainer
     private readonly stage: Stage
-    private readonly server: Server
     private readonly playerOptionsPanelController: PlayerOptionsPanelController
     private readonly playerOptionsDialogController: PlayerOptionsDialogController
     private readonly tableOptionsPanelController: TableOptionsPanelController
@@ -38,7 +37,7 @@ export class TableController {
     private readonly notification: Notification
     private readonly localTablePlayer: LocalTablePlayer
 
-    constructor(canvasElementId: string) {
+    constructor(canvasElementId: string, private readonly server: Server) {
         this.notification = new Notification()
 
         if (!LocalStorageRepository.isAvailable) {
@@ -79,9 +78,6 @@ export class TableController {
         this.refreshLayout()
         Ticker.addEventListener('tick', this.stage)
 
-        const webSocket = new WebSocket(`wss://localhost:29087`)
-        const webSocketHeartBeat = new WebSocketHeartBeat(webSocket)
-        this.server = new Server(webSocket, webSocketHeartBeat)
         this.server.onConnectionOpened = this.onServerConnectionOpened.bind(this)
         this.server.onJoinConfirmed = this.onServerJoinConfirmed.bind(this)
         this.server.onOtherJoined = this.onServerOtherJoined.bind(this)
