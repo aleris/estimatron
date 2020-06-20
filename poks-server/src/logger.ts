@@ -26,6 +26,7 @@ switch (env) {
     case 'test':
     case 'ci':
         transports.push(file)
+        // transports.push(console)
         break;
     case 'production':
     default:

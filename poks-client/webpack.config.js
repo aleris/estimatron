@@ -8,6 +8,18 @@ const ROOT = path.resolve( __dirname, 'src' );
 const SERVER_ROOT = path.resolve( __dirname, '../poks-server/src' );
 const DESTINATION = path.resolve( __dirname, 'dist' );
 
+console.log('webpack', process.env.NODE_ENV)
+function getServerUrl() {
+    switch (process.env.NODE_ENV) {
+        case 'production':
+            return 'wss://prod.site:443'
+        case 'dev':
+        case 'ci':
+        default:
+            return 'wss://localhost:44443'
+    }
+}
+
 module.exports = {
     context: ROOT,
 
@@ -86,6 +98,9 @@ module.exports = {
                 removeComments: true,
                 collapseWhitespace: false
             }
+        }),
+        new webpack.DefinePlugin({
+            SERVER_URL: JSON.stringify(getServerUrl())
         })
     ],
 
