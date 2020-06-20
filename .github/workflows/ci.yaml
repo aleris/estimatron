@@ -20,16 +20,4 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: '12.x'
-      - run: npm install
-        working-directory: ./poks-server
-      - run: npm test
-        working-directory: ./poks-server
-        env:
-          CI: true
-
-      - run: npm install
-        working-directory: ./poks-client
-      - run: npm test
-        working-directory: ./poks-client
-        env:
-          CI: true
+      - run: ./ci.sh

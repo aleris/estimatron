@@ -24,6 +24,7 @@ switch (env) {
         transports.push(console)
         break;
     case 'test':
+    case 'ci':
         transports.push(file)
         break;
     case 'production':

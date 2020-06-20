@@ -4,7 +4,8 @@ import { config } from 'dotenv'
 
 const env = process.env.NODE_ENV || 'production'
 let envFileRelativePath = '../.env'
-if (env === 'dev') {
-    envFileRelativePath += '.dev'
+if (env !== 'production') {
+    envFileRelativePath += '.' + env
 }
-config({ path: resolve(__dirname, envFileRelativePath) })
+const path = resolve(__dirname, envFileRelativePath)
+config({ path })
