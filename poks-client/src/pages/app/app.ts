@@ -1,7 +1,7 @@
-import './style/app.scss'
-import { TableController } from '@/TableController'
-import { WebSocketHeartBeat } from '@/WebSocketHeartBeat'
-import { Server } from '@/Server'
+import '../../style/app.scss'
+import { TableController } from '@/pages/app/TableController'
+import { WebSocketHeartBeat } from '@/pages/app/WebSocketHeartBeat'
+import { Server } from '@/pages/app/Server'
 
 window.addEventListener('DOMContentLoaded', async () => {
 

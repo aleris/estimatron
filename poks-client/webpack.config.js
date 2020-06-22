@@ -24,8 +24,9 @@ module.exports = {
     context: ROOT,
 
     entry: {
-        'app': './app.ts',
-        'index': './index.ts'
+        'app': './pages/app/app.ts',
+        'index': './pages/index/index.ts',
+        '404': './pages/404/404.ts'
     },
     
     output: {
@@ -90,7 +91,7 @@ module.exports = {
 
     plugins: [
         new HtmlWebpackPlugin({
-            template: path.resolve(__dirname, './src/index.html'),
+            template: path.resolve(__dirname, './src/pages/index/index.html'),
             filename: 'index.html',
             inject: true,
             chunks: ['index']
@@ -103,7 +104,7 @@ module.exports = {
             SERVER_URL: JSON.stringify(getServerUrl())
         }),
         new HtmlWebpackPlugin({
-            template: path.resolve(__dirname, './src/app.html'),
+            template: path.resolve(__dirname, './src/pages/app/app.html'),
             filename: 'app.html',
             inject: true,
             chunks: ['app']
@@ -111,6 +112,12 @@ module.exports = {
         new SubresourceIntegrityPlugin({
             hashFuncNames: ['sha256', 'sha384'],
             enabled: (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'ci'),
+        }),
+        new HtmlWebpackPlugin({
+            template: path.resolve(__dirname, './src/pages/404/404.html'),
+            filename: '404.html',
+            inject: true,
+            chunks: ['404']
         })
     ],
 

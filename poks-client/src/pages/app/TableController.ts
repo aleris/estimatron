@@ -15,15 +15,14 @@ import { ChangePlayerOptionsNotificationData } from '@server/model/ChangePlayerO
 import { SessionTable } from '@/data/SessionTable'
 import { SceneLayout } from '@/display/SceneLayout'
 import { TableContainer } from '@/display/TableContainer'
-import { Server } from '@/Server'
 import { PlayerOptionsPanelController } from '@/hud-components/player-options-panel/PlayerOptionsPanelController'
 import { PlayerOptionsDialogController } from '@/hud-components/player-options-dialog/PlayerOptionsDialogController'
 import { TableOptionsPanelController } from '@/hud-components/table-options-panel/TableOptionsPanelController'
 import { TableOptionsDialogController } from '@/hud-components/table-options-dialog/TableOptionsDialogController'
 import { Notification } from '@/hud-components/notification/Notification'
-import { WebSocketHeartBeat } from '@/WebSocketHeartBeat'
 import { LocalStorageRepository } from '@/data/StorageRepository'
 import { LocalTablePlayer } from '@/data/LocalTablePlayer'
+import { Server } from '@/pages/app/Server'
 
 export class TableController {
     private readonly sceneLayout: SceneLayout
