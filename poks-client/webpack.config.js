@@ -1,14 +1,14 @@
 const path = require('path')
 const webpack = require('webpack')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { TsConfigPathsPlugin } = require('awesome-typescript-loader')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const SubresourceIntegrityPlugin = require('webpack-subresource-integrity')
 
 const ROOT = path.resolve( __dirname, 'src' );
 const SERVER_ROOT = path.resolve( __dirname, '../poks-server/src' );
 const DESTINATION = path.resolve( __dirname, 'dist' );
 
-console.log('webpack', process.env.NODE_ENV)
 function getServerUrl() {
     switch (process.env.NODE_ENV) {
         case 'production':
@@ -29,7 +29,8 @@ module.exports = {
     
     output: {
         filename: '[name].bundle.js',
-        path: DESTINATION
+        path: DESTINATION,
+        crossOriginLoading: 'anonymous'
     },
 
     resolve: {
@@ -101,6 +102,10 @@ module.exports = {
         }),
         new webpack.DefinePlugin({
             SERVER_URL: JSON.stringify(getServerUrl())
+        }),
+        new SubresourceIntegrityPlugin({
+            hashFuncNames: ['sha256', 'sha384'],
+            enabled: (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'ci'),
         })
     ],
 
