@@ -24,7 +24,8 @@ module.exports = {
     context: ROOT,
 
     entry: {
-        'main': './main.ts'
+        'app': './app.ts',
+        'index': './index.ts'
     },
     
     output: {
@@ -88,20 +89,24 @@ module.exports = {
     },
 
     plugins: [
+        new HtmlWebpackPlugin({
+            template: path.resolve(__dirname, './src/index.html'),
+            filename: 'index.html',
+            inject: true,
+            chunks: ['index']
+        }),
         new MiniCssExtractPlugin({
             filename: '[name].css',
             chunkFilename: '[id].css',
         }),
-        new HtmlWebpackPlugin({
-            template: path.resolve(__dirname, './src/index.html'),
-            inject: true,
-            minify: {
-                removeComments: true,
-                collapseWhitespace: false
-            }
-        }),
         new webpack.DefinePlugin({
             SERVER_URL: JSON.stringify(getServerUrl())
+        }),
+        new HtmlWebpackPlugin({
+            template: path.resolve(__dirname, './src/app.html'),
+            filename: 'app.html',
+            inject: true,
+            chunks: ['app']
         }),
         new SubresourceIntegrityPlugin({
             hashFuncNames: ['sha256', 'sha384'],

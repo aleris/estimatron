@@ -1,6 +1,6 @@
 describe('Table Options', () => {
     beforeEach(() => {
-        cy.visit('/')
+        cy.visit('/app.html')
     })
 
     specify('table options dialog initially is not visible', () => {

@@ -1,4 +1,4 @@
-import './style/main.scss'
+import './style/app.scss'
 import { TableController } from '@/TableController'
 import { WebSocketHeartBeat } from '@/WebSocketHeartBeat'
 import { Server } from '@/Server'
