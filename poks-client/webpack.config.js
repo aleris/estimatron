@@ -1,14 +1,14 @@
 const path = require('path')
 const webpack = require('webpack')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { TsConfigPathsPlugin } = require('awesome-typescript-loader')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const SubresourceIntegrityPlugin = require('webpack-subresource-integrity')
 
 const ROOT = path.resolve( __dirname, 'src' );
 const SERVER_ROOT = path.resolve( __dirname, '../poks-server/src' );
 const DESTINATION = path.resolve( __dirname, 'dist' );
 
-console.log('webpack', process.env.NODE_ENV)
 function getServerUrl() {
     switch (process.env.NODE_ENV) {
         case 'production':
@@ -24,12 +24,15 @@ module.exports = {
     context: ROOT,
 
     entry: {
-        'main': './main.ts'
+        'app': './pages/app/app.ts',
+        'index': './pages/index/index.ts',
+        '404': './pages/404/404.ts'
     },
     
     output: {
         filename: '[name].bundle.js',
-        path: DESTINATION
+        path: DESTINATION,
+        crossOriginLoading: 'anonymous'
     },
 
     resolve: {
@@ -87,20 +90,34 @@ module.exports = {
     },
 
     plugins: [
+        new HtmlWebpackPlugin({
+            template: path.resolve(__dirname, './src/pages/index/index.html'),
+            filename: 'index.html',
+            inject: true,
+            chunks: ['index']
+        }),
         new MiniCssExtractPlugin({
             filename: '[name].css',
             chunkFilename: '[id].css',
         }),
-        new HtmlWebpackPlugin({
-            template: path.resolve(__dirname, './src/index.html'),
-            inject: true,
-            minify: {
-                removeComments: true,
-                collapseWhitespace: false
-            }
-        }),
         new webpack.DefinePlugin({
             SERVER_URL: JSON.stringify(getServerUrl())
+        }),
+        new HtmlWebpackPlugin({
+            template: path.resolve(__dirname, './src/pages/app/app.html'),
+            filename: 'app.html',
+            inject: true,
+            chunks: ['app']
+        }),
+        new SubresourceIntegrityPlugin({
+            hashFuncNames: ['sha256', 'sha384'],
+            enabled: (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'ci'),
+        }),
+        new HtmlWebpackPlugin({
+            template: path.resolve(__dirname, './src/pages/404/404.html'),
+            filename: '404.html',
+            inject: true,
+            chunks: ['404']
         })
     ],
 

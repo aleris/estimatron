@@ -1,0 +1,27 @@
+body {
+  font-family: 'Dosis', sans-serif;
+  font-size: 16px;
+}
+
+
+section {
+  max-width: 600px;
+  margin: 0 auto;
+
+  h1 {
+    font-size: 12rem;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    margin-bottom: 2rem;
+  }
+
+  a {
+    border: 1px solid #424242;
+    color: #424242;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+  }
+}

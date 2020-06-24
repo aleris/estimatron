@@ -12,7 +12,7 @@ import { RevealBetsNotificationData } from '@server/model/RevealBetsNotification
 import { ResetTableNotificationData } from '@server/model/ResetTableNotificationData'
 import { ChangeTableOptionsNotificationData } from '@server/model/ChangeTableOptionsNotificationData'
 import { ChangePlayerOptionsNotificationData } from '@server/model/ChangePlayerOptionsNotificationData'
-import { WebSocketHeartBeat } from '@/WebSocketHeartBeat'
+import { WebSocketHeartBeat } from '@/pages/app/WebSocketHeartBeat'
 
 export class Server {
     public onConnectionOpened: () => void = () => {}

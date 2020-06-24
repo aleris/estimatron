@@ -4,6 +4,7 @@
   "description": "Scrum poker table client",
   "main": "index.js",
   "scripts": {
+    "dev": "npm run start",
     "start": "webpack-dev-server --port 9000 --inline --progress --profile --colors --watch --content-base src/ --mode development",
     "build": "webpack --config webpack.config.js --mode production",
     "build.prod": "webpack --config webpack.config.js -p",
@@ -64,6 +65,7 @@
     "typescript": "3.8.3",
     "webpack": "4.43.0",
     "webpack-cli": "3.3.11",
-    "webpack-dev-server": "3.11.0"
+    "webpack-dev-server": "3.11.0",
+    "webpack-subresource-integrity": "^1.4.1"
   }
 }

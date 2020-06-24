@@ -1,5 +1,4 @@
 import { mock } from 'jest-mock-extended'
-import { WebSocketHeartBeat } from '@/WebSocketHeartBeat'
 import { MessageData, Messages } from '@server/model/Messages'
 import { createTestPlayerInfo, createTestTableInfo } from '@server/model/TablePlayerInfo.test-utils'
 import { BetHelper } from '@server/model/Bet'
@@ -19,7 +18,8 @@ import { RevealBetsData } from '@server/model/RevealBetsData'
 import { ResetTableData } from '@server/model/ResetTableData'
 import { ChangeTableOptionsData } from '@server/model/ChangeTableOptionsData'
 import { ChangePlayerOptionsData } from '@server/model/ChangePlayerOptionsData'
-import { Server } from './Server'
+import { WebSocketHeartBeat } from '@/pages/app/WebSocketHeartBeat'
+import { Server } from '@/pages/app/Server'
 
 jest.spyOn(console, 'log').mockImplementation()
 

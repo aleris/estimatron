@@ -1,6 +1,6 @@
 describe('Player Options', () => {
     beforeEach(() => {
-        cy.visit('/')
+        cy.visit('/app.html')
     })
 
     specify('player options dialog initially is not visible', () => {
