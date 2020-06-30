@@ -2,7 +2,7 @@ export NODE_ENV=ci
 
 cd poks-server
 npm install
-npm test
+npm run test
 client_unit_test_result=$?
 npm run build
 npm run start &
