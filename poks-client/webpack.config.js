@@ -12,7 +12,7 @@ const DESTINATION = path.resolve( __dirname, 'dist' );
 function getServerUrl() {
     switch (process.env.NODE_ENV) {
         case 'production':
-            return 'wss://prod.site:443'
+            return 'wss://localhost:44443'
         case 'dev':
         case 'ci':
         default:

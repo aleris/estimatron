@@ -14,8 +14,7 @@ function startServer() {
     const port = Number(process.env.SERVER_PORT) || 29087
     logger.info(`Starting server on port ${port}...`)
     if (process.env.WS_CERT_KEY_FILE_NAME === undefined
-        || process.env.WS_CERT_CERT_FILE_NAME === undefined
-        || process.env.WS_CERT_CERT_PASSPHRASE === undefined) {
+        || process.env.WS_CERT_CERT_FILE_NAME === undefined) {
         logger.error('WS_CERT env vars missing, cannot create WS app')
         return
     }

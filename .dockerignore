@@ -1,0 +1,6 @@
+poks-server/node_modules
+poks-client/node_modules
+poks-client/npm-debug.log
+poks-client/dist
+*.iml
+Dockerfile

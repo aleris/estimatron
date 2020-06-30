@@ -6,8 +6,9 @@
   "scripts": {
     "lint": "tslint -c tslint.json -p tsconfig.json --fix",
     "tsc": "tsc",
-    "build": "npm-run-all lint tsc",
-    "dev:start": "npm-run-all build start",
+    "build": "tsc",
+    "build:dev": "npm-run-all lint tsc",
+    "dev:start": "npm-run-all build:dev start",
     "dev": "NODE_ENV=dev nodemon --watch src -e ts --exec npm run dev:start",
     "start": "node .",
     "test": "NODE_ENV=test jest"
