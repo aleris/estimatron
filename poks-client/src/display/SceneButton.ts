@@ -1,7 +1,7 @@
-import { Container, Shadow, Shape, Text } from '@createjs/easeljs'
 import { RefreshLayout } from '@/display/RefreshLayout'
 import { SceneConstants } from '@/display/SceneConstants'
 import { SceneLayout } from '@/display/SceneLayout'
+import { Container, Shadow, Shape, Text } from '@/createjs'
 
 export class SceneButton extends Container implements RefreshLayout {
     private static readonly WIDTH_TEXT_REPORT = 0.22
@@ -15,6 +15,8 @@ export class SceneButton extends Container implements RefreshLayout {
     private readonly backgroundShadow: Shadow
     private readonly textDisplay: any
 
+    public width: number = 0
+    public height: number = 0
     public disabled = false
 
     constructor(

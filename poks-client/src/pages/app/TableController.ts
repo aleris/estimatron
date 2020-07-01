@@ -1,5 +1,3 @@
-import { Stage, Touch } from '@createjs/easeljs'
-import { Ticker } from '@createjs/core'
 import { Bet } from '@server/model/Bet'
 import { TableOptions } from '@server/model/TableOptions'
 import { PlayerOptions } from '@server/model/PlayerOptions'
@@ -23,6 +21,7 @@ import { Notification } from '@/hud-components/notification/Notification'
 import { LocalStorageRepository } from '@/data/StorageRepository'
 import { LocalTablePlayer } from '@/data/LocalTablePlayer'
 import { Server } from '@/pages/app/Server'
+import { Stage, Ticker, Touch } from '@/createjs'
 
 export class TableController {
     private readonly sceneLayout: SceneLayout
@@ -196,7 +195,7 @@ export class TableController {
             player.bet = notificationData.bet
             this.tableContainer.otherPlayerBet(player)
         } else {
-            console.warn(`player with ${notificationData.playerId} no longer at table ${this.tableContainer?.table?.id}`)
+            console.warn(`player with ${notificationData.playerId} no longer at table ${this.sessionTable.tableInfo.id}`)
         }
     }
 

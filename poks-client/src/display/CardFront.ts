@@ -1,7 +1,7 @@
-import { Container, Shape, Text } from '@createjs/easeljs'
 import { RefreshLayout } from '@/display/RefreshLayout'
 import { SceneConstants } from '@/display/SceneConstants'
 import { estimation } from '@server/model/Bet'
+import { Container, Shape, Text } from '@/createjs'
 
 export class CardFront extends Container implements RefreshLayout {
     private static readonly TEXT_TOP_LEFT_RATIO = 0.07
@@ -11,6 +11,9 @@ export class CardFront extends Container implements RefreshLayout {
 
     private readonly topLeftText: any
     private readonly bottomRightText: any
+
+    public width: number = 0
+    public height: number = 0
 
     constructor(
         public text: estimation

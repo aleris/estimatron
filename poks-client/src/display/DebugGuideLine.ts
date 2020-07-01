@@ -1,4 +1,4 @@
-import { Shape } from '@createjs/easeljs'
+import { Shape } from '@/createjs'
 
 export enum GuideLineOrientation {
     Horizontal,

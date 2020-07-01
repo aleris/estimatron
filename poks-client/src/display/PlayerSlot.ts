@@ -1,7 +1,7 @@
-import { Container, Point, Shape, Text } from '@createjs/easeljs'
 import { RefreshLayout } from '@/display/RefreshLayout'
 import { SceneConstants } from '@/display/SceneConstants'
 import { PlayerInfo } from '@server/model/PlayerInfo'
+import { Container, Point, Shape, Text } from '@/createjs'
 
 export class PlayerSlot extends Container implements RefreshLayout {
     private static readonly BACKGROUND_COLOR = '#2a513e'
@@ -13,6 +13,10 @@ export class PlayerSlot extends Container implements RefreshLayout {
     private readonly background: Shape
     private readonly nameText: any
     private readonly strikethroughShape: Shape
+
+    public width: number = 0
+    public height: number = 0
+    public center: Point = new Point(0, 0)
     public cardShapeWidth: number = 0
     public cardShapeHeight: number = 0
 

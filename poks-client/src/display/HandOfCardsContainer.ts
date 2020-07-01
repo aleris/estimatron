@@ -1,5 +1,3 @@
-import { Container, Point } from '@createjs/easeljs'
-import { Ease, Tween } from '@createjs/tweenjs'
 import { id } from '@server/model/id'
 import { DeckKind, DeckRepository } from '@server/model/Decks'
 import { BetHelper } from '@server/model/Bet'
@@ -11,7 +9,7 @@ import { PositionAndRotation } from '@/display/PositionAndRotation'
 import { CardShape } from '@/display/CardShape'
 import { SessionTable } from '@/data/SessionTable'
 import { PlayerSlotsContainer } from '@/display/PlayerSlotsContainer'
-import { SceneConstants } from '@/display/SceneConstants'
+import { Container, Ease, Point, Tween } from '@/createjs'
 
 export class HandOfCardsContainer extends Container implements RefreshLayout {
     public onChangeMyBet: (bet: Bet) => void = () => {}
@@ -23,8 +21,10 @@ export class HandOfCardsContainer extends Container implements RefreshLayout {
     private readonly cards = new Array<CardShape>()
     private readonly betsByPlayerIdMap = new Map<id, CardShape>()
 
+    public width: number = 0
+    public height: number = 0
     private betCard: CardShape | null = null
-    private draggedCardStart: Point
+    private draggedCardStart: Point | null = null
     private grabbedCard: CardShape | null = null
 
     constructor(
@@ -168,7 +168,7 @@ export class HandOfCardsContainer extends Container implements RefreshLayout {
         return pos.y < this.sceneLayout.sceneHeight / 2
     }
 
-    private placeMyCards(): Point {
+    private placeMyCards() {
         const radius = this.sceneLayout.sceneWidth / 3
         const offsetX = this.sceneLayout.halfSceneWidth
         const offsetY = this.sceneLayout.sceneHeight

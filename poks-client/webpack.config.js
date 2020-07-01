@@ -54,7 +54,10 @@ module.exports = {
             ROOT,
             SERVER_ROOT,
             'node_modules'
-        ]
+        ],
+        alias: {
+            createjs: 'createjs/builds/1.0.0/createjs.js'
+        }
     },
 
     module: {
@@ -71,6 +74,24 @@ module.exports = {
             /****************
             * LOADERS
             *****************/
+            {
+                test: /node_modules[/\\]createjs/,
+                use: [
+                    {
+                        loader: 'exports-loader',
+                        options: {
+                            exports: 'default window.createjs',
+                        }
+                    },
+                    {
+                        loader: 'imports-loader',
+                        options: {
+                            wrapper: 'window',
+                        }
+                    }
+                ]
+            },
+
             {
                 test: /\.(ts|js)x?$/,
                 exclude: /node_modules/,
@@ -127,4 +148,3 @@ module.exports = {
 
     devtool: 'cheap-module-source-map'
 };
-

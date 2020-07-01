@@ -1,12 +1,15 @@
-import { Container, Shape } from '@createjs/easeljs'
 import { RefreshLayout } from '@/display/RefreshLayout'
 import { SceneConstants } from '@/display/SceneConstants'
+import { Container, Shape } from '@/createjs'
 
 export class CardBack extends Container implements RefreshLayout {
     private static readonly COLOR = '#c1dae8'
 
     private readonly background: Shape
     private readonly color: Shape
+
+    public width: number = 0
+    public height: number = 0
 
     constructor() {
         super()

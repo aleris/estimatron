@@ -1,10 +1,10 @@
-import { Container } from '@createjs/easeljs'
 import { RefreshLayout } from '@/display/RefreshLayout'
 import { SceneLayout } from '@/display/SceneLayout'
 import { PlayerSlot } from '@/display/PlayerSlot'
 import { SceneConstants } from '@/display/SceneConstants'
 import { SessionTable } from '@/data/SessionTable'
 import { PlayerInfo } from '@server/model/PlayerInfo'
+import { Container } from '@/createjs'
 
 export class PlayerSlotsContainer extends Container implements RefreshLayout {
     private static readonly MARGIN_REPORT = 0.15
