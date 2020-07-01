@@ -1,4 +1,3 @@
-import { Container } from '@createjs/easeljs'
 import { Bet } from '@server/model/Bet'
 import { PlayerInfo } from '@server/model/PlayerInfo'
 import { SessionTable } from '@/data/SessionTable'
@@ -9,6 +8,7 @@ import { PlayerSlotsContainer } from '@/display/PlayerSlotsContainer'
 import { SceneButton } from '@/display/SceneButton'
 import { SceneConstants } from '@/display/SceneConstants'
 import { DebugGuideLine, GuideLineOrientation } from '@/display/DebugGuideLine'
+import { Container } from '@/createjs'
 
 export class TableContainer extends Container implements RefreshLayout {
     public onChangeMyBet: (bet: Bet) => void = () => {}
@@ -19,6 +19,9 @@ export class TableContainer extends Container implements RefreshLayout {
     private readonly handOfCards: HandOfCardsContainer
     private readonly revealBetsButton: SceneButton
     private readonly resetButton: SceneButton
+
+    public width: number = 0
+    public height: number = 0
 
     constructor(
         private readonly sceneLayout: SceneLayout,

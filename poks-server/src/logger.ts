@@ -30,6 +30,7 @@ switch (env) {
         break;
     case 'production':
     default:
+        transports.push(console)
         cloudLogging = new LoggingWinston({
             projectId: process.env.GOOGLE_PROJECT_ID,
             logName: 'poks-server'

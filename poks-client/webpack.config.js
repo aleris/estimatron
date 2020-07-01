@@ -1,6 +1,5 @@
 const path = require('path')
 const webpack = require('webpack')
-const { TsConfigPathsPlugin } = require('awesome-typescript-loader')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const SubresourceIntegrityPlugin = require('webpack-subresource-integrity')
@@ -9,10 +8,12 @@ const ROOT = path.resolve( __dirname, 'src' );
 const SERVER_ROOT = path.resolve( __dirname, '../poks-server/src' );
 const DESTINATION = path.resolve( __dirname, 'dist' );
 
+const dev = process.env.NODE_ENV !== 'production';
+
 function getServerUrl() {
     switch (process.env.NODE_ENV) {
         case 'production':
-            return 'wss://prod.site:443'
+            return 'wss://localhost:44443'
         case 'dev':
         case 'ci':
         default:
@@ -21,10 +22,22 @@ function getServerUrl() {
 }
 
 module.exports = {
+    devServer: {
+        host: 'localhost',
+        port: '9000',
+        hot: true,
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+        },
+        historyApiFallback: true
+    },
+
+    mode: dev ? 'development' : 'production',
+
     context: ROOT,
 
     entry: {
-        'app': './pages/app/app.ts',
+        'app': ['@babel/polyfill', './pages/app/app.ts'],
         'index': './pages/index/index.ts',
         '404': './pages/404/404.ts'
     },
@@ -42,9 +55,9 @@ module.exports = {
             SERVER_ROOT,
             'node_modules'
         ],
-        plugins: [
-            new TsConfigPathsPlugin()
-        ]
+        alias: {
+            createjs: 'createjs/builds/1.0.0/createjs.js'
+        }
     },
 
     module: {
@@ -57,20 +70,32 @@ module.exports = {
                 test: /\.js$/,
                 use: 'source-map-loader'
             },
-            {
-                enforce: 'pre',
-                test: /\.ts$/,
-                exclude: /node_modules/,
-                use: 'tslint-loader'
-            },
 
             /****************
             * LOADERS
             *****************/
             {
-                test: /\.ts$/,
-                exclude: [ /node_modules/ ],
-                use: 'awesome-typescript-loader'
+                test: /node_modules[/\\]createjs/,
+                use: [
+                    {
+                        loader: 'exports-loader',
+                        options: {
+                            exports: 'default window.createjs',
+                        }
+                    },
+                    {
+                        loader: 'imports-loader',
+                        options: {
+                            wrapper: 'window',
+                        }
+                    }
+                ]
+            },
+
+            {
+                test: /\.(ts|js)x?$/,
+                exclude: /node_modules/,
+                loaders: ['babel-loader'],
             },
             {
                 test: /\.s[ac]ss$/i,
@@ -121,7 +146,5 @@ module.exports = {
         })
     ],
 
-    devtool: 'cheap-module-source-map',
-    devServer: {}
+    devtool: 'cheap-module-source-map'
 };
-

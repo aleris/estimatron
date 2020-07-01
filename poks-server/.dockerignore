@@ -1,0 +1,7 @@
+node_modules
+!node_modules/uWebSockets.js
+npm-debug.log
+dist
+log
+*.iml
+Dockerfile

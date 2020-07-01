@@ -1,0 +1,13 @@
+{
+  "extends": [
+  ],
+  "env": {
+    "browser": true
+  },
+  "rules": {},
+  "settings": {
+    "import/resolver": {
+      "babel-module": {}
+    }
+  }
+}

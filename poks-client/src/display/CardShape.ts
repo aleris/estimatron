@@ -1,5 +1,3 @@
-import { Container, Point, Shadow, Shape } from '@createjs/easeljs'
-import { Ease, Tween } from '@createjs/tweenjs'
 import { RefreshLayout } from '@/display/RefreshLayout'
 import { SceneConstants } from '@/display/SceneConstants'
 import { PositionAndRotation } from '@/display/PositionAndRotation'
@@ -7,6 +5,7 @@ import { CardFront } from '@/display/CardFront'
 import { CardBack } from '@/display/CardBack'
 import { estimation } from '@server/model/Bet'
 import { BetHelper } from '@server/model/Bet'
+import { Container, Ease, Point, Shadow, Shape, Tween } from '@/createjs'
 
 export enum CardSide {
     Front,
@@ -21,14 +20,16 @@ export class CardShape extends Container implements RefreshLayout {
 
     private readonly backgroundShadow: Shadow
 
-    private dragOffset: Point
+    private dragOffset: Point | null = null
 
     public handPosition: PositionAndRotation | null = null
 
     private readonly cardFront: CardFront
     private readonly cardBack: CardBack
 
-    public center: Point
+    public width: number = 0
+    public height: number = 0
+    public center: Point = new Point(0, 0)
     public side = CardSide.Front
 
     constructor(
@@ -178,6 +179,9 @@ export class CardShape extends Container implements RefreshLayout {
     }
 
     drag(pos: Point) {
+        if (null == this.dragOffset) {
+            return
+        }
         this.x = pos.x + this.dragOffset.x
         this.y = pos.y + this.dragOffset.y
     }
@@ -199,6 +203,7 @@ export class CardShape extends Container implements RefreshLayout {
 
     // see https://github.com/CreateJS/EaselJS/issues/861
     private forceUpdateCursor() {
+        // @ts-ignore
         this.stage._testMouseOver(true)
     }
 }
