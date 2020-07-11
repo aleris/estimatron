@@ -1,8 +1,9 @@
 const path = require('path')
 const webpack = require('webpack')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+const HtmlPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const SubresourceIntegrityPlugin = require('webpack-subresource-integrity')
+const CopyPlugin = require('copy-webpack-plugin');
 
 const ROOT = path.resolve( __dirname, 'src' )
 const SERVER_ROOT = path.resolve( __dirname, '../poks-server/src' )
@@ -141,25 +142,25 @@ module.exports = {
         new webpack.DefinePlugin({
             SERVER_URL: JSON.stringify(getServerUrl())
         }),
-        new HtmlWebpackPlugin({
+        new HtmlPlugin({
             template: 'app/app.hbs',
             filename: 'app.html',
             inject: true,
             chunks: ['app']
         }),
-        new HtmlWebpackPlugin({
+        new HtmlPlugin({
             template: 'site/index/index.hbs',
             filename: 'index.html',
             inject: true,
             chunks: ['index']
         }),
-        new HtmlWebpackPlugin({
+        new HtmlPlugin({
             template: 'site/404/404.hbs',
             filename: '404.html',
             inject: true,
             chunks: ['404']
         }),
-        new HtmlWebpackPlugin({
+        new HtmlPlugin({
             template: 'site/planning-estimation-scale-decks/planning-estimation-scale-decks.hbs',
             filename: 'planning-estimation-scale-decks.html',
             inject: true,
@@ -168,6 +169,15 @@ module.exports = {
         new SubresourceIntegrityPlugin({
             hashFuncNames: ['sha256', 'sha384'],
             enabled: (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'ci'),
+        }),
+        new CopyPlugin({
+            patterns: [
+                { from: 'site/*.ico', to: '.', flatten: true },
+                { from: 'site/*.png', to: '.', flatten: true },
+                { from: 'site/*.svg', to: '.', flatten: true },
+                { from: 'site/site.webmanifest', to: '.', flatten: true },
+                { from: 'site/browserconfig.xml', to: '.', flatten: true }
+            ],
         })
     ],
 
