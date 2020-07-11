@@ -142,7 +142,7 @@ module.exports = {
             SERVER_URL: JSON.stringify(getServerUrl())
         }),
         new HtmlWebpackPlugin({
-            template: 'app/app.html',
+            template: 'app/app.hbs',
             filename: 'app.html',
             inject: true,
             chunks: ['app']
@@ -154,7 +154,7 @@ module.exports = {
             chunks: ['index']
         }),
         new HtmlWebpackPlugin({
-            template: 'site/404/404.html',
+            template: 'site/404/404.hbs',
             filename: '404.html',
             inject: true,
             chunks: ['404']
