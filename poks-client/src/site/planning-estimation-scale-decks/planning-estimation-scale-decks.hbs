@@ -15,6 +15,106 @@
     {{> ../partials/header }}
 
     <main>
+        <div class="container">
+
+            <h2>Planning Poker Estimation Decks</h2>
+            <p>
+                Members of the team make features estimates by playing numbered cards face-down to the table.
+                The value on the card usually represent the number of story points but ideal days can also be used as
+                estimation units.
+                There are several deck types that are often used in planning poker:
+            </p>
+            <h3 id="fibonacci">Fibonacci</h3>
+            <p>
+                Probably the most used deck has cards showing the Fibonacci sequence:
+            </p>
+            <pre>1, 2, 3, 5, 8, 13, 21, 34, 55, 89</pre>
+            <p>
+                The reason the fibonacci sequence works very well for software estimation is that it naturally reflects
+                the uncertainty of the estimation for higher values.
+                Also it prevents the estimates to be too close to one another for higher values and allows for better
+                team consensus even for rough estimates.
+            </p>
+            <p>
+                One disadvantage is that for higher values, a number like 21 might be interpreted like a very precise
+                measurement (versus just saying 20 for example).
+            </p>
+            <p>
+                The sequence might also include additional values like 0, ∞, ☕ or ? as
+                <a href="#additional-values">described below</a>.
+            </p>
+
+            <h3 id="modified-fibonacci">Modified Fibonacci</h3>
+            <p>
+                Several commercially available planning poker decks use the sequence:
+            </p>
+            <pre>0, ½, 1, 2, 3, 5, 8, 13, 20, 40, 100</pre>
+            <p>
+                The reason for not exactly following the Fibonacci sequence after 13 is the for higher values the
+                uncertainty increases and using a very precise number (21) might be interpreted as a very precise
+                estimation.
+                Using numbers with only a single digit of precision for higher values indicates the uncertainty in the
+                estimation.
+            </p>
+
+            <h3 id="power-of-two">Power of Two</h3>
+            <p>The exponential growing sequence of power of two increases more rapidly:</p>
+
+            <pre>1, 2, 4, 8, 16, 32, 64, 128</pre>
+
+            <p>
+                This sequence can be used when the tasks are bigger and cover a higher range of effort.
+            </p>
+
+            <h3 id="sequential">Sequential</h3>
+            <p>The sequential values cover a smaller range of effort:</p>
+
+            <pre>1, 2, 3, 4, 5, 6, 7, 8, 9, 10</pre>
+
+            <p>
+                This sequence can be used when the tasks are small, require a higher estimate precision and the range of
+                effort to cover is relatively small.
+            </p>
+
+            <h3 id="t-shirts">T-Shirts</h3>
+            <p>T-Shirt sizes are also sometimes used:</p>
+
+            <pre>XS, S, M, L, XL</pre>
+
+            <p>
+                This sequence can be used when the tasks very small and the range of effort to cover is very small.
+            </p>
+
+            <h3 id="additional-values">Additional Values</h3>
+            <p>
+                When using planning poker cards for estimation, there are several values that are usually included on
+                cards:
+            </p>
+            <ul>
+                <li>
+                    <strong>?</strong> - <em>"unsure"</em> - means that the team member does not know to estimate the
+                    story with sufficient confidence, usually because it is in a zone it does not know or there are
+                    necessary details that are missing
+                </li>
+                <li>
+                    <strong>0</strong> - <em>"zero"</em> - means that the work is already done or it might not be
+                    necessary to do because is already included in other story/stories.
+                </li>
+                <li>
+                    <strong>∞</strong> - <em>"infinite"</em> - means that the story can never be completed for reasons
+                    that will be explained in the revealing phase or is so huge that it doesn't even make sense to
+                    estimate.
+                </li>
+                <li>
+                    <strong>☕</strong> - <em>"coffee"</em> - means a coffee break request, when the planning session is
+                    running long is a way for players to request a break. Traditionally the one that is making the
+                    request is also bringing coffee to all team members. For obvious reasons this will not work in a
+                    remote setup 😀.
+                </li>
+            </ul>
+
+            <p><a href="/">Estimatron</a> let's you choose any of these decks.</p>
+        </div>
     </main>
 
     {{> ../partials/footer }}
