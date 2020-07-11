@@ -1,0 +1,16 @@
+@import "../style/index";
+
+section {
+  max-width: 600px;
+  margin: 0 auto;
+
+  h1 {
+    font-size: 200px;
+    line-height: 200px;
+    margin-bottom: 24px;
+  }
+
+  p {
+    margin-bottom: 24px;
+  }
+}

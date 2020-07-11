@@ -1,0 +1,80 @@
+#notification {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  min-width: 200px;
+  max-width: 320px;
+
+  ul {
+    padding: 0;
+    margin: 0;
+
+    li {
+      list-style-type: none;
+      background-color: #fff;
+      margin: 0 0 5px 0;
+      padding: 10px;
+      text-indent: 0;
+      display: flex;
+      justify-content: space-between;
+      border-radius: 10px;
+      box-shadow: 1px 1px 3px 1px #424242;
+
+      span {
+      }
+
+      button {
+        margin-left: 5px;
+        padding: 5px;
+        width: 20px;
+        height: 20px;
+        background-color: #fff;
+        border: none;
+        border-radius: 10px;
+        outline: none;
+
+        &:hover {
+          background-color: #f9f9f9;
+        }
+
+        &:focus {
+          box-shadow: 0 0 0 2px #6050dc;
+        }
+
+        i {
+          display: inline-block;
+          background-size: 100% 100%;
+          width: 10px;
+          height: 10px;
+          background-image: url('./assets/close.svg');
+        }
+      }
+    }
+  }
+}
+
+#notification--permanent {
+  position: absolute;
+  width: 100%;
+  bottom: 30%;
+  transition: bottom 0.4s ease, visibility 0.4s ease;
+  visibility: visible;
+
+  .message {
+    display: block;
+    margin: 0 auto;
+    width: 300px;
+    background-color: #630f0f;
+    color: #fff;
+    text-align: center;
+    border-radius: 10px;
+    padding: 20px;
+    font-weight: bold;
+    box-shadow: 1px 1px 3px 1px #424242;;
+  }
+
+  &.outside {
+    bottom: 0;
+    visibility: hidden;
+  }
+}

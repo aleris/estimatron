@@ -4,9 +4,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const SubresourceIntegrityPlugin = require('webpack-subresource-integrity')
 
-const ROOT = path.resolve( __dirname, 'src' );
-const SERVER_ROOT = path.resolve( __dirname, '../poks-server/src' );
-const DESTINATION = path.resolve( __dirname, 'dist' );
+const ROOT = path.resolve( __dirname, 'src' )
+const SERVER_ROOT = path.resolve( __dirname, '../poks-server/src' )
+const DESTINATION = path.resolve( __dirname, 'dist' )
 
 const dev = process.env.NODE_ENV !== 'production';
 
@@ -37,9 +37,10 @@ module.exports = {
     context: ROOT,
 
     entry: {
-        'app': ['@babel/polyfill', './pages/app/app.ts'],
-        'index': './pages/index/index.ts',
-        '404': './pages/404/404.ts'
+        'app': ['@babel/polyfill', './app/app.ts'],
+        'index': './site/index/index.ts',
+        '404': './site/404/404.ts',
+        'planning-estimation-scale-decks': './site/planning-estimation-scale-decks/planning-estimation-scale-decks.ts'
     },
     
     output: {
@@ -91,7 +92,25 @@ module.exports = {
                     }
                 ]
             },
+            // {
+            //     test: /index\.html$/i,
+            //     use: ['html-loader']
+            // },
+            {
+                test: /\.hbs$/,
+                use: [
+                    {
+                        loader: 'handlebars-loader'
+                    },
+                    {
+                        loader: 'extract-loader'
+                    },
+                    {
+                        loader: 'html-loader'
+                    },
+                ]
 
+            },
             {
                 test: /\.(ts|js)x?$/,
                 exclude: /node_modules/,
@@ -115,12 +134,6 @@ module.exports = {
     },
 
     plugins: [
-        new HtmlWebpackPlugin({
-            template: path.resolve(__dirname, './src/pages/index/index.html'),
-            filename: 'index.html',
-            inject: true,
-            chunks: ['index']
-        }),
         new MiniCssExtractPlugin({
             filename: '[name].css',
             chunkFilename: '[id].css',
@@ -129,20 +142,32 @@ module.exports = {
             SERVER_URL: JSON.stringify(getServerUrl())
         }),
         new HtmlWebpackPlugin({
-            template: path.resolve(__dirname, './src/pages/app/app.html'),
+            template: 'app/app.html',
             filename: 'app.html',
             inject: true,
             chunks: ['app']
         }),
-        new SubresourceIntegrityPlugin({
-            hashFuncNames: ['sha256', 'sha384'],
-            enabled: (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'ci'),
+        new HtmlWebpackPlugin({
+            template: 'site/index/index.hbs',
+            filename: 'index.html',
+            inject: true,
+            chunks: ['index']
         }),
         new HtmlWebpackPlugin({
-            template: path.resolve(__dirname, './src/pages/404/404.html'),
+            template: 'site/404/404.html',
             filename: '404.html',
             inject: true,
             chunks: ['404']
+        }),
+        new HtmlWebpackPlugin({
+            template: 'site/planning-estimation-scale-decks/planning-estimation-scale-decks.hbs',
+            filename: 'planning-estimation-scale-decks.html',
+            inject: true,
+            chunks: ['planning-estimation-scale-decks']
+        }),
+        new SubresourceIntegrityPlugin({
+            hashFuncNames: ['sha256', 'sha384'],
+            enabled: (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'ci'),
         })
     ],
 
