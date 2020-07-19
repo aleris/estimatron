@@ -1,0 +1,23 @@
+@import "index";
+
+.light {
+  color: color(typography, 4);
+  background-color: color(bg, 4);
+
+  .body-wrap {
+    background: color(bg, 4);
+  }
+
+  .boxed-container {
+    box-shadow: none;
+  }
+
+  h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    color: color(typography, 4);
+  }
+
+  pre {
+    background-color: color(bg, 5);
+    color: color(typography, 4);
+  }
+}

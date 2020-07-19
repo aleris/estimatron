@@ -6,12 +6,15 @@ $color: (
 	typography: (
 		1: #FFFFFF,
 		2: #b5cbdc,
-		3: #9CACBC
+		3: #9CACBC,
+        4: #424242
 	),
 	bg: (
 		1: #141516,
 		2: #222424,
-		3: #454C4C
+		3: #454C4C,
+        4: #FFFFFF,
+        5: #E9EDF3
 	),
 	primary: (
 		1: #4353FF,
@@ -32,7 +35,7 @@ $font__family: (
 	base: '"Heebo", sans-serif', // font-family(base)
 	heading: '"Titillium Web", sans-serif', // font-family(heading)
 	code: 'Monaco, Consolas, "Andale Mono", "DejaVu Sans Mono", monospace', // font-family(code)
-	pre: '"Courier 10 Pitch", Courier, monospace' // font-family(pre)
+	pre: '"Dosis", Courier, monospace' // font-family(pre)
 );
 
 $font__sizes: (

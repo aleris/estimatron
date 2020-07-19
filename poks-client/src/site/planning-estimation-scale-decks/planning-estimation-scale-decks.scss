@@ -1,1 +1,5 @@
-@import "../style/index";
+@import "../style/light";
+
+.pre-big {
+  @include font-size(3, mobile, true, true);
+}

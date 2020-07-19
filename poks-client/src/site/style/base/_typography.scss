@@ -212,11 +212,10 @@ pre, code, kbd, tt, var {
 
 pre {
 	@include font-size(7, mobile, true, true);
-	margin-bottom: 1.6em;
 	max-width: 100%;
 	overflow: auto;
-	padding: 24px;
-	margin-top: 24px;
+	padding: 20px;
+	margin-top: 20px;
 	margin-bottom: 24px;
 }
 

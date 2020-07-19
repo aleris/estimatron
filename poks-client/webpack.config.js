@@ -39,9 +39,10 @@ module.exports = {
 
     entry: {
         'app': ['@babel/polyfill', './app/app.ts'],
-        'index': './site/index/index.ts',
         '404': './site/404/404.ts',
-        'planning-estimation-scale-decks': './site/planning-estimation-scale-decks/planning-estimation-scale-decks.ts'
+        'index': './site/index/index.ts',
+        'planning-estimation-scale-decks': './site/planning-estimation-scale-decks/planning-estimation-scale-decks.ts',
+        'agile-planning-estimation': './site/agile-planning-estimation/agile-planning-estimation.ts'
     },
     
     output: {
@@ -149,22 +150,28 @@ module.exports = {
             chunks: ['app']
         }),
         new HtmlPlugin({
-            template: 'site/index/index.hbs',
-            filename: 'index.html',
-            inject: true,
-            chunks: ['index']
-        }),
-        new HtmlPlugin({
             template: 'site/404/404.hbs',
             filename: '404.html',
             inject: true,
             chunks: ['404']
         }),
         new HtmlPlugin({
+            template: 'site/index/index.hbs',
+            filename: 'index.html',
+            inject: true,
+            chunks: ['index']
+        }),
+        new HtmlPlugin({
             template: 'site/planning-estimation-scale-decks/planning-estimation-scale-decks.hbs',
             filename: 'planning-estimation-scale-decks.html',
             inject: true,
             chunks: ['planning-estimation-scale-decks']
+        }),
+        new HtmlPlugin({
+            template: 'site/agile-planning-estimation/agile-planning-estimation.hbs',
+            filename: 'agile-planning-estimation.html',
+            inject: true,
+            chunks: ['agile-planning-estimation']
         }),
         new SubresourceIntegrityPlugin({
             hashFuncNames: ['sha256', 'sha384'],
