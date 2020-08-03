@@ -40,7 +40,7 @@ module.exports = {
     entry: {
         'app': ['@babel/polyfill', './app/app.ts'],
         '404': './site/404/404.ts',
-        'index': './site/index/index.ts',
+        'index': ['@babel/polyfill', './site/index/index.ts'],
         'planning-estimation-scale-decks': './site/planning-estimation-scale-decks/planning-estimation-scale-decks.ts',
         'agile-planning-estimation': './site/agile-planning-estimation/agile-planning-estimation.ts'
     },

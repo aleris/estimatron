@@ -40,6 +40,18 @@ export class LocalStorageRepository<T> {
         return map.get(itemKey)
     }
 
+    getAll(): Map<string, T> | undefined {
+        if (!LocalStorageRepository.isAvailable) {
+            return undefined
+        }
+        const serializedValue = localStorage.getItem(this.repositoryKey)
+        if (!serializedValue) {
+            return undefined
+        }
+        const objectValue = JSON.parse(serializedValue)
+        return new Map<string, T>(objectValue)
+    }
+
     set(value: T, itemKey: string | null = null) {
         if (!LocalStorageRepository.isAvailable) {
             return
