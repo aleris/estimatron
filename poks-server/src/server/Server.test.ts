@@ -165,6 +165,8 @@ describe(Server.name, () => {
     })
 
     test('join deny when table full', () => {
+        (JoinCommand as any)['MAX_PLAYERS_ON_TABLE'] = 2
+
         const wsPlayer1 = mock<WebSocket>()
         const tablePlayer1 = createTestTablePlayer(wsPlayer1)
         for (let i = 2; i <= JoinCommand.MAX_PLAYERS_ON_TABLE; i++) {
@@ -172,16 +174,16 @@ describe(Server.name, () => {
         }
         serverStorage.saveTable(tablePlayer1.table)
 
-        const wsPlayer7 = mock<WebSocket>()
-        const player7 = createTestPlayer(wsPlayer7, 7)
+        const wsPlayerMax = mock<WebSocket>()
+        const playerMax = createTestPlayer(wsPlayerMax, JoinCommand.MAX_PLAYERS_ON_TABLE + 1)
         const message: MessageData<JoinData> = {
             kind: Messages.Join,
             data: {
                 tableInfo: tablePlayer1.table.tableInfo,
-                playerInfo: player7.playerInfo
+                playerInfo: playerMax.playerInfo
             }
         }
-        sendTestMessage(wsSocketBehavior!, wsPlayer7, message)
+        sendTestMessage(wsSocketBehavior!, wsPlayerMax, message)
 
         const joinDenyNotification: MessageData<JoinDeniedNotificationData> = {
             kind: Messages.JoinDeniedNotification,
@@ -190,9 +192,42 @@ describe(Server.name, () => {
             }
         }
         const serializedNotification = JSON.stringify(joinDenyNotification)
-        expect(wsPlayer7.send).toHaveBeenCalledWith(serializedNotification)
-        expect(wsPlayer7.end).toHaveBeenCalledWith(CloseCodes.JoinDeny, JoinDeniedReasons[JoinDeniedReasons.MaxPlayersOnATable])
+        expect(wsPlayerMax.send).toHaveBeenCalledWith(serializedNotification)
+        expect(wsPlayerMax.end).toHaveBeenCalledWith(CloseCodes.JoinDeny, JoinDeniedReasons[JoinDeniedReasons.MaxPlayersOnATable])
         expect(server.serverStorage.getTable('table-id-1')?.players.length).toStrictEqual(JoinCommand.MAX_PLAYERS_ON_TABLE)
+    })
+
+
+    test('join deny when no more tables', () => {
+        (JoinCommand as any)['MAX_TABLES'] = 2
+
+        for (let i = 1; i <= JoinCommand.MAX_TABLES; i++) {
+            const wsPlayerExisting = mock<WebSocket>()
+            const tablePlayerExisting = createTestTablePlayer(wsPlayerExisting, i)
+            serverStorage.saveTable(tablePlayerExisting.table)
+        }
+
+        const wsPlayerMax = mock<WebSocket>()
+        const tablePlayerMax = createTestTablePlayer(wsPlayerMax, JoinCommand.MAX_TABLES + 1)
+        const message: MessageData<JoinData> = {
+            kind: Messages.Join,
+            data: {
+                tableInfo: tablePlayerMax.table.tableInfo,
+                playerInfo: tablePlayerMax.player.playerInfo
+            }
+        }
+        sendTestMessage(wsSocketBehavior!, wsPlayerMax, message)
+
+        const joinDenyNotification: MessageData<JoinDeniedNotificationData> = {
+            kind: Messages.JoinDeniedNotification,
+            data: {
+                reason: JoinDeniedReasons.MaxTables
+            }
+        }
+        const serializedNotification = JSON.stringify(joinDenyNotification)
+        expect(wsPlayerMax.send).toHaveBeenCalledWith(serializedNotification)
+        expect(wsPlayerMax.end).toHaveBeenCalledWith(CloseCodes.JoinDeny, JoinDeniedReasons[JoinDeniedReasons.MaxTables])
+        expect(server.serverStorage.tablesCount).toStrictEqual(JoinCommand.MAX_TABLES)
     })
 
     test('leave on connection closed', () => {

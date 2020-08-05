@@ -20,6 +20,7 @@ import { CloseCodes } from '../model/CloseCodes'
 const log = logger.child({ component: 'JoinCommand' })
 
 export class JoinCommand implements Command<JoinData> {
+    static readonly MAX_TABLES = 1000
     static readonly MAX_PLAYERS_ON_TABLE = 6
 
     constructor(
@@ -91,6 +92,7 @@ class CreateTableAction implements JoinCreateAction {
     ) { }
 
     create(): JoinCreateActionResult {
+
         const player = {
             ws: this.senderWebSocket,
             playerInfo: {
@@ -112,15 +114,22 @@ class CreateTableAction implements JoinCreateAction {
             lastResetByPlayer: null
         }
 
-        log.info(`Adding table ${TableHelper.nameAndId(table)} with player ${PlayerHelper.nameAndId(player)}`)
-
-        this.server.serverStorage.saveTable(table)
-
-        Monitoring.recordStatsCreatedTables()
+        let joinAccepted, joinDeniedReason
+        if (this.server.serverStorage.tablesCount < JoinCommand.MAX_TABLES) {
+            joinAccepted = true
+            joinDeniedReason = null
+            this.server.serverStorage.saveTable(table)
+            log.info(`Added table ${TableHelper.nameAndId(table)} with player ${PlayerHelper.nameAndId(player)}`)
+            Monitoring.recordStatsCreatedTables()
+        } else {
+            joinAccepted = false
+            joinDeniedReason = JoinDeniedReasons.MaxTables
+            log.info(`Max table reached, table ${TableHelper.nameAndId(table)} created by player ${PlayerHelper.nameAndId(player)} not added`)
+        }
 
         const tablePlayer = { table, player }
 
-        return { tablePlayer, joinAccepted: true, joinDeniedReason: null }
+        return { tablePlayer, joinAccepted, joinDeniedReason }
     }
 }
 
@@ -141,13 +150,15 @@ class CreatePlayerAction implements JoinCreateAction {
                 gone: false
             }
         }
-        let joinAccepted
+        let joinAccepted, joinDeniedReason
         if (this.table.players.length < JoinCommand.MAX_PLAYERS_ON_TABLE) {
             joinAccepted = true
+            joinDeniedReason = null
             this.table.players.push(player)
             log.info(`Added player ${PlayerHelper.nameAndId(player)} to table ${TableHelper.nameAndId(this.table)}`)
         } else {
             joinAccepted = false
+            joinDeniedReason = JoinDeniedReasons.MaxPlayersOnATable
             log.info(`Max players reached, player ${PlayerHelper.nameAndId(player)} not added to table ${TableHelper.nameAndId(this.table)}`)
         }
         Monitoring.recordStatsPlayersJoined()
@@ -155,7 +166,7 @@ class CreatePlayerAction implements JoinCreateAction {
         const table =  this.table
         const tablePlayer = { table, player }
 
-        return { tablePlayer, joinAccepted, joinDeniedReason: JoinDeniedReasons.MaxPlayersOnATable }
+        return { tablePlayer, joinAccepted, joinDeniedReason }
     }
 }
 
