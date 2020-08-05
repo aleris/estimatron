@@ -77,6 +77,7 @@ export class TableController {
         Ticker.addEventListener('tick', this.stage)
 
         this.server.onConnectionOpened = this.onServerConnectionOpened.bind(this)
+        this.server.onConnectionClosed = this.onServerConnectionClosed.bind(this)
         this.server.onJoinConfirmed = this.onServerJoinConfirmed.bind(this)
         this.server.onOtherJoined = this.onServerOtherJoined.bind(this)
         this.server.onJoinDenied = this.onServerJoinDenied.bind(this)
@@ -107,6 +108,11 @@ export class TableController {
             playerInfo,
             tableInfo
         })
+    }
+
+    private onServerConnectionClosed() {
+        console.log('onServerConnectionClosed', this.sessionTable)
+        this.notification.permanent('The connection to the server was closed. It might be a temporary network issue or a problem with the server. Please try to refresh the page.')
     }
 
     private onChangeMyBet(bet: Bet) {
