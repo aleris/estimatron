@@ -1,3 +1,4 @@
+import { Container } from '@/app/createjs'
 import { Bet } from '@server/model/Bet'
 import { PlayerInfo } from '@server/model/PlayerInfo'
 import { SessionTable } from '@/app/data/SessionTable'
@@ -5,17 +6,18 @@ import { HandOfCardsContainer } from '@/app/display/HandOfCardsContainer'
 import { RefreshLayout } from '@/app/display/RefreshLayout'
 import { SceneLayout } from '@/app/display/SceneLayout'
 import { PlayerSlotsContainer } from '@/app/display/PlayerSlotsContainer'
+import { ObserversContainer } from '@/app/display/ObserversContainer'
 import { SceneButton } from '@/app/display/SceneButton'
 import { SceneConstants } from '@/app/display/SceneConstants'
 import { DebugGuideLine, GuideLineOrientation } from '@/app/display/DebugGuideLine'
-import { Container } from '@/app/createjs'
 
 export class TableContainer extends Container implements RefreshLayout {
     public onChangeMyBet: (bet: Bet) => void = () => {}
     public onRevealBetsClick: () => void = () => {}
     public onResetTableClick: () => void = () => {}
 
-    private readonly playerSlotsList: PlayerSlotsContainer
+    private readonly observersContainer: ObserversContainer
+    private readonly playerSlotsContainer: PlayerSlotsContainer
     private readonly handOfCards: HandOfCardsContainer
     private readonly revealBetsButton: SceneButton
     private readonly resetButton: SceneButton
@@ -28,8 +30,11 @@ export class TableContainer extends Container implements RefreshLayout {
         private readonly sessionTable: SessionTable
     ) {
         super()
-        this.playerSlotsList = new PlayerSlotsContainer(sceneLayout, sessionTable)
-        this.addChild(this.playerSlotsList)
+        this.observersContainer = new ObserversContainer(sceneLayout, sessionTable)
+        this.addChild(this.observersContainer)
+
+        this.playerSlotsContainer = new PlayerSlotsContainer(sceneLayout, sessionTable)
+        this.addChild(this.playerSlotsContainer)
 
         this.revealBetsButton = new SceneButton(
             sceneLayout,
@@ -60,7 +65,7 @@ export class TableContainer extends Container implements RefreshLayout {
         })
         this.addChild(this.resetButton)
 
-        this.handOfCards = new HandOfCardsContainer(sceneLayout, sessionTable, this.playerSlotsList)
+        this.handOfCards = new HandOfCardsContainer(sceneLayout, sessionTable, this.playerSlotsContainer)
         this.handOfCards.onChangeMyBet = this.changeMyBet.bind(this)
         this.addChild(this.handOfCards)
     }
@@ -77,7 +82,8 @@ export class TableContainer extends Container implements RefreshLayout {
         this.resetButton.y = this.revealBetsButton.y
         this.resetButton.x = this.sceneLayout.sceneWidth / 6
 
-        this.playerSlotsList.refreshLayout()
+        this.observersContainer.refreshLayout()
+        this.playerSlotsContainer.refreshLayout()
         this.handOfCards.refreshLayout()
 
         // this.addChild(new DebugGuideLine(this.sceneLayout.halfSceneHeight, GuideLineOrientation.Horizontal))
@@ -89,7 +95,8 @@ export class TableContainer extends Container implements RefreshLayout {
     }
 
     refreshPlayers(): void {
-        this.playerSlotsList.refreshLayout()
+        this.observersContainer.refreshLayout()
+        this.playerSlotsContainer.refreshLayout()
         this.updateControlButtonsState()
     }
 

@@ -28,11 +28,12 @@ export class PlayerSlotsContainer extends Container implements RefreshLayout {
     }
 
     refreshLayout(): void {
-        const players = this.sessionTable.players
-        if (!players) {
+        const allPlayers = this.sessionTable.players
+        if (!allPlayers) {
             console.error('players are not set on session table')
             return
         }
+        const players = allPlayers.filter(p => !p.observerMode)
         const margin = Math.round(this.sceneLayout.cardWidth * PlayerSlotsContainer.MARGIN_REPORT)
         const slotsCount = players.length
         const availableWidth = this.sceneLayout.sceneWidth

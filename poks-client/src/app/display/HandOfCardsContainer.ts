@@ -266,7 +266,7 @@ export class HandOfCardsContainer extends Container implements RefreshLayout {
     }
 
     private drop(card: CardShape, pos: Point) {
-        card.dropTo(pos)
+        card.dropTo(new PositionAndRotation(pos.x, pos.y, 0))
         this.grabbedCard = null
         this.onDropCard(card, pos)
     }

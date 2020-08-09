@@ -1,4 +1,5 @@
 import { SessionTable } from '@/app/data/SessionTable'
+import { PlayerInfo } from '@server/model/PlayerInfo'
 
 export class PlayerOptionsPanelController {
     private readonly optionsButton: HTMLElement | null
@@ -14,11 +15,18 @@ export class PlayerOptionsPanelController {
 
     refresh() {
         if (this.playerName) {
-            this.playerName.textContent = this.sessionTable.playerInfo.name
+            this.playerName.textContent = this.getPlayerNameForDisplay(this.sessionTable.playerInfo)
         }
     }
 
     refocusAction() {
         setTimeout(() => this.optionsButton?.focus(), 0)
+    }
+
+    private getPlayerNameForDisplay(playerInfo: PlayerInfo): string {
+        if (playerInfo.observerMode) {
+            return `👀 ${playerInfo.name}`
+        }
+        return playerInfo.name
     }
 }

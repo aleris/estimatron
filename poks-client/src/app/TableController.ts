@@ -157,7 +157,7 @@ export class TableController {
 
     private onTableOptionsClose(tableOptions: TableOptions | null) {
         console.log('onChangeTableOptions', tableOptions)
-        this.tableOptionsPanelController.refocusAction()
+        // this.tableOptionsPanelController.refocusAction()
         if (tableOptions) {
             this.server.sendChangeTableOptions({tableOptions})
         }
@@ -165,7 +165,7 @@ export class TableController {
 
     private onPlayerOptionsClose(playerOptions: PlayerOptions | null) {
         console.log('onChangePlayerOptions', playerOptions)
-        this.playerOptionsPanelController.refocusAction()
+        // this.playerOptionsPanelController.refocusAction()
         if (playerOptions) {
             this.server.sendChangePlayerOptions({playerOptions})
         }
