@@ -94,10 +94,6 @@ module.exports = {
                     }
                 ]
             },
-            // {
-            //     test: /index\.html$/i,
-            //     use: ['html-loader']
-            // },
             {
                 test: /\.hbs$/,
                 use: [
