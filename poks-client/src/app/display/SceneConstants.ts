@@ -23,4 +23,6 @@ export class SceneConstants {
     public static readonly REVEAL_BUTTON_BACKGROUND_COLOR_ROLLOVER = '#ff8900'
     public static readonly RESET_BUTTON_BACKGROUND_COLOR = '#b03060'
     public static readonly RESET_BUTTON_BACKGROUND_COLOR_ROLLOVER = '#c0205c'
+    public static readonly INVITE_OTHERS_BUTTON_BACKGROUND_COLOR = '#9084f4'
+    public static readonly INVITE_OTHERS_BUTTON_BACKGROUND_COLOR_ROLLOVER = '#998fe9'
 }

@@ -22,6 +22,7 @@ import { LocalStorageRepository } from '@/app/data/StorageRepository'
 import { LocalTablePlayer } from '@/app/data/LocalTablePlayer'
 import { Server } from '@/app/Server'
 import { Stage, Ticker, Touch } from '@/app/createjs'
+import { InviteOthersDialogController } from '@/app/hud-components/invite-others-dialog/InviteOthersDialogController'
 
 export class TableController {
     private readonly sceneLayout: SceneLayout
@@ -32,6 +33,7 @@ export class TableController {
     private readonly playerOptionsDialogController: PlayerOptionsDialogController
     private readonly tableOptionsPanelController: TableOptionsPanelController
     private readonly tableOptionsDialogController: TableOptionsDialogController
+    private readonly inviteOthersDialogController: InviteOthersDialogController
     private readonly notification: Notification
     private readonly localTablePlayer: LocalTablePlayer
 
@@ -59,6 +61,7 @@ export class TableController {
         this.tableContainer.onChangeMyBet = this.onChangeMyBet.bind(this)
         this.tableContainer.onRevealBetsClick = this.onRevealBetsClick.bind(this)
         this.tableContainer.onResetTableClick = this.onResetTableClick.bind(this)
+        this.tableContainer.onInviteOthersClick = this.onInviteOthersClick.bind(this)
         this.stage.addChild(this.tableContainer)
 
         this.tableOptionsPanelController = new TableOptionsPanelController(this.sessionTable)
@@ -72,6 +75,8 @@ export class TableController {
 
         this.playerOptionsDialogController = new PlayerOptionsDialogController(this.sessionTable)
         this.playerOptionsDialogController.onClose = this.onPlayerOptionsClose.bind(this)
+
+        this.inviteOthersDialogController = new InviteOthersDialogController(this.sessionTable)
 
         this.refreshLayout()
         Ticker.addEventListener('tick', this.stage)
@@ -108,6 +113,7 @@ export class TableController {
             playerInfo,
             tableInfo
         })
+        this.inviteOthersDialogController.update(window.location.href)
     }
 
     private onServerConnectionClosed() {
@@ -131,6 +137,11 @@ export class TableController {
     private onResetTableClick() {
         console.log('onResetTableClick')
         this.server.sendResetTable()
+    }
+
+    private onInviteOthersClick() {
+        console.log('onInviteOthersClick')
+        this.inviteOthersDialogController.open()
     }
 
     private onPlayerOptionsButtonClick() {

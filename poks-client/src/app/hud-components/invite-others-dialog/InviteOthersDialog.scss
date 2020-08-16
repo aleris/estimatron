@@ -1,0 +1,24 @@
+#inviteOthersDialog {
+  width: 600px;
+  height: 230px;
+  margin-top: -115px;
+  margin-left: -300px;
+  transition: left 0.4s ease, top 0.4s ease, visibility 0.4s ease;
+  visibility: visible;
+
+  &.outside {
+    top: -230px;
+    left: 100%;
+    visibility: hidden;
+  }
+}
+
+@media screen and (max-width: 600px), screen and (max-height: 230px) {
+  #inviteOthersDialog {
+    width: 100%;
+    top: 0;
+    left: 0;
+    margin-top: 0;
+    margin-left: 0;
+  }
+}

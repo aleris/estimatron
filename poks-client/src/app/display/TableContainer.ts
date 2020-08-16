@@ -10,17 +10,20 @@ import { ObserversContainer } from '@/app/display/ObserversContainer'
 import { SceneButton } from '@/app/display/SceneButton'
 import { SceneConstants } from '@/app/display/SceneConstants'
 import { DebugGuideLine, GuideLineOrientation } from '@/app/display/DebugGuideLine'
+import { InviteOthersButton } from '@/app/display/InviteOthersButton'
 
 export class TableContainer extends Container implements RefreshLayout {
     public onChangeMyBet: (bet: Bet) => void = () => {}
     public onRevealBetsClick: () => void = () => {}
     public onResetTableClick: () => void = () => {}
+    public onInviteOthersClick: () => void = () => {}
 
     private readonly observersContainer: ObserversContainer
     private readonly playerSlotsContainer: PlayerSlotsContainer
     private readonly handOfCards: HandOfCardsContainer
     private readonly revealBetsButton: SceneButton
     private readonly resetButton: SceneButton
+    private readonly inviteOthersButton: InviteOthersButton
 
     public width: number = 0
     public height: number = 0
@@ -39,9 +42,9 @@ export class TableContainer extends Container implements RefreshLayout {
         this.revealBetsButton = new SceneButton(
             sceneLayout,
             'REVEAL',
-            false,
             SceneConstants.REVEAL_BUTTON_BACKGROUND_COLOR,
-            SceneConstants.REVEAL_BUTTON_BACKGROUND_COLOR_ROLLOVER
+            SceneConstants.REVEAL_BUTTON_BACKGROUND_COLOR_ROLLOVER,
+            false
         )
         this.addChild(this.revealBetsButton)
         this.revealBetsButton.addEventListener('click', () => {
@@ -53,9 +56,9 @@ export class TableContainer extends Container implements RefreshLayout {
         this.resetButton = new SceneButton(
             sceneLayout,
             ' RESET',
-            true,
             SceneConstants.RESET_BUTTON_BACKGROUND_COLOR,
-            SceneConstants.RESET_BUTTON_BACKGROUND_COLOR_ROLLOVER
+            SceneConstants.RESET_BUTTON_BACKGROUND_COLOR_ROLLOVER,
+            true
         )
         this.resetButton.disabled = true
         this.resetButton.addEventListener('click', () => {
@@ -64,6 +67,17 @@ export class TableContainer extends Container implements RefreshLayout {
             }
         })
         this.addChild(this.resetButton)
+
+        this.inviteOthersButton = new InviteOthersButton(
+            sceneLayout,
+            'INVITE\nOTHERS',
+            SceneConstants.INVITE_OTHERS_BUTTON_BACKGROUND_COLOR,
+            SceneConstants.INVITE_OTHERS_BUTTON_BACKGROUND_COLOR_ROLLOVER
+        )
+        this.inviteOthersButton.addEventListener('click', () => {
+            this.onInviteOthersClick()
+        })
+        this.addChild(this.inviteOthersButton)
 
         this.handOfCards = new HandOfCardsContainer(sceneLayout, sessionTable, this.playerSlotsContainer)
         this.handOfCards.onChangeMyBet = this.changeMyBet.bind(this)
@@ -74,19 +88,11 @@ export class TableContainer extends Container implements RefreshLayout {
         this.height = this.sceneLayout.sceneHeight
         this.width = this.sceneLayout.sceneWidth
 
-        this.updateControlButtonsState()
-
-        this.revealBetsButton.y = this.height / 2
-        this.revealBetsButton.x = (this.sceneLayout.sceneWidth - this.sceneLayout.sceneWidth / 6) - this.revealBetsButton.width
-
-        this.resetButton.y = this.revealBetsButton.y
-        this.resetButton.x = this.sceneLayout.sceneWidth / 6
-
         this.observersContainer.refreshLayout()
         this.playerSlotsContainer.refreshLayout()
         this.handOfCards.refreshLayout()
 
-        // this.addChild(new DebugGuideLine(this.sceneLayout.halfSceneHeight, GuideLineOrientation.Horizontal))
+        this.updateControlButtonsState()
     }
 
     otherPlayerBet(player: PlayerInfo) {
@@ -120,10 +126,24 @@ export class TableContainer extends Container implements RefreshLayout {
     }
 
     private updateControlButtonsState() {
+        this.revealBetsButton.y = this.height / 2
+        this.revealBetsButton.x = (this.sceneLayout.sceneWidth - this.sceneLayout.sceneWidth / 6) - this.revealBetsButton.width
         const isRevealed = this.sessionTable.tableInfo.revealed
         this.revealBetsButton.disabled = isRevealed
         this.revealBetsButton.refreshLayout()
+
         this.resetButton.disabled = !this.sessionTable.areBetsPresent && !isRevealed
         this.resetButton.refreshLayout()
+        this.resetButton.y = this.revealBetsButton.y
+        this.resetButton.x = this.sceneLayout.sceneWidth / 6
+
+        this.inviteOthersButton.visible = this.sessionTable.players.length === 1
+        this.inviteOthersButton.refreshLayout()
+        const playerSlot = this.playerSlotsContainer.playerSlot
+        if (playerSlot) {
+            this.inviteOthersButton.x = playerSlot.x + this.sceneLayout.cardWidth
+            this.inviteOthersButton.y = playerSlot.y - this.sceneLayout.cardHeight / 2
+        }
+
     }
 }
