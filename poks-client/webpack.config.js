@@ -2,8 +2,12 @@ const path = require('path')
 const webpack = require('webpack')
 const HtmlPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const TerserJSPlugin = require('terser-webpack-plugin')
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const SubresourceIntegrityPlugin = require('webpack-subresource-integrity')
 const CopyPlugin = require('copy-webpack-plugin');
+const CompressionPlugin = require('compression-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const ROOT = path.resolve( __dirname, 'src' )
 const SERVER_ROOT = path.resolve( __dirname, '../poks-server/src' )
@@ -46,9 +50,13 @@ module.exports = {
     },
     
     output: {
-        filename: '[name].bundle.js',
+        filename: '[name].[hash].js',
         path: DESTINATION,
         crossOriginLoading: 'anonymous'
+    },
+
+    optimization: {
+        minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
     },
 
     resolve: {
@@ -112,7 +120,7 @@ module.exports = {
             {
                 test: /\.(ts|js)x?$/,
                 exclude: /node_modules/,
-                loaders: ['babel-loader'],
+                use: 'babel-loader'
             },
             {
                 test: /\.s[ac]ss$/i,
@@ -132,8 +140,10 @@ module.exports = {
     },
 
     plugins: [
+        new CleanWebpackPlugin(),
+
         new MiniCssExtractPlugin({
-            filename: '[name].css',
+            filename: '[name].[contenthash].css',
             chunkFilename: '[id].css',
         }),
         new webpack.DefinePlugin({
@@ -169,10 +179,14 @@ module.exports = {
             inject: true,
             chunks: ['agile-planning-estimation']
         }),
+
         new SubresourceIntegrityPlugin({
             hashFuncNames: ['sha256', 'sha384'],
             enabled: (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'ci'),
         }),
+
+        new CompressionPlugin(),
+
         new CopyPlugin({
             patterns: [
                 { from: 'site/*.ico', to: '.', flatten: true },
