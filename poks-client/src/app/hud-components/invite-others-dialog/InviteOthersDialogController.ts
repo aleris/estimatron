@@ -13,7 +13,7 @@ export class InviteOthersDialogController extends OptionsDialog<string> {
         this.dialogElement = document.getElementById('inviteOthersDialog')
         this.closeButton = document.getElementById('inviteOthersDialog--closeButton')
         this.applyButton = document.getElementById('inviteOthersDialog--applyButton')
-        this.copyButton = document.getElementById('tableOptionsDialog--copyButton')
+        this.copyButton = document.getElementById('inviteOthersDialog--copyButton')
         this.inviteOthersDialogURL = document.getElementById('inviteOthersDialog--url') as HTMLInputElement
 
         this.addBaseListeners()

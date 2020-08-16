@@ -12,11 +12,20 @@ files from server (`/poks-server/src/model`). This is why there is a `.dockerign
 ## Tests
 Run all tests, including integration tests:
     
-    `./ci.sh`
+`./ci.sh`
 
 Run single test:
 
-    `npm test -- -t 'Server bet'`
+`npm test -- -t 'Server bet'`
+
+Open Cypress:
+
+Start server & client and then:
+
+```
+cd poks-client
+./node_modules/.bin/cypress open
+```
 
 ## SSL
 
