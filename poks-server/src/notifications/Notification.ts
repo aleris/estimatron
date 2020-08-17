@@ -62,8 +62,8 @@ export abstract class Notification<T> {
     private sendToWebSocket(ws: WebSocket, message: string): void {
         try {
             ws.send(message)
-        } catch (e) {
-            log.error('Error when sending message to socket', e)
+        } catch (error) {
+            log.error('Error when sending message to socket', {error})
         }
     }
 

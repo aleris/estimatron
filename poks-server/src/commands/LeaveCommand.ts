@@ -34,5 +34,9 @@ export class LeaveCommand implements Command<LeaveData> {
         player.playerInfo.gone = true
 
         new OtherLeftNotification({table, player}).send()
+
+        if (table.players.filter(p => !p.playerInfo.gone).length === 0) {
+            this.server.serverStorage.freeTable(table)
+        }
     }
 }

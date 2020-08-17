@@ -29,6 +29,14 @@ describe(MemoryServerStorage.name, () => {
         expect(serverStorage.tablesCount).toStrictEqual(2)
     })
 
+    test('freeTable', () => {
+        const serverStorage = new MemoryServerStorage()
+        const table = createTestTablePlayer(mock<WebSocket>(), 1).table
+        serverStorage.saveTable(table)
+        serverStorage.freeTable(table)
+        expect(serverStorage.tablesCount).toStrictEqual(0)
+    })
+
     test('getTable not found', () => {
         const serverStorage = new MemoryServerStorage()
         const table = createTestTablePlayer(mock<WebSocket>()).table

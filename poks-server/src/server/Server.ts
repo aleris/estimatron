@@ -26,8 +26,6 @@ export class Server {
         this.startedOn = new Date()
         this.latestActivity = this.startedOn
 
-        this.serverStorage.mount()
-
         this.app
             .get('/_admin/status', (res, req) => {
                 this.adminStatus(res, req)
@@ -67,7 +65,7 @@ export class Server {
     }
 
     public stop() {
-        this.serverStorage.unmount()
+        log.info('Server stopped')
     }
 
     private adminStatus(res: HttpResponse, req: HttpRequest) {

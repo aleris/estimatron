@@ -7,36 +7,27 @@ const log = logger.child({ component: 'MemoryServerStorage' })
 export class MemoryServerStorage implements ServerStorage {
     private readonly tables = new Map<string, Table>()
 
-    private deleteUnusedTablesSchedule: NodeJS.Timeout | undefined
-
-    constructor(private readonly deleteUnusedTablesJob = false) { }
-
-    mount(): void {
-        if (this.deleteUnusedTablesJob) {
-            const TEN_MINUTES = 10 * 60 * 1000
-            this.deleteUnusedTablesSchedule = setInterval(this.deleteUnusedTables.bind(this), TEN_MINUTES)
-        }
-    }
-
-    unmount(): void {
-        if (this.deleteUnusedTablesSchedule !== undefined) {
-            clearInterval(this.deleteUnusedTablesSchedule)
-        }
-    }
+    constructor() { }
 
     saveTable(table: Table): void {
         this.tables.set(table.tableInfo.id, table)
+        log.info('Saved table', { table })
     }
 
     getTable(tableId: string): Table | undefined {
         return this.tables.get(tableId)
     }
 
+    freeTable(table: Table): void {
+        this.tables.delete(table.tableInfo.id)
+        log.info('Freed table', { table })
+    }
+
     get tablesCount(): number {
         return this.tables.size
     }
 
-    private deleteUnusedTables() {
-        log.debug('Deleting unused tables')
+    clear() {
+        this.tables.clear()
     }
 }

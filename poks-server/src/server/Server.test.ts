@@ -264,6 +264,32 @@ describe(Server.name, () => {
         expect(targetTable?.players[1].playerInfo.gone).toStrictEqual(false)
     })
 
+    test('leave last player frees the table', () => {
+        const wsPlayer1 = mock<WebSocket>()
+        const tablePlayer1 = createTestTablePlayer(wsPlayer1)
+        const wsPlayer2 = mock<WebSocket>()
+        const player2 = createTestPlayer(wsPlayer2, 2)
+        const table = {
+            tableInfo: tablePlayer1.table.tableInfo,
+            players: [tablePlayer1.player, player2],
+            createdTimestamp: 123,
+            activityTimestamp: 123,
+            lastRevealedByPlayer: null,
+            lastResetByPlayer: null
+        }
+        server.serverStorage.saveTable(table)
+        wsPlayer1['tableId'] = tablePlayer1.table.tableInfo.id
+        wsPlayer1['playerId'] = tablePlayer1.player.playerInfo.id
+        wsPlayer2['tableId'] = tablePlayer1.table.tableInfo.id
+        wsPlayer2['playerId'] = player2.playerInfo.id
+
+        wsSocketBehavior!.close!(wsPlayer1, 10001, Buffer.alloc(0, ''))
+        expect(wsPlayer2.send).toHaveBeenCalled()
+        wsSocketBehavior!.close!(wsPlayer2, 10001, Buffer.alloc(0, ''))
+
+        expect(server.serverStorage.getTable(table.tableInfo.id)).toBeUndefined()
+    })
+
     test('bet', () => {
         const wsPlayer1 = mock<WebSocket>()
         const tablePlayer1 = createTestTablePlayer(wsPlayer1)
