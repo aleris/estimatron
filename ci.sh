@@ -1,6 +1,6 @@
 export NODE_ENV=ci
 
-cd poks-server
+cd server
 npm install
 npm run test
 client_unit_test_result=$?
@@ -8,7 +8,7 @@ npm run build
 npm run start &
 server_node_pid=$!
 
-cd ../poks-client
+cd ../client
 npm install
 npm run test:unit
 server_unit_tests_result=$?

@@ -1,6 +1,6 @@
-poks-server/node_modules
-poks-client/node_modules
-poks-client/npm-debug.log
-poks-client/dist
+server/node_modules
+client/node_modules
+client/npm-debug.log
+client/dist
 *.iml
 Dockerfile

@@ -1,5 +1,5 @@
 {
-  "name": "poks",
+  "name": "estimatron-client",
   "version": "0.0.1",
   "description": "Scrum poker table client",
   "main": "index.js",
@@ -19,7 +19,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/aleris/poks"
+    "url": "https://github.com/aleris/estimatron"
   },
   "private": true,
   "author": "Adrian Toșcă",

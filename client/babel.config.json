@@ -19,7 +19,7 @@
         "root": ["./"],
         "alias": {
           "@": "./src",
-          "@server": "../poks-server/src"
+          "@server": "../server/src"
         }
       }
     ]

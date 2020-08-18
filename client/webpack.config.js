@@ -10,7 +10,7 @@ const CompressionPlugin = require('compression-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const ROOT = path.resolve( __dirname, 'src' )
-const SERVER_ROOT = path.resolve( __dirname, '../poks-server/src' )
+const SERVER_ROOT = path.resolve( __dirname, '../estimatron-server/src' )
 const DESTINATION = path.resolve( __dirname, 'dist' )
 
 const dev = process.env.NODE_ENV !== 'production';

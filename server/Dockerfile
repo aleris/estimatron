@@ -14,20 +14,20 @@ RUN mkdir -p /etc/letsencrypt/renewal-hooks/pre/
 RUN mkdir -p /etc/letsencrypt/renewal-hooks/post/
 RUN mkdir -p /etc/letsencrypt/live/estimatron
 RUN chmod 0755 /etc/letsencrypt/live/estimatron
-RUN sh -c 'printf "#!/bin/sh\nkillall node\n" > /etc/letsencrypt/renewal-hooks/pre/poks-server.sh'
-RUN sh -c 'printf "#!/bin/sh\nnode /opt/poks-server/.\n" > /etc/letsencrypt/renewal-hooks/post/poks-server.sh'
-RUN chmod 755 /etc/letsencrypt/renewal-hooks/pre/poks-server.sh
-RUN chmod 755 /etc/letsencrypt/renewal-hooks/post/poks-server.sh
-#RUN certbot certonly --standalone --non-interactive --agree-tos -d estimatron.dev -m poks.agile.app@gmail.com --dry-run
+RUN sh -c 'printf "#!/bin/sh\nkillall node\n" > /etc/letsencrypt/renewal-hooks/pre/estimatron-server.sh'
+RUN sh -c 'printf "#!/bin/sh\nnode /opt/estimatron-server/.\n" > /etc/letsencrypt/renewal-hooks/post/estimatron-server.sh'
+RUN chmod 755 /etc/letsencrypt/renewal-hooks/pre/estimatron-server.sh
+RUN chmod 755 /etc/letsencrypt/renewal-hooks/post/estimatron-server.sh
+#RUN certbot certonly --standalone --non-interactive --agree-tos -d estimatron.dev -m estimatron.dev@gmail.com --dry-run
 
 # testing certificates (for testing the script locally purpose), will be overriden at startup by certbot
 COPY cert/cert.pem /etc/letsencrypt/live/estimatron/fullchain.pem
 COPY cert/key.pem /etc/letsencrypt/live/estimatron/privkey.pem
 
-# poks-server
-RUN mkdir /opt/poks-server
+# estimatron-server
+RUN mkdir /opt/estimatron-server
 
-WORKDIR /opt/poks-server
+WORKDIR /opt/estimatron-server
 
 COPY package*.json ./
 
@@ -36,7 +36,7 @@ COPY node_modules/uWebSockets.js ./node_modules/uWebSockets.js/
 
 RUN npm install && npm cache clean --force --loglevel=error
 
-COPY ./google-creds-*.json /etc/poks-server/
+COPY ./google-creds-*.json /etc/estimatron-server/
 
 COPY . .
 

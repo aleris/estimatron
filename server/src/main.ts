@@ -6,7 +6,7 @@ import { Server } from './server/Server'
 import { MemoryServerStorage } from './server/MemoryServerStorage'
 import { SSLApp } from 'uWebSockets.js'
 
-logger.info('.:: Poks Server ::.')
+logger.info('.:: Estimatron Server ::.')
 
 Monitoring.initialize()
 

@@ -1,14 +1,14 @@
 version: "3.8"
 
 services:
-  poks-client:
+  estimatron-client:
     build:
       context: .
-      dockerfile: ./poks-client/Dockerfile
+      dockerfile: ./client/Dockerfile
     ports:
       - 8080:8080
 
-  poks-server:
-    build: ./poks-server
+  estimatron-server:
+    build: ./server
     ports:
       - 44443:44443

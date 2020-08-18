@@ -33,7 +33,7 @@ switch (env) {
         transports.push(console)
         cloudLogging = new LoggingWinston({
             projectId: process.env.GOOGLE_PROJECT_ID,
-            logName: 'poks-server'
+            logName: 'estimatron-server'
         })
         transports.push(cloudLogging)
 }

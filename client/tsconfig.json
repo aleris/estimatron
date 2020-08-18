@@ -11,8 +11,8 @@
     "strict": true,
     "baseUrl": "..",
     "paths": {
-      "@/*": ["poks-client/src/*"],
-      "@server/*": ["poks-server/src/*"]
+      "@/*": ["client/src/*"],
+      "@server/*": ["server/src/*"]
     }
   },
   "include": [
