@@ -20,11 +20,9 @@ function startServer() {
     }
     const key_file_name = path.resolve(process.env.WS_CERT_KEY_FILE_NAME)
     const cert_file_name = path.resolve(process.env.WS_CERT_CERT_FILE_NAME)
-    const passphrase = process.env.WS_CERT_CERT_PASSPHRASE
     const wsApp = SSLApp({
         key_file_name,
-        cert_file_name,
-        passphrase
+        cert_file_name
     })
     const serverStorage = new MemoryServerStorage()
     const server = new Server(port, wsApp, serverStorage)

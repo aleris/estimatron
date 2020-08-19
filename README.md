@@ -52,10 +52,19 @@ directly in a storage bucket. The image is build in the root context (`/estimatr
 it needs the model files from server (`/server/src/model`). This is why there is a `.dockerignore` file in root (see
 `docker-compose.yml`).
 
-## SSL
+## Local WSS
 
-generate self signed cert:
-    
-    `openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365`
+Generate self signed cert:
 
-go to https://localhost:29087/_admin/status and accept cert so wss also works
+```
+openssl req \
+    -nodes \
+    -new \
+    -x509 \
+    -keyout estimatron.dev.key \
+    -out estimatron.dev.cert \
+    -subj "/C=RO/ST=GL/L=B/O=Intensive/OU=Software/CN=estimatron.dev/emailAddress=estimatron.dev@google.com" \
+    -days 365
+```
+
+Make sure the browser accepts the certificate (chrome settings enable local certificates).
