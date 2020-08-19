@@ -3,6 +3,8 @@
 Immersive planning poker online tool that helps to build team consensus estimates
 and facilitates discussions about user stories.
 
+![Estimatron App Screenshot](https://github.com/aleris/estimatron/blob/master/client/src/site/images/screenshot.png "Estimatron App Screenshot")
+
 ## Dev
 
 1. To start the server open a terminal and type:
