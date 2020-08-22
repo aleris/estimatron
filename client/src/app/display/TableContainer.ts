@@ -143,6 +143,9 @@ export class TableContainer extends Container implements RefreshLayout {
         if (playerSlot) {
             this.inviteOthersButton.x = playerSlot.x + this.sceneLayout.cardWidth
             this.inviteOthersButton.y = playerSlot.y - this.sceneLayout.cardHeight / 2
+        } else {
+            this.inviteOthersButton.x = this.sceneLayout.halfSceneWidth
+            this.inviteOthersButton.y = this.sceneLayout.halfSceneHeight / 2
         }
 
     }
