@@ -165,6 +165,9 @@ export class HandOfCardsContainer extends Container implements RefreshLayout {
     }
 
     private acceptDropToSlot(pos: Point): boolean {
+        if (this.sessionTable.playerInfo.observerMode) {
+            return false
+        }
         return pos.y < this.sceneLayout.sceneHeight / 2
     }
 

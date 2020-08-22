@@ -26,7 +26,7 @@ and then go to `https://localhost:9000`
 
 ## Tests
 Run all tests, including integration tests:
-    
+
 `./ci.sh`
 
 Run single test:
@@ -36,7 +36,8 @@ Run single test:
 
 Open Cypress:
 
-1. Start server & client and then:
+1. Start server & client 
+2. Then run the following to start cypress:
 
 ```
 cd client
